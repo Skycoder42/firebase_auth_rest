@@ -1,5 +1,5 @@
 export 'src/firebase_account.dart';
-export 'src/firebase_auth_api.dart';
+export 'src/rest_api.dart';
 export 'src/models/auth_error.dart';
 export 'src/models/delete_request.dart';
 export 'src/models/fetch_provider_request.dart';

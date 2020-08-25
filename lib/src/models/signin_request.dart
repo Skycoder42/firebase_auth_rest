@@ -45,10 +45,10 @@ abstract class SignInRequest with _$SignInRequest {
   }) = IdpSignInRequest;
 
   factory SignInRequest.idp({
-    @required Uri requestUri,
     @required IdpProvider idpProvider,
-    @Default(true) bool returnSecureToken,
-    @Default(false) bool returnIdpCredential,
+    @required Uri requestUri,
+    bool returnSecureToken = true,
+    bool returnIdpCredential = false,
   }) =>
       SignInRequest.internal_idp(
         requestUri: requestUri,

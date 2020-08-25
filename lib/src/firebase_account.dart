@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'firebase_auth_api.dart';
+import 'rest_api.dart';
 import 'models/signin_response.dart';
 
 class FirebaseAccount {
-  final FirebaseAuthApi _api;
+  final RestApi _api;
 
   String _localId;
   String _idToken;
@@ -38,7 +38,7 @@ class FirebaseAccount {
   }
 
   static Future<FirebaseAccount> restore(
-    FirebaseAuthApi api,
+    RestApi api,
     String refreshToken, {
     bool autoRefresh = true,
   }) async {

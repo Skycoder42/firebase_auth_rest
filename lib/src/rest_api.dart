@@ -20,7 +20,7 @@ import 'models/update_response.dart';
 import 'models/userdata_request.dart';
 import 'models/userdata_response.dart';
 
-class FirebaseAuthApi {
+class RestApi {
   static const _firebaseLocaleHeader = "X-Firebase-Locale";
   static const _authHost = "identitytoolkit.googleapis.com";
   static const _tokenHost = "securetoken.googleapis.com";
@@ -28,7 +28,7 @@ class FirebaseAuthApi {
   final Client _client;
   final String _apiKey;
 
-  const FirebaseAuthApi(
+  const RestApi(
     this._client,
     this._apiKey,
   );

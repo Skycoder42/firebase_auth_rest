@@ -7,7 +7,7 @@ import './mocks.dart';
 void main() {
   const apiKey = "apiKey";
   final mockClient = MockClient();
-  final api = FirebaseAuthApi(mockClient, apiKey);
+  final api = RestApi(mockClient, apiKey);
 
   setUp(() {
     reset(mockClient);
