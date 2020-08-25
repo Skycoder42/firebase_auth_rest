@@ -82,21 +82,6 @@ class RestApi {
         request.toJson(),
       ));
 
-  Future<SignInResponse> signUp(SignInRequest signInRequest) =>
-      signInRequest.maybeMap<Future<SignInResponse>>(
-        password: signUpWithPassword,
-        orElse: () => throw ArgumentError.value(signInRequest.runtimeType),
-      );
-
-  Future<SignInResponse> signIn(SignInRequest signInRequest) =>
-      signInRequest.maybeMap<Future<SignInResponse>>(
-        anonymous: signUpAnonymous,
-        internal_idp: signInWithIdp,
-        password: signUpWithPassword,
-        customToken: signInWithCustomToken,
-        orElse: () => throw ArgumentError.value(signInRequest.runtimeType),
-      );
-
   Future<UserDataResponse> getUserData(UserDataRequest request) async =>
       UserDataResponse.fromJson(await _post(
         _buildUri("accounts:lookup"),
