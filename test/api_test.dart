@@ -1,3 +1,4 @@
+import 'package:firebase_rest_auth/src/models/idp_provider.dart';
 import 'package:test/test.dart';
 import 'package:firebase_rest_auth/firebase_rest_auth.dart';
 import 'package:mockito/mockito.dart';
@@ -90,7 +91,7 @@ void main() {
     test("should send a post request with correct data", () async {
       await api.signInWithIdp(IdpSignInRequest(
         requestUri: Uri(),
-        postBody: "postBody",
+        postBody: IdpProvider.google("idToken").postBody,
       ));
       verify(mockClient.post(
         Uri.parse(

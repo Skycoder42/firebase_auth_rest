@@ -1,5 +1,6 @@
 import 'firebase_account.dart';
 import 'models/fetch_provider_request.dart';
+import 'models/idp_provider.dart';
 import 'models/oob_code_request.dart';
 import 'models/password_reset_request.dart';
 import 'models/signin_request.dart';

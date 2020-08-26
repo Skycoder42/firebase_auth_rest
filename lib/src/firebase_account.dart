@@ -1,22 +1,15 @@
 import 'dart:async';
 
+import 'models/delete_request.dart';
+import 'models/idp_provider.dart';
 import 'models/oob_code_request.dart';
+import 'models/signin_request.dart';
 import 'models/signin_response.dart';
 import 'models/update_request.dart';
+import 'models/userdata.dart';
 import 'models/userdata_request.dart';
-import 'models/userdata_response.dart';
+import 'profile_update.dart';
 import 'rest_api.dart';
-
-class ProfileUpdate<T> {
-  final T _data;
-
-  bool get update => _data != null;
-  bool get delete => _data == null;
-  T get data => _data;
-
-  const ProfileUpdate.update(this._data);
-  const ProfileUpdate.delete() : _data = null;
-}
 
 class FirebaseAccount {
   final RestApi _api;
@@ -102,6 +95,19 @@ class FirebaseAccount {
     return _idToken;
   }
 
+  Future requestEmailConfirmation({
+    String locale,
+  }) async =>
+      _api.sendOobCode(
+        OobCodeRequest.verifyEmail(
+          idToken: _idToken,
+        ),
+        locale ?? _locale,
+      );
+
+  Future confirmEmail(String oobCode) async =>
+      _api.confirmEmail(ConfirmEmailRequest(oobCode: oobCode));
+
   Future<UserData> getDetails() async {
     final response = await _api.getUserData(UserDataRequest(idToken: _idToken));
     return response.users.isNotEmpty ? response.users.first : null;
@@ -115,6 +121,7 @@ class FirebaseAccount {
         EmailUpdateRequest(
           idToken: _idToken,
           email: newEmail,
+          returnSecureToken: false,
         ),
         locale ?? _locale,
       );
@@ -123,6 +130,7 @@ class FirebaseAccount {
       _api.updatePassword(PasswordUpdateRequest(
         idToken: _idToken,
         password: newPassword,
+        returnSecureToken: false,
       ));
 
   Future updateProfile({
@@ -139,21 +147,60 @@ class FirebaseAccount {
             DeleteAttribute.DISPLAY_NAME,
           if (photoUrl != null && photoUrl.delete) DeleteAttribute.PHOTO_URL,
         ],
+        returnSecureToken: false,
       ));
 
-  Future requestEmailConfirmation(
-    FirebaseAccount account, {
+  Future<bool> linkEmail(
+    String email,
+    String password, {
+    bool autoVerify = true,
     String locale,
-  }) async =>
-      _api.sendOobCode(
-        OobCodeRequest.verifyEmail(
-          idToken: account.idToken,
-        ),
-        locale ?? _locale,
-      );
+  }) async {
+    final response = await _api.linkEmail(LinkEmailRequest(
+      idToken: _idToken,
+      email: email,
+      password: password,
+      returnSecureToken: false,
+    ));
+    if (!response.emailVerified && autoVerify) {
+      await requestEmailConfirmation(locale: locale);
+    }
+    return response.emailVerified;
+  }
 
-  Future confirmEmail(String oobCode) async =>
-      _api.confirmEmail(ConfirmEmailRequest(oobCode: oobCode));
+  Future linkIdp(
+    IdpProvider provider,
+    Uri requestUri,
+  ) =>
+      _api.linkIdp(LinkIdpRequest(
+        idToken: _idToken,
+        postBody: provider.postBody,
+        requestUri: requestUri,
+        returnSecureToken: false,
+      ));
+
+  Future unlinkProvider(List<String> providers) =>
+      _api.unlinkProvider(UnlinkRequest(
+        idToken: _idToken,
+        deleteProvider: providers,
+      ));
+
+  Future delete() async {
+    await _api.delete(DeleteRequest(idToken: _idToken));
+    _localId = null;
+    _idToken = null;
+    _refreshToken = null;
+    _expiresAt = null;
+    autoRefresh = false;
+    if (_refreshController.hasListener) {
+      _refreshController.add(null);
+    }
+  }
+
+  void dispose() {
+    autoRefresh = false;
+    _refreshController.close();
+  }
 
   static Duration _durFromString(String expiresIn) =>
       Duration(seconds: int.parse(expiresIn));
