@@ -175,7 +175,7 @@ class RestApi {
           "v1",
           path,
         ],
-        queryParameters: {
+        queryParameters: <String, dynamic>{
           "key": _apiKey,
           ...?queryParameters,
         },
@@ -187,6 +187,7 @@ class RestApi {
     Map<String, String> headers,
     bool noContent = false,
   }) async {
+    body.remove("runtimeType");
     final response = await _client.post(
       url,
       body: json.encode(body),

@@ -1,7 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'idp_provider.dart';
-
 part 'signin_request.freezed.dart';
 part 'signin_request.g.dart';
 

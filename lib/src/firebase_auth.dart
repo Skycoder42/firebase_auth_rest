@@ -1,3 +1,5 @@
+import 'package:http/http.dart';
+
 import 'firebase_account.dart';
 import 'models/fetch_provider_request.dart';
 import 'models/idp_provider.dart';
@@ -9,15 +11,18 @@ import 'rest_api.dart';
 class FirebaseAuth {
   final RestApi _api;
 
-  String _locale;
+  String locale;
 
   FirebaseAuth(
-    this._api, [
-    this._locale,
-  ]);
+    Client client,
+    String apiKey, [
+    this.locale,
+  ]) : _api = RestApi(client, apiKey);
 
-  String get locale => _locale;
-  set locale(String locale) => _locale = locale;
+  FirebaseAuth.api(
+    this._api, [
+    this.locale,
+  ]);
 
   Future<List<String>> fetchProviders(
     String email, [
@@ -34,11 +39,11 @@ class FirebaseAuth {
   }
 
   Future<FirebaseAccount> signUpAnonymous({bool autoRefresh = true}) async =>
-      FirebaseAccount.create(
+      FirebaseAccount.apiCreate(
         _api,
-        await _api.signUpAnonymous(AnonymousSignInRequest()),
+        await _api.signUpAnonymous(const AnonymousSignInRequest()),
         autoRefresh: autoRefresh,
-        locale: _locale,
+        locale: locale,
       );
 
   Future<FirebaseAccount> signUpWithPassword(
@@ -57,26 +62,29 @@ class FirebaseAuth {
         OobCodeRequest.verifyEmail(
           idToken: response.idToken,
         ),
-        locale ?? _locale,
+        locale ?? this.locale,
       );
     }
-    return FirebaseAccount.create(
+    return FirebaseAccount.apiCreate(
       _api,
       response,
-      locale: _locale,
+      locale: this.locale,
     );
   }
 
-  Future<FirebaseAccount> signInWithIdp(IdpProvider provider, Uri requestUri,
-          {bool autoRefresh = true}) async =>
-      FirebaseAccount.create(
+  Future<FirebaseAccount> signInWithIdp(
+    IdpProvider provider,
+    Uri requestUri, {
+    bool autoRefresh = true,
+  }) async =>
+      FirebaseAccount.apiCreate(
         _api,
         await _api.signInWithIdp(IdpSignInRequest(
           postBody: provider.postBody,
           requestUri: requestUri,
         )),
         autoRefresh: autoRefresh,
-        locale: _locale,
+        locale: locale,
       );
 
   Future<FirebaseAccount> signInWithPassword(
@@ -84,27 +92,27 @@ class FirebaseAuth {
     String password, {
     bool autoRefresh = true,
   }) async =>
-      FirebaseAccount.create(
+      FirebaseAccount.apiCreate(
         _api,
         await _api.signInWithPassword(PasswordSignInRequest(
           email: email,
           password: password,
         )),
         autoRefresh: autoRefresh,
-        locale: _locale,
+        locale: locale,
       );
 
   Future<FirebaseAccount> signInWithCustomToken(
     String token, {
     bool autoRefresh = true,
   }) async =>
-      FirebaseAccount.create(
+      FirebaseAccount.apiCreate(
         _api,
         await _api.signInWithCustomToken(CustomTokenSignInRequest(
           token: token,
         )),
         autoRefresh: autoRefresh,
-        locale: _locale,
+        locale: locale,
       );
 
   Future requestPasswordReset(
@@ -113,7 +121,7 @@ class FirebaseAuth {
   }) async =>
       _api.sendOobCode(
         OobCodeRequest.passwordReset(email: email),
-        locale ?? _locale,
+        locale ?? this.locale,
       );
 
   Future validatePasswordReset(String oobCode) async =>

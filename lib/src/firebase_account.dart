@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:http/http.dart';
+
 import 'models/delete_request.dart';
 import 'models/idp_provider.dart';
 import 'models/oob_code_request.dart';
@@ -13,14 +15,14 @@ import 'rest_api.dart';
 
 class FirebaseAccount {
   final RestApi _api;
-  String _locale;
+  String locale;
 
   String _localId;
   String _idToken;
   String _refreshToken;
   DateTime _expiresAt;
 
-  Timer _refreshTimer = null;
+  Timer _refreshTimer;
   final StreamController<String> _refreshController =
       StreamController<String>.broadcast(
     onListen: () {},
@@ -33,23 +35,49 @@ class FirebaseAccount {
     this._idToken,
     this._refreshToken,
     this._expiresAt,
-    this._locale,
+    this.locale,
   );
 
   FirebaseAccount.create(
-    this._api,
+    Client client,
+    String apiKey,
     SignInResponse signInResponse, {
     bool autoRefresh = true,
     String locale,
+  }) : this.apiCreate(
+          RestApi(client, apiKey),
+          signInResponse,
+          autoRefresh: autoRefresh,
+          locale: locale,
+        );
+
+  FirebaseAccount.apiCreate(
+    this._api,
+    SignInResponse signInResponse, {
+    bool autoRefresh = true,
+    this.locale,
   })  : _localId = signInResponse.localId,
         _idToken = signInResponse.idToken,
         _refreshToken = signInResponse.refreshToken,
-        _expiresAt = _expiresInToAt(_durFromString(signInResponse.expiresIn)),
-        _locale = locale {
+        _expiresAt = _expiresInToAt(_durFromString(signInResponse.expiresIn)) {
     this.autoRefresh = autoRefresh;
   }
 
   static Future<FirebaseAccount> restore(
+    Client client,
+    String apiKey,
+    String refreshToken, {
+    bool autoRefresh = true,
+    String locale,
+  }) =>
+      apiRestore(
+        RestApi(client, apiKey),
+        refreshToken,
+        autoRefresh: autoRefresh,
+        locale: locale,
+      );
+
+  static Future<FirebaseAccount> apiRestore(
     RestApi api,
     String refreshToken, {
     bool autoRefresh = true,
@@ -67,9 +95,6 @@ class FirebaseAccount {
     account.autoRefresh = autoRefresh;
     return account;
   }
-
-  String get locale => _locale;
-  set locale(String locale) => _locale = locale;
 
   String get localId => _localId;
   String get idToken => _idToken;
@@ -102,7 +127,7 @@ class FirebaseAccount {
         OobCodeRequest.verifyEmail(
           idToken: _idToken,
         ),
-        locale ?? _locale,
+        locale ?? this.locale,
       );
 
   Future confirmEmail(String oobCode) async =>
@@ -123,7 +148,7 @@ class FirebaseAccount {
           email: newEmail,
           returnSecureToken: false,
         ),
-        locale ?? _locale,
+        locale ?? this.locale,
       );
 
   Future updatePassword(String newPassword) =>

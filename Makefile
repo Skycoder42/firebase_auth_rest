@@ -26,6 +26,11 @@ watch:
 tests:
 	pub run test
 
+cover: get
+	pub run test_coverage
+	genhtml -o coverage coverage/lcov.info
+	open coverage/index.html || start coverage/index.html
+
 publish:
 	rm lib/src/.gitignore
 	pub publish

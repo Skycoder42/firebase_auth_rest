@@ -3,13 +3,9 @@ import 'package:http/http.dart';
 import 'package:mockito/mockito.dart';
 
 class MockResponse extends Mock implements Response {
-  MockResponse._();
-
-  factory MockResponse({int statusCode = 200, String body = "{}"}) {
-    final response = MockResponse._();
-    when(response.statusCode).thenReturn(statusCode);
-    when(response.body).thenReturn(body);
-    return response;
+  MockResponse({int statusCode = 200, String body = "{}"}) {
+    when(this.statusCode).thenReturn(statusCode);
+    when(this.body).thenReturn(body);
   }
 }
 

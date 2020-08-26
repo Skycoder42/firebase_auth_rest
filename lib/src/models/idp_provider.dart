@@ -10,10 +10,10 @@ abstract class IdpProvider with _$IdpProvider {
     String accessToken,
     String oauthTokenSecret,
   }) = _TwitterIdpProvider;
-  factory IdpProvider.custom(
+  factory IdpProvider.custom({
     String providerId,
     Map<String, dynamic> parameters,
-  ) = _CustomIdpProvider;
+  }) = _CustomIdpProvider;
 
   @late
   String get postBody => when(
@@ -23,8 +23,9 @@ abstract class IdpProvider with _$IdpProvider {
         twitter: (accessToken, oauthTokenSecret) =>
             "access_token=$accessToken&oauth_token_secret=$oauthTokenSecret&providerId=twitter.com",
         custom: (providerId, parameters) {
-          final args = ["providerId=$providerId"];
-          parameters.forEach((key, value) => args.add("$key=$value"));
+          final args = <String>[];
+          parameters.forEach((key, dynamic value) => args.add("$key=$value"));
+          args.add("providerId=$providerId");
           return args.join("&");
         },
       );
