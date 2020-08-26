@@ -28,3 +28,7 @@ jobs:
       # - run: dartanalyzer lib test
       - run: pub run test
       - run: pub run test_coverage
+      - uses: ChicagoFlutter/lcov-cop@v1.0.2
+        with:
+          min_coverage: 95
+          exclude: "**/*.g.dart **/*.freezed.dart lib/src/models/*.dart"

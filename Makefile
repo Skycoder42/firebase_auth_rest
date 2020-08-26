@@ -27,9 +27,11 @@ tests:
 	pub run test
 
 cover: get
+	@rm -rf coverage
 	pub run test_coverage
+	pub run remove_from_coverage -f coverage/lcov.info -r '\.g\.dart$$' -r '\.freezed\.dart$' -r 'src[\\/]models[\\/].*\.dart$'
 	genhtml -o coverage coverage/lcov.info
-	open coverage/index.html || start coverage/index.html
+	#open coverage/index.html || start coverage/index.html
 
 publish:
 	rm lib/src/.gitignore
