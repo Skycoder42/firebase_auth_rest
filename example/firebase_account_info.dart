@@ -1,22 +1,30 @@
+// ignore_for_file: avoid_print
 import 'dart:io';
 
-import 'package:args/args.dart';
+import 'package:args/command_runner.dart';
 
-void main(List<String> arguments) {
-  final result = _runParser(arguments);
+class TestCommand extends Command<int> {
+  @override
+  String get name => "test";
+
+  @override
+  String get description => "test is test.";
+
+  @override
+  Future<int> run() async {
+    return 0;
+  }
 }
 
-ArgResults _runParser(List<String> arguments) {
-  final parser = ArgParser()
-    ..addFlag('help',
-        abbr: 'h', negatable: false, help: "Displays this help information.");
-
-  final result = parser.parse(arguments);
-
-  if (result['help'] as bool) {
-    print(parser.usage);
-    exit(0);
+Future main(List<String> arguments) async {
+  try {
+    final runner = CommandRunner<int>(
+      "firebase_account_info",
+      "Demo application.",
+    )..addCommand(TestCommand());
+    exitCode = (await runner.run(arguments)) ?? 0;
+  } on UsageException catch (error) {
+    print(error);
+    exitCode = 127;
   }
-
-  return result;
 }

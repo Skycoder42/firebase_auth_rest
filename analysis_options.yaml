@@ -12,3 +12,8 @@ analyzer:
   errors:
     missing_return: error
     missing_required_param: error
+
+lint:
+  rules:
+    prefer_single_quotes: false
+    prefer_double_quotes: true
