@@ -33,6 +33,9 @@ class RestApi {
     this._apiKey,
   );
 
+  Client get client => _client;
+  String get apiKey => _apiKey;
+
   Future<RefreshResponse> token({
     @required String refresh_token,
     String grant_type = "refresh_token",

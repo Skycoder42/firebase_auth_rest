@@ -96,9 +96,10 @@ class FirebaseAccount {
     return account;
   }
 
+  RestApi get api => _api;
   String get localId => _localId;
   String get idToken => _idToken;
-  String get refreshToken => _idToken;
+  String get refreshToken => _refreshToken;
   DateTime get expiresAt => _expiresAt;
 
   bool get autoRefresh => _refreshTimer != null;

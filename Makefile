@@ -1,5 +1,5 @@
 # files
-.packages: pubspec.yaml pubspec.lock
+.packages: pubspec.yaml
 	pub get
 
 lib/models/%.freezed.dart: .build-runner-trigger .packages
@@ -22,10 +22,10 @@ build: .build-runner-completed
 generate: get
 	pub run build_runner build --delete-conflicting-outputs
 	
-watch:
+watch: get
 	pub run build_runner watch --delete-conflicting-outputs
 
-test:
+test: get
 	pub run test
 
 coverage: get
@@ -35,10 +35,11 @@ coverage: get
 	genhtml -o coverage coverage/lcov.info
 	#open coverage/index.html || start coverage/index.html
 
-doc:
-	dartdoc
+doc: get
+	@rm -rf doc
+	dartdoc --show-progress 
 
-publish:
+publish: get
 	rm lib/src/.gitignore
 	pub publish
 	echo '# Generated dart files' > lib/src/.gitignore

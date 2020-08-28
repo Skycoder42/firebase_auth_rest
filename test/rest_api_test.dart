@@ -25,6 +25,11 @@ void main() {
     mockClient.setupMock();
   });
 
+  test("Constructor initializes properties as expected", () {
+    expect(api.client, mockClient);
+    expect(api.apiKey, apiKey);
+  });
+
   group("token", () {
     test("should send a post request with correct data", () async {
       const token = "token";
