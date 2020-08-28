@@ -1,0 +1,4 @@
+dartdoc:
+  exclude:
+    - "*.g.dart"
+    - "*.freezed.dart"
