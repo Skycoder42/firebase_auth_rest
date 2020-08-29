@@ -1,5 +1,6 @@
 # files
 .packages: pubspec.yaml
+	rm pubspec.lock
 	pub get
 
 lib/models/%.freezed.dart: .build-runner-trigger .packages
