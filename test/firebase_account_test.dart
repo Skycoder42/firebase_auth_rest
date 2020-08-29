@@ -18,10 +18,18 @@ class MockSignInResponse extends Mock implements SignInResponse {}
 
 void main() {
   final mockApi = RestApiMock();
+  final mockResponse = MockSignInResponse();
+
   FirebaseAccount account;
 
   setUp(() {
     reset(mockApi);
+
+    reset(mockResponse);
+    when(mockResponse.localId).thenReturn("localId");
+    when(mockResponse.idToken).thenReturn("idToken");
+    when(mockResponse.refreshToken).thenReturn("refreshToken");
+    when(mockResponse.expiresIn).thenReturn("5");
   });
 
   tearDown(() {
@@ -30,16 +38,9 @@ void main() {
 
   group("create", () {
     final mockClient = MockClient();
-    final mockResponse = MockSignInResponse();
 
     setUp(() {
       reset(mockClient);
-
-      reset(mockResponse);
-      when(mockResponse.localId).thenReturn("localId");
-      when(mockResponse.idToken).thenReturn("idToken");
-      when(mockResponse.refreshToken).thenReturn("refreshToken");
-      when(mockResponse.expiresIn).thenReturn("5");
     });
 
     test("apiCreate initializes account correctly", () {
@@ -161,4 +162,145 @@ void main() {
       expect(account.api.apiKey, apiKey);
     });
   });
+
+  group("refresh", () {
+    test("updates all properties", () async {
+      const idToken = "id";
+      const refreshToken = "refresh";
+      when(mockApi.token(refresh_token: anyNamed("refresh_token")))
+          .thenAnswer((i) async => RefreshResponse(
+                id_token: idToken,
+                refresh_token: refreshToken,
+                expires_in: "6000",
+              ));
+
+      account = FirebaseAccount.apiCreate(
+        mockApi,
+        mockResponse,
+        autoRefresh: false,
+      );
+
+      final expiresAt = DateTime.now().toUtc().add(Duration(seconds: 6000));
+      final token = await account.refresh();
+
+      expect(token, idToken);
+      expect(account.idToken, idToken);
+      expect(account.refreshToken, refreshToken);
+      expect(account.expiresAt.difference(expiresAt).inSeconds, 0);
+    });
+
+    test("forwards auth exceptions", () async {
+      when(mockApi.token(refresh_token: anyNamed("refresh_token")))
+          .thenAnswer((i) => throw AuthError());
+
+      account = FirebaseAccount.apiCreate(
+        mockApi,
+        mockResponse,
+        autoRefresh: false,
+      );
+
+      expect(() => account.refresh(), throwsA(isA<AuthError>()));
+    });
+
+    test("token updates are streamed", () async {
+      const idToken = "nextId";
+      when(mockApi.token(refresh_token: anyNamed("refresh_token")))
+          .thenAnswer((i) async => RefreshResponse(
+                id_token: idToken,
+                expires_in: "5",
+              ));
+
+      account = FirebaseAccount.apiCreate(
+        mockApi,
+        mockResponse,
+        autoRefresh: false,
+      );
+
+      expect(account.idTokenStream.isBroadcast, true);
+
+      final firstElement = account.idTokenStream.first;
+      await account.refresh();
+      expect(await firstElement, idToken);
+    });
+
+    // test("token update errors are streamed", () async {
+    //   when(mockApi.token(refresh_token: anyNamed("refresh_token")))
+    //       .thenAnswer((i) => throw AuthError());
+
+    //   account = FirebaseAccount.apiCreate(
+    //     mockApi,
+    //     mockResponse,
+    //     autoRefresh: false,
+    //   );
+
+    //   // final firstElement = account.idTokenStream.first;
+    //   // print("A");
+    //   expect(() async => await account.refresh(), throwsA(AuthError));
+    //   // print("B");
+    //   // expect(() => firstElement, throwsA(isA<AuthError>()));
+    //   // print("C");
+    // });
+  });
+
+  group("autoRefresh", () {
+    test("does nothing if disabled", () async {
+      when(mockResponse.expiresIn).thenReturn("61");
+
+      account = FirebaseAccount.apiCreate(
+        mockApi,
+        mockResponse,
+        autoRefresh: false,
+      );
+
+      await _wait(3);
+
+      verifyZeroInteractions(mockApi);
+    });
+
+    test("sends token request one minute before timeout", () async {
+      when(mockResponse.expiresIn).thenReturn("62");
+
+      account = FirebaseAccount.apiCreate(
+        mockApi,
+        mockResponse,
+      );
+
+      await _wait(3);
+
+      verify(mockApi.token(refresh_token: "refreshToken")).called(1);
+    });
+
+    test("sends token request again after timeout", () async {
+      when(mockResponse.expiresIn).thenReturn("62");
+      when(mockApi.token(refresh_token: anyNamed("refresh_token")))
+          .thenAnswer((i) async => RefreshResponse(
+                refresh_token: "refreshToken2",
+                expires_in: "62",
+              ));
+
+      account = FirebaseAccount.apiCreate(
+        mockApi,
+        mockResponse,
+      );
+
+      await _wait(7);
+
+      verify(mockApi.token(refresh_token: "refreshToken")).called(1);
+      verify(mockApi.token(refresh_token: "refreshToken2")).called(2);
+    });
+
+    test("sends token request immediatly if timeout is below 60 seconds",
+        () async {
+      account = FirebaseAccount.apiCreate(
+        mockApi,
+        mockResponse,
+      );
+
+      await _wait(1);
+
+      verify(mockApi.token(refresh_token: "refreshToken")).called(1);
+    });
+  });
 }
+
+Future _wait(int seconds) => Future<void>.delayed(Duration(seconds: seconds));

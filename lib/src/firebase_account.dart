@@ -118,6 +118,7 @@ class FirebaseAccount {
 
   Future<String> refresh() async {
     await _updateToken();
+    print("2");
     return _idToken;
   }
 
@@ -236,10 +237,10 @@ class FirebaseAccount {
 
   void _scheduleAutoRefresh(Duration expiresIn) {
     var triggerTimer = expiresIn - const Duration(minutes: 1);
-    if (triggerTimer < const Duration(minutes: 1)) {
+    if (triggerTimer < const Duration(seconds: 1)) {
       triggerTimer = Duration.zero;
     }
-    _refreshTimer = Timer(triggerTimer, _updateToken);
+    _refreshTimer = Timer(triggerTimer, _updateTokenTimout);
   }
 
   Future _updateToken() async {
@@ -260,6 +261,15 @@ class FirebaseAccount {
       if (_refreshController.hasListener) {
         _refreshController.addError(e, s);
       }
+      rethrow;
+    }
+  }
+
+  Future _updateTokenTimout() async {
+    try {
+      await _updateToken();
+    } catch (e) {
+      // ignore e
     }
   }
 }
