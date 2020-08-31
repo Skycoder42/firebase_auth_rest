@@ -7,7 +7,22 @@ on:
     branches: [master]
 
 jobs:
-  analyze:
+  dart:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: cedx/setup-dart@v2
+      - uses: actions/checkout@v2
+      - run: pub get
+      - run: pub run build_runner build
+      # - run: dartanalyzer lib test  # Skip because currently broken
+      - run: pub run test
+      - run: pub run test_coverage
+      - uses: ChicagoFlutter/lcov-cop@v1.0.2
+        with:
+          min_coverage: 95
+          exclude: "**/*.g.dart **/*.freezed.dart lib/src/models/*.dart"
+
+  flutter:
     runs-on: ubuntu-latest
     steps:
       - uses: subosito/flutter-action@v1
@@ -16,18 +31,8 @@ jobs:
       - run: flutter pub get
       - run: flutter pub run build_runner build
       - run: flutter analyze
-
-  test:
-    runs-on: ubuntu-latest
-    needs: analyze
-    steps:
-      - uses: cedx/setup-dart@v2
-      - uses: actions/checkout@v2
-      - run: pub get
-      - run: pub run build_runner build
-      # - run: dartanalyzer lib test
-      - run: pub run test
-      - run: pub run test_coverage
+      - run: flutter pub run test
+      - run: flutter pub run test_coverage
       - uses: ChicagoFlutter/lcov-cop@v1.0.2
         with:
           min_coverage: 95

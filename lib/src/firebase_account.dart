@@ -118,7 +118,6 @@ class FirebaseAccount {
 
   Future<String> refresh() async {
     await _updateToken();
-    print("2");
     return _idToken;
   }
 
@@ -270,6 +269,7 @@ class FirebaseAccount {
       await _updateToken();
     } catch (e) {
       // ignore e
+      // TODO use logger?
     }
   }
 }
