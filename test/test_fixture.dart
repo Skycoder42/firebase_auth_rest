@@ -62,6 +62,56 @@ class Fixture {
 
     return data.join(", ");
   }
+
+  static List<Fixture> mapped([
+    List<dynamic> param0List,
+    List<dynamic> param1List,
+    List<dynamic> param2List,
+    List<dynamic> param3List,
+    List<dynamic> param4List,
+    List<dynamic> param5List,
+    List<dynamic> param6List,
+    List<dynamic> param7List,
+    List<dynamic> param8List,
+    List<dynamic> param9List,
+  ]) {
+    final fixtures = <Fixture>[];
+
+    for (final param0 in param0List ?? const [null]) {
+      for (final param1 in param1List ?? const [null]) {
+        for (final param2 in param2List ?? const [null]) {
+          for (final param3 in param3List ?? const [null]) {
+            for (final param4 in param4List ?? const [null]) {
+              for (final param5 in param5List ?? const [null]) {
+                for (final param6 in param6List ?? const [null]) {
+                  for (final param7 in param7List ?? const [null]) {
+                    for (final param8 in param8List ?? const [null]) {
+                      for (final param9 in param9List ?? const [null]) {
+                        fixtures.add(Fixture(
+                          param0,
+                          param1,
+                          param2,
+                          param3,
+                          param4,
+                          param5,
+                          param6,
+                          param7,
+                          param8,
+                          param9,
+                        ));
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return fixtures;
+  }
 }
 
 @isTestGroup

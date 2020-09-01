@@ -10,6 +10,7 @@ import 'package:firebase_rest_auth/src/models/update_request.dart';
 import 'package:firebase_rest_auth/src/models/userdata.dart';
 import 'package:firebase_rest_auth/src/models/userdata_request.dart';
 import 'package:firebase_rest_auth/src/models/userdata_response.dart';
+import 'package:firebase_rest_auth/src/profile_update.dart';
 import 'package:firebase_rest_auth/src/rest_api.dart';
 import 'package:http/http.dart';
 import 'package:mockito/mockito.dart';
@@ -358,6 +359,105 @@ void main() {
         ),
         fixture.get1<String>(),
       ));
+    });
+
+    test("updatePassword sends password update request", () async {
+      const newPassword = "pw";
+      await account.updatePassword(newPassword);
+
+      verify(mockApi.updatePassword(PasswordUpdateRequest(
+        idToken: "idToken",
+        password: newPassword,
+        returnSecureToken: false,
+      )));
+    });
+
+    testWithData("updateProfile sends profile update", [
+      Fixture(
+        null,
+        null,
+        null,
+        null,
+        const <DeleteAttribute>[],
+      ),
+      Fixture(
+        null,
+        ProfileUpdate<Uri>.update(Uri.parse("http://example.com/image.jpg")),
+        null,
+        Uri.parse("http://example.com/image.jpg"),
+        const <DeleteAttribute>[],
+      ),
+      Fixture(
+        null,
+        ProfileUpdate<Uri>.delete(),
+        null,
+        null,
+        const <DeleteAttribute>[DeleteAttribute.PHOTO_URL],
+      ),
+      Fixture(
+        ProfileUpdate<String>.update("name"),
+        null,
+        "name",
+        null,
+        const <DeleteAttribute>[],
+      ),
+      Fixture(
+        ProfileUpdate<String>.update("name"),
+        ProfileUpdate<Uri>.update(Uri.parse("http://example.com/image.jpg")),
+        "name",
+        Uri.parse("http://example.com/image.jpg"),
+        const <DeleteAttribute>[],
+      ),
+      Fixture(
+        ProfileUpdate<String>.update("name"),
+        ProfileUpdate<Uri>.delete(),
+        "name",
+        null,
+        const <DeleteAttribute>[DeleteAttribute.PHOTO_URL],
+      ),
+      Fixture(
+        ProfileUpdate<String>.delete(),
+        null,
+        null,
+        null,
+        const <DeleteAttribute>[DeleteAttribute.DISPLAY_NAME],
+      ),
+      Fixture(
+        ProfileUpdate<String>.delete(),
+        ProfileUpdate<Uri>.update(Uri.parse("http://example.com/image.jpg")),
+        null,
+        Uri.parse("http://example.com/image.jpg"),
+        const <DeleteAttribute>[DeleteAttribute.DISPLAY_NAME],
+      ),
+      Fixture(
+        ProfileUpdate<String>.delete(),
+        ProfileUpdate<Uri>.delete(),
+        null,
+        null,
+        const <DeleteAttribute>[
+          DeleteAttribute.DISPLAY_NAME,
+          DeleteAttribute.PHOTO_URL,
+        ],
+      ),
+    ], (fixture) async {
+      final nameUpdate = fixture.get0<ProfileUpdate<String>>();
+      final photoUpdate = fixture.get1<ProfileUpdate<Uri>>();
+      final nameData = fixture.get2<String>();
+      final photoData = fixture.get3<Uri>();
+      final deleteData = fixture.get4<List<DeleteAttribute>>();
+
+      await account.updateProfile(
+        displayName: nameUpdate,
+        photoUrl: photoUpdate,
+      );
+
+      verify(mockApi.updateProfile(ProfileUpdateRequest(
+        idToken: "idToken",
+        displayName: nameData,
+        photoUrl: photoData,
+        deleteAttribute: deleteData,
+        returnSecureToken: false,
+      )));
     });
   });
 }
