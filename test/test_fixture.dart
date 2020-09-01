@@ -38,18 +38,30 @@ class Fixture {
   T get9<T>() => _param9 as T;
 
   @override
-  String toString() => <dynamic>[
-        if (_param0 != null) _param0,
-        if (_param1 != null) _param1,
-        if (_param2 != null) _param2,
-        if (_param3 != null) _param3,
-        if (_param4 != null) _param4,
-        if (_param5 != null) _param5,
-        if (_param6 != null) _param6,
-        if (_param7 != null) _param7,
-        if (_param8 != null) _param8,
-        if (_param9 != null) _param9,
-      ].join(", ");
+  String toString() {
+    final data = <dynamic>[
+      _param0,
+      _param1,
+      _param2,
+      _param3,
+      _param4,
+      _param5,
+      _param6,
+      _param7,
+      _param8,
+      _param9,
+    ];
+
+    for (var i = data.length - 1; i >= 0; --i) {
+      if (data[i] == null) {
+        data.removeLast();
+      } else {
+        break;
+      }
+    }
+
+    return data.join(", ");
+  }
 }
 
 @isTestGroup

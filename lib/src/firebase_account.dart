@@ -136,7 +136,9 @@ class FirebaseAccount {
 
   Future<UserData> getDetails() async {
     final response = await _api.getUserData(UserDataRequest(idToken: _idToken));
-    return response.users.isNotEmpty ? response.users.first : null;
+    return response.users != null && response.users.isNotEmpty
+        ? response.users.first
+        : null;
   }
 
   Future updateEmail(

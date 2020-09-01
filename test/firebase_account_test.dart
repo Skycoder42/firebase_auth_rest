@@ -15,6 +15,8 @@ import 'package:http/http.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
+import 'test_fixture.dart';
+
 class MockResponse extends Mock implements Response {}
 
 class MockClient extends Mock implements Client {}
@@ -237,6 +239,7 @@ void main() {
         mockApi,
         mockResponse,
         autoRefresh: false,
+        locale: "ab-CD",
       );
     });
 
@@ -292,16 +295,18 @@ void main() {
       });
     });
 
-    test("requestEmailConfirmation sends oobCode request", () async {
-      const locale = "ab-CD";
-      await account.requestEmailConfirmation(locale: locale);
+    testWithData("requestEmailConfirmation sends oobCode request", [
+      const Fixture("ee-EE", "ee-EE"),
+      const Fixture(null, "ab-CD"),
+    ], (fixture) async {
+      await account.requestEmailConfirmation(locale: fixture.get0<String>());
 
       verify(mockApi.sendOobCode(
         OobCodeRequest.verifyEmail(
           idToken: "idToken",
           requestType: OobCodeRequestType.VERIFY_EMAIL,
         ),
-        locale,
+        fixture.get1<String>(),
       ));
     });
 
@@ -312,15 +317,47 @@ void main() {
       verify(mockApi.confirmEmail(ConfirmEmailRequest(oobCode: code)));
     });
 
-    test("getDetails sends user data request", () async {
-      when(mockApi.getUserData(any)).thenAnswer((i) async => UserDataResponse(
-            users: [],
-          ));
+    group("getDetails", () {
+      test("sends user data request", () async {
+        when(mockApi.getUserData(any)).thenAnswer((i) async => UserDataResponse(
+              users: [],
+            ));
 
-      final result = await account.getDetails();
+        final result = await account.getDetails();
 
-      verify(mockApi.getUserData(UserDataRequest(idToken: "idToken")));
-      expect(result, null);
+        verify(mockApi.getUserData(UserDataRequest(idToken: "idToken")));
+        expect(result, null);
+      });
+
+      test("returns first user data element", () async {
+        final userData = UserData(displayName: "Max Muster");
+        when(mockApi.getUserData(any)).thenAnswer((i) async => UserDataResponse(
+              users: [
+                userData,
+                UserData(),
+              ],
+            ));
+
+        final result = await account.getDetails();
+        expect(result, userData);
+      });
+    });
+
+    testWithData("updateEmail sends email update request", [
+      const Fixture("ee-EE", "ee-EE"),
+      const Fixture(null, "ab-CD"),
+    ], (fixture) async {
+      const newEmail = "new@mail.de";
+      await account.updateEmail(newEmail, locale: fixture.get0<String>());
+
+      verify(mockApi.updateEmail(
+        EmailUpdateRequest(
+          idToken: "idToken",
+          email: newEmail,
+          returnSecureToken: false,
+        ),
+        fixture.get1<String>(),
+      ));
     });
   });
 }
