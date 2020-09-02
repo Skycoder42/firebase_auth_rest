@@ -207,7 +207,7 @@ class FirebaseAccount {
         returnSecureToken: false,
       ));
 
-  Future unlinkProvider(List<String> providers) =>
+  Future unlinkProviders(List<String> providers) =>
       _api.unlinkProvider(UnlinkRequest(
         idToken: _idToken,
         deleteProvider: providers,

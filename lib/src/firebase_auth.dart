@@ -24,6 +24,8 @@ class FirebaseAuth {
     this.locale,
   ]);
 
+  RestApi get api => _api;
+
   Future<List<String>> fetchProviders(
     String email, [
     Uri continueUri,

@@ -3,10 +3,14 @@ import 'dart:convert';
 
 import 'package:firebase_rest_auth/src/firebase_account.dart';
 import 'package:firebase_rest_auth/src/models/auth_error.dart';
+import 'package:firebase_rest_auth/src/models/delete_request.dart';
+import 'package:firebase_rest_auth/src/models/idp_provider.dart';
 import 'package:firebase_rest_auth/src/models/oob_code_request.dart';
 import 'package:firebase_rest_auth/src/models/refresh_response.dart';
+import 'package:firebase_rest_auth/src/models/signin_request.dart';
 import 'package:firebase_rest_auth/src/models/signin_response.dart';
 import 'package:firebase_rest_auth/src/models/update_request.dart';
+import 'package:firebase_rest_auth/src/models/update_response.dart';
 import 'package:firebase_rest_auth/src/models/userdata.dart';
 import 'package:firebase_rest_auth/src/models/userdata_request.dart';
 import 'package:firebase_rest_auth/src/models/userdata_response.dart';
@@ -296,9 +300,9 @@ void main() {
       });
     });
 
-    testWithData("requestEmailConfirmation sends oobCode request", [
-      const Fixture("ee-EE", "ee-EE"),
-      const Fixture(null, "ab-CD"),
+    testWithData("requestEmailConfirmation sends oobCode request", const [
+      Fixture("ee-EE", "ee-EE"),
+      Fixture(null, "ab-CD"),
     ], (fixture) async {
       await account.requestEmailConfirmation(locale: fixture.get0<String>());
 
@@ -344,9 +348,9 @@ void main() {
       });
     });
 
-    testWithData("updateEmail sends email update request", [
-      const Fixture("ee-EE", "ee-EE"),
-      const Fixture(null, "ab-CD"),
+    testWithData("updateEmail sends email update request", const [
+      Fixture("ee-EE", "ee-EE"),
+      Fixture(null, "ab-CD"),
     ], (fixture) async {
       const newEmail = "new@mail.de";
       await account.updateEmail(newEmail, locale: fixture.get0<String>());
@@ -458,6 +462,132 @@ void main() {
         deleteAttribute: deleteData,
         returnSecureToken: false,
       )));
+    });
+
+    group("linkEmail", () {
+      test("sends link email request", () async {
+        when(mockApi.linkEmail(any)).thenAnswer((i) async => LinkEmailResponse(
+              emailVerified: false,
+            ));
+
+        const mail = "mail";
+        const password = "password";
+        final result = await account.linkEmail(
+          mail,
+          password,
+          autoVerify: false,
+        );
+
+        verify(mockApi.linkEmail(LinkEmailRequest(
+          idToken: "idToken",
+          email: mail,
+          password: password,
+          returnSecureToken: false,
+        )));
+        expect(result, false);
+      });
+
+      test("returns email verified as result", () async {
+        when(mockApi.linkEmail(any)).thenAnswer((i) async => LinkEmailResponse(
+              emailVerified: true,
+            ));
+
+        final result = await account.linkEmail(
+          "mail",
+          "password",
+          autoVerify: false,
+        );
+
+        expect(result, true);
+      });
+
+      testWithData(
+          "requests email confirmation if not verified and enabled", const [
+        Fixture("ee-EE", "ee-EE"),
+        Fixture(null, "ab-CD"),
+      ], (fixture) async {
+        when(mockApi.linkEmail(any)).thenAnswer((i) async => LinkEmailResponse(
+              emailVerified: false,
+            ));
+
+        final result = await account.linkEmail(
+          "mail",
+          "password",
+          locale: fixture.get0<String>(),
+        );
+        expect(result, false);
+
+        verify(mockApi.sendOobCode(
+          OobCodeRequest.verifyEmail(
+            idToken: "idToken",
+          ),
+          fixture.get1<String>(),
+        ));
+      });
+
+      test("does not request email confirmation if verified and enabled",
+          () async {
+        when(mockApi.linkEmail(any)).thenAnswer((i) async => LinkEmailResponse(
+              emailVerified: true,
+            ));
+
+        final result = await account.linkEmail(
+          "mail",
+          "password",
+        );
+        expect(result, true);
+
+        verifyNever(mockApi.sendOobCode(any));
+      });
+    });
+
+    test("linkIdp sends link idp request", () async {
+      final provider = IdpProvider.google("token");
+      final uri = Uri.parse("https://localhost:4242");
+      await account.linkIdp(provider, uri);
+
+      verify(mockApi.linkIdp(LinkIdpRequest(
+        idToken: "idToken",
+        postBody: provider.postBody,
+        requestUri: uri,
+        returnIdpCredential: false,
+        returnSecureToken: false,
+      )));
+    });
+
+    test("unlinkProvider sends unlink request", () async {
+      const providers = ["a", "b"];
+      await account.unlinkProviders(providers);
+
+      verify(mockApi.unlinkProvider(UnlinkRequest(
+        idToken: "idToken",
+        deleteProvider: providers,
+      )));
+    });
+
+    group("delete", () {
+      test("sends delete request", () async {
+        await account.delete();
+
+        verify(mockApi.delete(DeleteRequest(
+          idToken: "idToken",
+        )));
+      });
+
+      test("sends null to idToken stream", () async {
+        final firstElement = account.idTokenStream.first;
+        await account.delete();
+        expect(await firstElement, null);
+      });
+    });
+
+    test("dispose disables auto refresh and clears controller", () async {
+      account.autoRefresh = true;
+      account.dispose();
+
+      expect(account.autoRefresh, false);
+      expect(await account.idTokenStream.length, 0);
+      account = null;
     });
   });
 }
