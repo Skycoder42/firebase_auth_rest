@@ -42,6 +42,7 @@ coverage: get
 doc: get
 	@rm -rf doc
 	dartdoc --show-progress 
+	xdg-open doc/api/index.html || start doc/api/index.html
 
 publish: get
 	rm lib/src/.gitignore

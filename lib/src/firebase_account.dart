@@ -13,8 +13,19 @@ import 'models/userdata_request.dart';
 import 'profile_update.dart';
 import 'rest_api.dart';
 
+/// A firebase account, representing the identity of a logged in user.
+///
+/// Provides account credentials and operations to get more data about the user
+/// or to modify the remote account. Also provide automatic refreshing of the
+/// idToken.
+///
+/// To create an account, either load one from an existing refresh token via
+/// [FirebaseAccount.restore()], or use one of the various login methods of the
+/// [FirebaseAuth] class.
 class FirebaseAccount {
   final RestApi _api;
+
+  /// The default locale to be used for E-Mails sent by Firebase.
   String locale;
 
   String _localId;
@@ -38,6 +49,15 @@ class FirebaseAccount {
     this.locale,
   );
 
+  /// Creates a new account from a successfuly sign in response.
+  ///
+  /// Instead of using this constructor directly, prefer using one of the
+  /// [FirebaseAuth] classes signIn/signUp methods.
+  ///
+  /// The account is created by using the [client] and [apiKey] for accessing
+  /// the Firebase REST endpoints. The user credentials are extracted from the
+  /// [signInResponse]. If [autoRefresh] and [locale] are used to initialize
+  /// these properties.
   FirebaseAccount.create(
     Client client,
     String apiKey,
@@ -51,6 +71,14 @@ class FirebaseAccount {
           locale: locale,
         );
 
+  /// Creates a new account from a successfuly sign in response and a [RestApi].
+  ///
+  /// Instead of using this constructor directly, prefer using one of the
+  /// [FirebaseAuth] classes signIn/signUp methods.
+  ///
+  /// The account is created by using the [_api] for accessing the Firebase REST
+  /// endpoints. The user credentials are extracted from the [signInResponse].
+  /// If [autoRefresh] and [locale] are used to initialize these properties.
   FirebaseAccount.apiCreate(
     this._api,
     SignInResponse signInResponse, {
@@ -63,6 +91,16 @@ class FirebaseAccount {
     this.autoRefresh = autoRefresh;
   }
 
+  /// Restores an account by using a refresh token to log the user in again.
+  ///
+  /// If a user has logged in once normally, you can store the [refreshToken]
+  /// and the later use this method to recreate the account instance without the
+  /// user logging in again. Internally, this method calls [refresh()] to obtain
+  /// user credentails and the returns a newly created account from the result.
+  ///
+  /// The account is created by using the [client] and [apiKey] for accessing
+  /// the Firebase REST endpoints. If [autoRefresh] and [locale] are used to
+  /// initialize these properties.
   static Future<FirebaseAccount> restore(
     Client client,
     String apiKey,
@@ -77,6 +115,16 @@ class FirebaseAccount {
         locale: locale,
       );
 
+  /// Restores an account by using a refresh token to log the user in again.
+  ///
+  /// If a user has logged in once normally, you can store the [refreshToken]
+  /// and the later use this method to recreate the account instance without the
+  /// user logging in again. Internally, this method calls [refresh()] to obtain
+  /// user credentails and the returns a newly created account from the result.
+  ///
+  /// The account is created by using the [_api] for accessing the Firebase REST
+  /// endpoints. If [autoRefresh] and [locale] are used to initialize these
+  /// properties.
   static Future<FirebaseAccount> apiRestore(
     RestApi api,
     String refreshToken, {
@@ -96,12 +144,42 @@ class FirebaseAccount {
     return account;
   }
 
+  /// The internally used [RestApi] instance.
   RestApi get api => _api;
+
+  /// The local id (account-id) of the logged in user.
   String get localId => _localId;
+
+  /// The id token of the logged in user.
+  ///
+  /// Use [idTokenStream] to get a new token whenever the account credentials
+  /// have been refreshed via [refresh()] or automatically in the background.
   String get idToken => _idToken;
+
+  /// The refresh token token of the logged in user.
+  ///
+  /// If you want to log in the user again in the future, even after the app
+  /// has been restarted, persist this token and use [FirebaseAccount.restore()]
+  /// to recreate the account without the user having to log in again.
   String get refreshToken => _refreshToken;
+
+  /// The point in time when the current [idToken] expires.
+  ///
+  /// When [autoRefresh] is enable, the account will automatically request a new
+  /// idToken via [refresh()] roughly one minute before that timeout. If it is
+  /// disabled, use this value to do so yourself.
   DateTime get expiresAt => _expiresAt;
 
+  /// Specifies if the the account should automatically refresh the [idToken].
+  ///
+  /// When enabled, the account will start an internal timer that will timeout
+  /// roughly one minute before [expiresAt] and call [refresh()] to renew the
+  /// [idToken]. This loops indenfinitely, until this property has been set to
+  /// false or the account was disposed of.
+  ///
+  /// **Important:** If you enable auto refreshing, make sure to always call
+  /// [dispose()] when you don't need the account anymore to stop the automatic
+  /// refreshing.
   bool get autoRefresh => _refreshTimer != null;
   set autoRefresh(bool autoRefresh) {
     if (autoRefresh != this.autoRefresh) {
