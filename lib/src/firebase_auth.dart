@@ -71,6 +71,7 @@ class FirebaseAuth {
       _api,
       response,
       locale: this.locale,
+      autoRefresh: autoRefresh,
     );
   }
 

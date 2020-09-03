@@ -1,9 +1,11 @@
 // ignore_for_file: prefer_const_constructors
-import 'package:firebase_rest_auth/firebase_rest_auth.dart';
+import 'package:firebase_rest_auth/src/firebase_account.dart';
 import 'package:firebase_rest_auth/src/firebase_auth.dart';
 import 'package:firebase_rest_auth/src/models/fetch_provider_request.dart';
 import 'package:firebase_rest_auth/src/models/fetch_provider_response.dart';
+import 'package:firebase_rest_auth/src/models/idp_provider.dart';
 import 'package:firebase_rest_auth/src/models/oob_code_request.dart';
+import 'package:firebase_rest_auth/src/models/password_reset_request.dart';
 import 'package:firebase_rest_auth/src/models/signin_request.dart';
 import 'package:firebase_rest_auth/src/models/signin_response.dart';
 import 'package:firebase_rest_auth/src/rest_api.dart';
@@ -203,6 +205,209 @@ void main() {
           fixture.get1<String>(),
         ));
       });
+
+      test("creates account from reply", () async {
+        when(mockApi.signUpWithPassword(any))
+            .thenAnswer((i) async => PasswordSignInResponse(
+                  idToken: idToken,
+                  localId: localId,
+                  expiresIn: expiresIn,
+                  refreshToken: refreshToken,
+                ));
+
+        final expiresAt =
+            DateTime.now().toUtc().add(const Duration(minutes: 1));
+        account = await auth.signUpWithPassword(
+          "email",
+          "password",
+          autoVerify: false,
+          autoRefresh: false,
+        );
+
+        expect(account.localId, localId);
+        expect(account.idToken, idToken);
+        expect(account.refreshToken, refreshToken);
+        expect(account.autoRefresh, false);
+        expect(account.expiresAt.difference(expiresAt).inSeconds, 0);
+      });
+    });
+
+    group("signInWithIdp", () {
+      test("sends idp sign in request", () async {
+        final provider = IdpProvider.google("token");
+        final uri = Uri.parse("http://localhost");
+        when(mockApi.signInWithIdp(any))
+            .thenAnswer((i) async => IdpSignInResponse(
+                  idToken: "",
+                  localId: "",
+                  expiresIn: "1",
+                  refreshToken: "",
+                ));
+
+        account = await auth.signInWithIdp(provider, uri);
+
+        verify(mockApi.signInWithIdp(IdpSignInRequest(
+          postBody: provider.postBody,
+          requestUri: uri,
+          returnIdpCredential: false,
+          returnSecureToken: true,
+        )));
+      });
+
+      test("creates account from reply", () async {
+        when(mockApi.signInWithIdp(any))
+            .thenAnswer((i) async => IdpSignInResponse(
+                  idToken: idToken,
+                  localId: localId,
+                  expiresIn: expiresIn,
+                  refreshToken: refreshToken,
+                ));
+
+        final expiresAt =
+            DateTime.now().toUtc().add(const Duration(minutes: 1));
+        account = await auth.signInWithIdp(
+          IdpProvider.google("idToken"),
+          Uri(),
+          autoRefresh: false,
+        );
+
+        expect(account.localId, localId);
+        expect(account.idToken, idToken);
+        expect(account.refreshToken, refreshToken);
+        expect(account.autoRefresh, false);
+        expect(account.expiresAt.difference(expiresAt).inSeconds, 0);
+      });
+    });
+
+    group("signInWithPassword", () {
+      test("sends password sign in request", () async {
+        const mail = "mail";
+        const password = "password";
+        when(mockApi.signInWithPassword(any))
+            .thenAnswer((i) async => PasswordSignInResponse(
+                  idToken: "",
+                  localId: "",
+                  expiresIn: "1",
+                  refreshToken: "",
+                ));
+
+        account = await auth.signInWithPassword(
+          mail,
+          password,
+        );
+
+        verify(mockApi.signInWithPassword(PasswordSignInRequest(
+          email: mail,
+          password: password,
+          returnSecureToken: true,
+        )));
+        verifyNoMoreInteractions(mockApi);
+      });
+
+      test("creates account from reply", () async {
+        when(mockApi.signInWithPassword(any))
+            .thenAnswer((i) async => PasswordSignInResponse(
+                  idToken: idToken,
+                  localId: localId,
+                  expiresIn: expiresIn,
+                  refreshToken: refreshToken,
+                ));
+
+        final expiresAt =
+            DateTime.now().toUtc().add(const Duration(minutes: 1));
+        account = await auth.signInWithPassword(
+          "email",
+          "password",
+          autoRefresh: false,
+        );
+
+        expect(account.localId, localId);
+        expect(account.idToken, idToken);
+        expect(account.refreshToken, refreshToken);
+        expect(account.autoRefresh, false);
+        expect(account.expiresAt.difference(expiresAt).inSeconds, 0);
+      });
+    });
+
+    group("signInWithCustomToken", () {
+      test("sends custom tken sign in request", () async {
+        const token = "token";
+        when(mockApi.signInWithCustomToken(any))
+            .thenAnswer((i) async => CustomTokenSignInResponse(
+                  idToken: "",
+                  localId: "",
+                  expiresIn: "1",
+                  refreshToken: "",
+                ));
+
+        account = await auth.signInWithCustomToken(token);
+
+        verify(mockApi.signInWithCustomToken(CustomTokenSignInRequest(
+          token: token,
+          returnSecureToken: true,
+        )));
+      });
+
+      test("creates account from reply", () async {
+        when(mockApi.signInWithCustomToken(any))
+            .thenAnswer((i) async => CustomTokenSignInResponse(
+                  idToken: idToken,
+                  localId: localId,
+                  expiresIn: expiresIn,
+                  refreshToken: refreshToken,
+                ));
+
+        final expiresAt =
+            DateTime.now().toUtc().add(const Duration(minutes: 1));
+        account = await auth.signInWithCustomToken(
+          "token",
+          autoRefresh: false,
+        );
+
+        expect(account.localId, localId);
+        expect(account.idToken, idToken);
+        expect(account.refreshToken, refreshToken);
+        expect(account.autoRefresh, false);
+        expect(account.expiresAt.difference(expiresAt).inSeconds, 0);
+      });
+    });
+
+    testWithData("requestPasswordReset sends oob code request", const [
+      Fixture("ee-EE", "ee-EE"),
+      Fixture(null, "ab-CD"),
+    ], (fixture) async {
+      const mail = "email";
+      await auth.requestPasswordReset(
+        mail,
+        locale: fixture.get0<String>(),
+      );
+
+      verify(mockApi.sendOobCode(
+        OobCodeRequest.passwordReset(
+          email: mail,
+        ),
+        fixture.get1<String>(),
+      ));
+    });
+
+    test("validatePasswordReset send reset password request", () async {
+      const code = "oob-code";
+      await auth.validatePasswordReset(code);
+
+      verify(mockApi.resetPassword(PasswordResetRequest.verify(
+        oobCode: code,
+      )));
+    });
+
+    test("resetPassword send reset password request", () async {
+      const code = "oob-code";
+      const password = "password";
+      await auth.resetPassword(code, password);
+
+      verify(mockApi.resetPassword(PasswordResetRequest.confirm(
+        oobCode: code,
+        newPassword: password,
+      )));
     });
   });
 }
