@@ -1,7 +1,7 @@
 // ignore_for_file: avoid_print
 import 'dart:io';
 
-import 'package:firebase_rest_auth/firebase_rest_auth.dart';
+import 'package:firebase_auth_rest/firebase_auth_rest.dart';
 import 'package:http/http.dart';
 
 Future main(List<String> arguments) async {

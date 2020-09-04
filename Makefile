@@ -48,5 +48,5 @@ publish: get
 	rm lib/src/.gitignore
 	pub publish
 	echo '# Generated dart files' > lib/src/.gitignore
-	echo '*.freezed.dart'
-	echo '*.g.dart'
+	echo '*.freezed.dart' >> lib/src/.gitignore
+	echo '*.g.dart' >> lib/src/.gitignore

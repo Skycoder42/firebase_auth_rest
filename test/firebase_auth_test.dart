@@ -1,14 +1,14 @@
 // ignore_for_file: prefer_const_constructors
-import 'package:firebase_rest_auth/src/firebase_account.dart';
-import 'package:firebase_rest_auth/src/firebase_auth.dart';
-import 'package:firebase_rest_auth/src/models/fetch_provider_request.dart';
-import 'package:firebase_rest_auth/src/models/fetch_provider_response.dart';
-import 'package:firebase_rest_auth/src/models/idp_provider.dart';
-import 'package:firebase_rest_auth/src/models/oob_code_request.dart';
-import 'package:firebase_rest_auth/src/models/password_reset_request.dart';
-import 'package:firebase_rest_auth/src/models/signin_request.dart';
-import 'package:firebase_rest_auth/src/models/signin_response.dart';
-import 'package:firebase_rest_auth/src/rest_api.dart';
+import 'package:firebase_auth_rest/src/firebase_account.dart';
+import 'package:firebase_auth_rest/src/firebase_auth.dart';
+import 'package:firebase_auth_rest/src/models/fetch_provider_request.dart';
+import 'package:firebase_auth_rest/src/models/fetch_provider_response.dart';
+import 'package:firebase_auth_rest/src/models/idp_provider.dart';
+import 'package:firebase_auth_rest/src/models/oob_code_request.dart';
+import 'package:firebase_auth_rest/src/models/password_reset_request.dart';
+import 'package:firebase_auth_rest/src/models/signin_request.dart';
+import 'package:firebase_auth_rest/src/models/signin_response.dart';
+import 'package:firebase_auth_rest/src/rest_api.dart';
 import 'package:http/http.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';

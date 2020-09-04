@@ -1,5 +1,5 @@
 // ignore_for_file: prefer_const_constructors
-import 'package:firebase_rest_auth/src/profile_update.dart';
+import 'package:firebase_auth_rest/src/profile_update.dart';
 import 'package:test/test.dart';
 
 void main() {

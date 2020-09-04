@@ -1,5 +1,5 @@
 // ignore_for_file: prefer_const_constructors
-import 'package:firebase_rest_auth/src/models/idp_provider.dart';
+import 'package:firebase_auth_rest/src/models/idp_provider.dart';
 import 'package:test/test.dart';
 
 import '../test_fixture.dart';

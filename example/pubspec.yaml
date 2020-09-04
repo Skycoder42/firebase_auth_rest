@@ -1,7 +1,7 @@
-name: firebase_rest_auth_example
-description: firebase_rest_auth example
+name: firebase_auth_rest_example
+description: firebase_auth_rest example
 version: 0.0.1
-homepage: https://github.com/Skycoder42/firebase_rest_auth
+homepage: https://github.com/Skycoder42/firebase_auth_rest
 
 environment:
   sdk: ">=2.7.0 <3.0.0"

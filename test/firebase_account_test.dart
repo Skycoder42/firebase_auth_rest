@@ -1,21 +1,21 @@
 // ignore_for_file: prefer_const_constructors
 import 'dart:convert';
 
-import 'package:firebase_rest_auth/src/firebase_account.dart';
-import 'package:firebase_rest_auth/src/models/auth_error.dart';
-import 'package:firebase_rest_auth/src/models/delete_request.dart';
-import 'package:firebase_rest_auth/src/models/idp_provider.dart';
-import 'package:firebase_rest_auth/src/models/oob_code_request.dart';
-import 'package:firebase_rest_auth/src/models/refresh_response.dart';
-import 'package:firebase_rest_auth/src/models/signin_request.dart';
-import 'package:firebase_rest_auth/src/models/signin_response.dart';
-import 'package:firebase_rest_auth/src/models/update_request.dart';
-import 'package:firebase_rest_auth/src/models/update_response.dart';
-import 'package:firebase_rest_auth/src/models/userdata.dart';
-import 'package:firebase_rest_auth/src/models/userdata_request.dart';
-import 'package:firebase_rest_auth/src/models/userdata_response.dart';
-import 'package:firebase_rest_auth/src/profile_update.dart';
-import 'package:firebase_rest_auth/src/rest_api.dart';
+import 'package:firebase_auth_rest/src/firebase_account.dart';
+import 'package:firebase_auth_rest/src/models/auth_error.dart';
+import 'package:firebase_auth_rest/src/models/delete_request.dart';
+import 'package:firebase_auth_rest/src/models/idp_provider.dart';
+import 'package:firebase_auth_rest/src/models/oob_code_request.dart';
+import 'package:firebase_auth_rest/src/models/refresh_response.dart';
+import 'package:firebase_auth_rest/src/models/signin_request.dart';
+import 'package:firebase_auth_rest/src/models/signin_response.dart';
+import 'package:firebase_auth_rest/src/models/update_request.dart';
+import 'package:firebase_auth_rest/src/models/update_response.dart';
+import 'package:firebase_auth_rest/src/models/userdata.dart';
+import 'package:firebase_auth_rest/src/models/userdata_request.dart';
+import 'package:firebase_auth_rest/src/models/userdata_response.dart';
+import 'package:firebase_auth_rest/src/profile_update.dart';
+import 'package:firebase_auth_rest/src/rest_api.dart';
 import 'package:http/http.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
