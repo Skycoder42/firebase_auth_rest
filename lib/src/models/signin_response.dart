@@ -3,8 +3,10 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'signin_response.freezed.dart';
 part 'signin_response.g.dart';
 
+/// Meta-Class for multiple API-Endpoints
 @freezed
 abstract class SignInResponse with _$SignInResponse {
+  /// https://firebase.google.com/docs/reference/rest/auth#section-sign-in-anonymously
   const factory SignInResponse.anonymous({
     String idToken,
     String email,
@@ -13,6 +15,7 @@ abstract class SignInResponse with _$SignInResponse {
     String localId,
   }) = AnonymousSignInResponse;
 
+  /// https://firebase.google.com/docs/reference/rest/auth#section-sign-in-with-oauth-credential
   const factory SignInResponse.idp({
     String federatedId,
     String providerId,
@@ -34,6 +37,10 @@ abstract class SignInResponse with _$SignInResponse {
     bool needConfirmation,
   }) = IdpSignInResponse;
 
+  /// Meta-Class for multiple API-Endpoints
+  ///
+  /// - https://firebase.google.com/docs/reference/rest/auth#section-create-email-password
+  /// - https://firebase.google.com/docs/reference/rest/auth#section-sign-in-email-password
   const factory SignInResponse.password({
     String idToken,
     String email,
@@ -43,6 +50,7 @@ abstract class SignInResponse with _$SignInResponse {
     bool registered,
   }) = PasswordSignInResponse;
 
+  /// https://firebase.google.com/docs/reference/rest/auth#section-verify-custom-token
   const factory SignInResponse.custom({
     String idToken,
     String refreshToken,
@@ -50,6 +58,7 @@ abstract class SignInResponse with _$SignInResponse {
     String localId,
   }) = CustomTokenSignInResponse;
 
+  /// https://firebase.google.com/docs/reference/rest/auth#section-link-with-oauth-credential
   const factory SignInResponse.linkIdp({
     String federatedId,
     String providerId,

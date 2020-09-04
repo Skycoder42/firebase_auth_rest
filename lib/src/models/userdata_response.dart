@@ -5,6 +5,7 @@ import 'userdata.dart';
 part 'userdata_response.freezed.dart';
 part 'userdata_response.g.dart';
 
+/// https://firebase.google.com/docs/reference/rest/auth#section-get-account-info
 @freezed
 abstract class UserDataResponse with _$UserDataResponse {
   const factory UserDataResponse({

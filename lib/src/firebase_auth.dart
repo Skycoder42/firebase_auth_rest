@@ -161,6 +161,19 @@ class FirebaseAuth {
         locale: locale,
       );
 
+  /// Signs into firebase with an email and a password.
+  ///
+  /// This logs into an exsiting account and returns it's credentials as
+  /// [FirebaseAccount] if the request succeeds, or throws an [AuthError] if it
+  /// fails.
+  ///
+  /// If [autoRefresh] is enabled (the default), the created accounts
+  /// [FirebaseAccount.autoRefresh] is set to true as well, wich will start an
+  /// automatic token refresh in the background, as soon as the current token
+  /// comes close to expiring. See [FirebaseAccount.autoRefresh] for more
+  /// details.
+  ///
+  /// **Note:** To create a new account, use [signUpWithPassword()].
   Future<FirebaseAccount> signInWithPassword(
     String email,
     String password, {
@@ -176,6 +189,17 @@ class FirebaseAuth {
         locale: locale,
       );
 
+  /// Signs into firebase with a custom token.
+  ///
+  /// This logs into an exsiting account and returns it's credentials as
+  /// [FirebaseAccount] if the request succeeds, or throws an [AuthError] if it
+  /// fails.
+  ///
+  /// If [autoRefresh] is enabled (the default), the created accounts
+  /// [FirebaseAccount.autoRefresh] is set to true as well, wich will start an
+  /// automatic token refresh in the background, as soon as the current token
+  /// comes close to expiring. See [FirebaseAccount.autoRefresh] for more
+  /// details.
   Future<FirebaseAccount> signInWithCustomToken(
     String token, {
     bool autoRefresh = true,
@@ -189,6 +213,12 @@ class FirebaseAuth {
         locale: locale,
       );
 
+  /// Sends a password reset email to a user.
+  ///
+  /// This tells firebase to generate a password reset mail and send it to
+  /// [email]. The language of that mail is determined by [locale], if
+  /// specified, [FirebaseAuth.locale] otherwise. If the request fails, an
+  /// [AuthError] is thrown.
   Future requestPasswordReset(
     String email, {
     String locale,
@@ -198,9 +228,26 @@ class FirebaseAuth {
         locale ?? this.locale,
       );
 
+  /// Checks, if a password reset code is valid.
+  ///
+  /// When using [requestPasswordReset()] to send a mail to the user, that mail
+  /// contains an [oobCode]. You can use this method to verify if the code is a
+  /// valid code, before allowing the user to enter a new password.
+  ///
+  /// If the check succeeds, the future simply resolves without a value. If it
+  /// fails instead, an [AuthError] is thrown.
   Future validatePasswordReset(String oobCode) async =>
       _api.resetPassword(PasswordResetRequest.verify(oobCode: oobCode));
 
+  /// Completes a password reset by setting a new password.
+  ///
+  /// When using [requestPasswordReset()] to send a mail to the user, that mail
+  /// contains an [oobCode]. You can use this method to complete the process and
+  /// reset the users password to [newPassword].
+  ///
+  /// If this method succeeds, the user must from now on use [newPassword] when
+  /// signing in via [signInWithPassword()]. If it fails, an [AuthError] is
+  /// thrown.
   Future resetPassword(String oobCode, String newPassword) async =>
       _api.resetPassword(PasswordResetRequest.confirm(
         oobCode: oobCode,

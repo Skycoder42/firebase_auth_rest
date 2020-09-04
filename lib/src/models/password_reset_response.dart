@@ -3,6 +3,10 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'password_reset_response.freezed.dart';
 part 'password_reset_response.g.dart';
 
+/// Meta-Class for multiple API-Endpoints
+///
+/// - https://firebase.google.com/docs/reference/rest/auth#section-verify-password-reset-code
+/// - https://firebase.google.com/docs/reference/rest/auth#section-confirm-reset-password
 @freezed
 abstract class PasswordResetResponse with _$PasswordResetResponse {
   const factory PasswordResetResponse({

@@ -20,6 +20,12 @@ import 'models/update_response.dart';
 import 'models/userdata_request.dart';
 import 'models/userdata_response.dart';
 
+/// A client wrapper class for the firebase authentication REST-Api.
+///
+/// The class methods itself are not extensively documented, instead all members
+/// link to their endpoint documentation of the Firebase API itself.
+///
+/// See https://firebase.google.com/docs/reference/rest/auth for more details.
 class RestApi {
   static const _firebaseLocaleHeader = "X-Firebase-Locale";
   static const _authHost = "identitytoolkit.googleapis.com";
@@ -28,14 +34,22 @@ class RestApi {
   final Client _client;
   final String _apiKey;
 
+  /// Create a new api instance
+  ///
+  /// The api is created with [_client] and [_apiKey] to initialize the
+  /// equivalent properties, [client] and [apiKey].
   const RestApi(
     this._client,
     this._apiKey,
   );
 
+  /// The HTTP-Client used to access the remote api
   Client get client => _client;
+
+  /// The Firebase Web-API-Key to authenticate to the remote api
   String get apiKey => _apiKey;
 
+  /// https://firebase.google.com/docs/reference/rest/auth#section-refresh-token
   Future<RefreshResponse> token({
     @required String refresh_token,
     String grant_type = "refresh_token",
@@ -51,6 +65,7 @@ class RestApi {
         },
       ));
 
+  /// https://firebase.google.com/docs/reference/rest/auth#section-sign-in-anonymously
   Future<AnonymousSignInResponse> signUpAnonymous(
           AnonymousSignInRequest request) async =>
       AnonymousSignInResponse.fromJson(await _post(
@@ -58,6 +73,7 @@ class RestApi {
         request.toJson(),
       ));
 
+  /// https://firebase.google.com/docs/reference/rest/auth#section-create-email-password
   Future<PasswordSignInResponse> signUpWithPassword(
           PasswordSignInRequest request) async =>
       PasswordSignInResponse.fromJson(await _post(
@@ -65,12 +81,14 @@ class RestApi {
         request.toJson(),
       ));
 
+  /// https://firebase.google.com/docs/reference/rest/auth#section-sign-in-with-oauth-credential
   Future<IdpSignInResponse> signInWithIdp(IdpSignInRequest request) async =>
       IdpSignInResponse.fromJson(await _post(
         _buildUri("accounts:signInWithIdp"),
         request.toJson(),
       ));
 
+  /// https://firebase.google.com/docs/reference/rest/auth#section-sign-in-email-password
   Future<PasswordSignInResponse> signInWithPassword(
           PasswordSignInRequest request) async =>
       PasswordSignInResponse.fromJson(await _post(
@@ -78,6 +96,7 @@ class RestApi {
         request.toJson(),
       ));
 
+  /// https://firebase.google.com/docs/reference/rest/auth#section-verify-custom-token
   Future<CustomTokenSignInResponse> signInWithCustomToken(
           CustomTokenSignInRequest request) async =>
       CustomTokenSignInResponse.fromJson(await _post(
@@ -85,12 +104,14 @@ class RestApi {
         request.toJson(),
       ));
 
+  /// https://firebase.google.com/docs/reference/rest/auth#section-get-account-info
   Future<UserDataResponse> getUserData(UserDataRequest request) async =>
       UserDataResponse.fromJson(await _post(
         _buildUri("accounts:lookup"),
         request.toJson(),
       ));
 
+  /// https://firebase.google.com/docs/reference/rest/auth#section-change-email
   Future<EmailUpdateResponse> updateEmail(EmailUpdateRequest request,
           [String locale]) async =>
       EmailUpdateResponse.fromJson(await _post(
@@ -99,6 +120,7 @@ class RestApi {
         headers: locale != null ? {_firebaseLocaleHeader: locale} : null,
       ));
 
+  /// https://firebase.google.com/docs/reference/rest/auth#section-change-password
   Future<PasswordUpdateResponse> updatePassword(
           PasswordUpdateRequest request) async =>
       PasswordUpdateResponse.fromJson(await _post(
@@ -106,6 +128,7 @@ class RestApi {
         request.toJson(),
       ));
 
+  /// https://firebase.google.com/docs/reference/rest/auth#section-update-profile
   Future<ProfileUpdateResponse> updateProfile(
           ProfileUpdateRequest request) async =>
       ProfileUpdateResponse.fromJson(await _post(
@@ -113,6 +136,10 @@ class RestApi {
         request.toJson(),
       ));
 
+  /// Meta-Method for multiple API-Methods
+  ///
+  /// - https://firebase.google.com/docs/reference/rest/auth#section-send-email-verification
+  /// - https://firebase.google.com/docs/reference/rest/auth#section-send-password-reset-email
   Future<OobCodeResponse> sendOobCode(OobCodeRequest request,
           [String locale]) async =>
       OobCodeResponse.fromJson(await _post(
@@ -121,6 +148,10 @@ class RestApi {
         headers: locale != null ? {_firebaseLocaleHeader: locale} : null,
       ));
 
+  /// Meta-Method for multiple API-Methods
+  ///
+  /// - https://firebase.google.com/docs/reference/rest/auth#section-verify-password-reset-code
+  /// - https://firebase.google.com/docs/reference/rest/auth#section-confirm-reset-password
   Future<PasswordResetResponse> resetPassword(
           PasswordResetRequest request) async =>
       PasswordResetResponse.fromJson(await _post(
@@ -128,6 +159,7 @@ class RestApi {
         request.toJson(),
       ));
 
+  /// https://firebase.google.com/docs/reference/rest/auth#section-confirm-email-verification
   Future<ConfirmEmailResponse> confirmEmail(
           ConfirmEmailRequest request) async =>
       ConfirmEmailResponse.fromJson(await _post(
@@ -135,6 +167,7 @@ class RestApi {
         request.toJson(),
       ));
 
+  /// https://firebase.google.com/docs/reference/rest/auth#section-fetch-providers-for-email
   Future<FetchProviderResponse> fetchProviders(
           FetchProviderRequest request) async =>
       FetchProviderResponse.fromJson(await _post(
@@ -142,24 +175,28 @@ class RestApi {
         request.toJson(),
       ));
 
+  /// https://firebase.google.com/docs/reference/rest/auth#section-link-with-email-password
   Future<LinkEmailResponse> linkEmail(LinkEmailRequest request) async =>
       LinkEmailResponse.fromJson(await _post(
         _buildUri("accounts:update"),
         request.toJson(),
       ));
 
+  /// https://firebase.google.com/docs/reference/rest/auth#section-link-with-oauth-credential
   Future<LinkIdpResponse> linkIdp(LinkIdpRequest request) async =>
       LinkIdpResponse.fromJson(await _post(
         _buildUri("accounts:signInWithIdp"),
         request.toJson(),
       ));
 
+  /// https://firebase.google.com/docs/reference/rest/auth#section-unlink-provider
   Future<UnlinkResponse> unlinkProvider(UnlinkRequest request) async =>
       UnlinkResponse.fromJson(await _post(
         _buildUri("accounts:update"),
         request.toJson(),
       ));
 
+  /// https://firebase.google.com/docs/reference/rest/auth#section-delete-account
   Future delete(DeleteRequest request) => _post(
         _buildUri("accounts:delete"),
         request.toJson(),

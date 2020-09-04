@@ -4,6 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'refresh_response.freezed.dart';
 part 'refresh_response.g.dart';
 
+/// https://firebase.google.com/docs/reference/rest/auth#section-refresh-token
 @freezed
 abstract class RefreshResponse with _$RefreshResponse {
   const factory RefreshResponse({

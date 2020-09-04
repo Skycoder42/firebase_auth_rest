@@ -27,6 +27,7 @@ abstract class ErrorData with _$ErrorData {
       _$ErrorDataFromJson(json);
 }
 
+/// https://firebase.google.com/docs/reference/rest/auth#section-error-format
 @freezed
 abstract class AuthError with _$AuthError {
   const factory AuthError([ErrorData error]) = _AuthError;
