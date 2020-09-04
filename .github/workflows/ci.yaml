@@ -60,7 +60,10 @@ jobs:
         run: |
           mkdir -p ~/.pub-cache
           cat '${{secrets.PUB_DEV_CREDENTIALS}}' > ~/.pub-cache/credentials.json
-      - run: pub publish
+      - name: pub publish
+        run: |
+          rm -rf lib/src/.gitignore
+          pub publish
       - name: Clean up credentials
         if: always()
         run: rm -rf ~/.pub-cache/credentials.json
