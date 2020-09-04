@@ -101,6 +101,8 @@ class FirebaseAccount {
   /// The account is created by using the [client] and [apiKey] for accessing
   /// the Firebase REST endpoints. If [autoRefresh] and [locale] are used to
   /// initialize these properties.
+  ///
+  /// If the refreshing fails, an [AuthError] will be thrown.
   static Future<FirebaseAccount> restore(
     Client client,
     String apiKey,
@@ -125,6 +127,8 @@ class FirebaseAccount {
   /// The account is created by using the [_api] for accessing the Firebase REST
   /// endpoints. If [autoRefresh] and [locale] are used to initialize these
   /// properties.
+  ///
+  /// If the refreshing fails, an [AuthError] will be thrown.
   static Future<FirebaseAccount> apiRestore(
     RestApi api,
     String refreshToken, {
@@ -192,13 +196,46 @@ class FirebaseAccount {
     }
   }
 
+  /// A broadcast stream of idTokens.
+  ///
+  /// Generates a new token everytime the users credentials are refreshed via
+  /// [refresh()] or [autoRefresh]. The stream is a broadcast stream, so you can
+  /// listen to it as you please.
+  ///
+  /// Whenever a new token is returned, [idToken] has also been updated.
+  /// However, no intial event is sent to the stream when you subscribe. If an
+  /// error happens during a refresh, the [AuthError] is passed as error to the
+  /// stream, so you can react to these.
+  ///
+  /// **Note:** If no stream is connected, refresh errors fail silently.
   Stream<String> get idTokenStream => _refreshController?.stream;
 
+  /// Refreshes the accounts [idToken] and returns the new token.
+  ///
+  /// Sends the [refreshToken] to the firebase server to obtain a new [idToken].
+  /// On a success, the [idToken] and [refreshToken] properties are updated and
+  /// [idTokenStream] provides a new value. If the request fails, an [AuthError]
+  /// is thrown.
+  ///
+  /// **Note:** Instead of manually refreshing whenever [expiresAt] comes close,
+  /// you can simply set [autoRefresh] to true to enable automatic refreshing of
+  /// the [idToken] in the background.
   Future<String> refresh() async {
     await _updateToken();
     return _idToken;
   }
 
+  /// Sends a verification email at the users email.
+  ///
+  /// You can use this method, if [getDetails()] reveals that the users email
+  /// has not been verified yet. This method will cause the firebase servers to
+  /// send a verification email with a verification code. That code must be then
+  /// sent back to firebase via [confirmEmail()] to complete the process.
+  ///
+  /// The language of the email is determined by [locale]. If not specified, the
+  /// accounts [FirebaseAccount.locale] will be used.
+  ///
+  /// If the request fails, an [AuthError] will be thrown.
   Future requestEmailConfirmation({
     String locale,
   }) async =>
@@ -209,9 +246,27 @@ class FirebaseAccount {
         locale ?? this.locale,
       );
 
+  /// Verifies the users email by completing the process.
+  ///
+  /// To confirm the users email, you need an [oobCode]. You can obtain that
+  /// code by using [requestEmailConfirmation()]. That method will send the user
+  /// an email that contains said [oobCode]. In an application you can extract
+  /// that code from the email to complete the process with this method.
+  ///
+  /// If the request fails, including because an invalid code was passed to the
+  /// method, an [AuthError] will be thrown.
   Future confirmEmail(String oobCode) async =>
       _api.confirmEmail(ConfirmEmailRequest(oobCode: oobCode));
 
+  /// Fetches the user profile details of the account.
+  ///
+  /// Requests the account details that firebase itself has about the current
+  /// account and returns them as [UserData]. If the request fails, an
+  /// [AuthError] is thrown instead.
+  ///
+  /// **Note:** If the request succeeds, but there is not user-data associated
+  /// with the user, null is returned. In theory, this should never happen, but
+  /// it is not guaranteed to never happen.
   Future<UserData> getDetails() async {
     final response = await _api.getUserData(UserDataRequest(idToken: _idToken));
     return response.users != null && response.users.isNotEmpty
@@ -219,6 +274,22 @@ class FirebaseAccount {
         : null;
   }
 
+  /// Updates the users email address.
+  ///
+  /// This is the email that is used by the user to login with a password. The
+  /// current email is replaced by [newEmail]. If the request fails, an
+  /// [AuthError] will be thrown.
+  ///
+  /// Firebase sents a notification email to the old email address to notify the
+  /// user that his email has changed. The user may revoke the change via that
+  /// email. The language of the email is determined by [locale]. If not
+  /// specified, the accounts [FirebaseAccount.locale] will be used.
+  ///
+  /// **Note:** If the user has logged in anonymously or via an IDP-Provider,
+  /// the mail may not be changeable, leading the a failure of this request. You
+  /// can use [getDetails()] or [FirebaseAuth.fetchProviders] to find out which
+  /// providers a user has activated for this account. You can instead link the
+  /// account with an email address and a new password via [linkEmail()].
   Future updateEmail(
     String newEmail, {
     String locale,
@@ -232,6 +303,15 @@ class FirebaseAccount {
         locale ?? this.locale,
       );
 
+  /// Updates the users login password.
+  ///
+  /// Replaces the users current password with [newPassword]. If the request
+  /// fails, an [AuthError] will be thrown.
+  ///
+  /// This request can only be used, if the user has logged in via
+  /// email/password. When logged in anonymously or via an IDP-Provider, this
+  /// request will always fail. You can instead link the account with an email
+  /// address and a new password via [linkEmail()].
   Future updatePassword(String newPassword) =>
       _api.updatePassword(PasswordUpdateRequest(
         idToken: _idToken,
@@ -239,6 +319,17 @@ class FirebaseAccount {
         returnSecureToken: false,
       ));
 
+  /// Updates certain aspects of the users profile.
+  ///
+  /// Only the [displayName] and the [photoUrl] can be updated. For each of
+  /// these parameters, you have one of three options:
+  /// - Pass null to (or leave out the) parameter to keep it as it is
+  /// - Pass [ProfileUpdate.update()] to change the property to a new value
+  /// - Pass [ProfileUpdate.delete()] to remove the property. This will erase
+  /// the data on firebase servers and set them to null.
+  ///
+  /// If the request fails, an [AuthError] will be thrown. The updated profile
+  /// can be fetched via [getDetails()].
   Future updateProfile({
     ProfileUpdate<String> displayName,
     ProfileUpdate<Uri> photoUrl,
@@ -256,6 +347,23 @@ class FirebaseAccount {
         returnSecureToken: false,
       ));
 
+  /// Links a new email address to this account.
+  ///
+  /// Linking allows a user to add a new login method to an existing account.
+  /// After doing so, he can choose any of those methods to perform the login.
+  ///
+  /// With this method, an email address can be added to allow login with the
+  /// given [email] and [password] via [FirebaseAuth.signInWithPassword()]. The
+  /// method returns, whether the given [email] has already been verified. If
+  /// the linking fails, an [AuthError] is thrown instead.
+  ///
+  /// By default, a verification email is sent automatically to the user, the
+  /// language of the email is determined by [locale]. If not specified, the
+  /// accounts [FirebaseAccount.locale] will be used.
+  ///
+  /// If you do not want the verification email to be sent immediatly, you can
+  /// simply set [autoVerify] to false and send the email manually by calling
+  /// [requestEmailConfirmation()].
   Future<bool> linkEmail(
     String email,
     String password, {
@@ -274,6 +382,15 @@ class FirebaseAccount {
     return response.emailVerified;
   }
 
+  /// Links a new IDP-Account to this account.
+  ///
+  /// Linking allows a user to add a new login method to an existing account.
+  /// After doing so, he can choose any of those methods to perform the login.
+  ///
+  /// With this method, an IDP-Provider based account (like google, facebook,
+  /// twitter, etc.) can be added to allow login with the given [provider] and
+  /// [requestUri] via [FirebaseAuth.signInWithIdp()]. If the linking fails, an
+  /// [AuthError] is thrown.
   Future linkIdp(
     IdpProvider provider,
     Uri requestUri,
@@ -285,12 +402,36 @@ class FirebaseAccount {
         returnSecureToken: false,
       ));
 
+  /// Unlinks all specified providers from the account.
+  ///
+  /// This removes all login providers from the account that are specified via
+  /// [providers]. The expected IDs are the same as returned by
+  /// [IdpProvider.id]. If the unlinking fails, an [AuthError] will be thrown.
+  ///
+  /// After a provider has been removed, the user cannot login anymore with that
+  /// provider. However, you can always re-add providers via [linkEmail()] or
+  /// [linkIdp()].
   Future unlinkProviders(List<String> providers) =>
       _api.unlinkProvider(UnlinkRequest(
         idToken: _idToken,
         deleteProvider: providers,
       ));
 
+  /// Delete the account
+  ///
+  /// Deletes this firebase account. This is a permanent action and cannot be
+  /// undone. After deleting, all access credentials will be set to null and
+  /// the account cannot be used anymore.
+  ///
+  /// If you were listeting to [idTokenStream], it will publish null as value,
+  /// but not close. In addition [autoRefresh] will be set to false. You should
+  /// still call [dispose()] afterwards.
+  ///
+  /// **Note:** While this operation deletes the firebase account (and all
+  /// associated data in firebase), it does *not* delete the original account,
+  /// if an IDP-Provider like google was used. The user can always recreate the
+  /// account by signing in/up again, but he will receive a new [localId] and
+  /// will be treated as completely different user by firebase.
   Future delete() async {
     await _api.delete(DeleteRequest(idToken: _idToken));
     _localId = null;
@@ -303,6 +444,13 @@ class FirebaseAccount {
     }
   }
 
+  /// Disposes the account
+  ///
+  /// Disables any ongoing [autoRefresh] and sets it to false. Also disposes of
+  /// the internally used stream controller for [idTokenStream].
+  ///
+  /// **Important:** Even if you do not use any of the two properties mentioned
+  /// above, you still have to always dispose of an account.
   void dispose() {
     autoRefresh = false;
     _refreshController.close();
@@ -348,7 +496,7 @@ class FirebaseAccount {
     try {
       await _updateToken();
     } catch (e) {
-      // ignore e
+      // ignore error
       // TODO use logger?
     }
   }
