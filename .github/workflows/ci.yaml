@@ -36,7 +36,7 @@ jobs:
           min_coverage: 95
           exclude: "**/*.g.dart **/*.freezed.dart lib/src/models/*.dart"
 
-  publish:
+  doc:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
     needs:
@@ -54,14 +54,3 @@ jobs:
           github_token: ${{secrets.GITHUB_TOKEN}}
           publish_dir: doc/api
           force_orphan: true
-      - name: Store credentials
-        run: |
-          mkdir -p ~/.pub-cache
-          cat '${{secrets.PUB_DEV_CREDENTIALS}}' > ~/.pub-cache/credentials.json
-      - name: pub publish
-        run: |
-          rm -rf lib/src/.gitignore
-          pub publish
-      - name: Clean up credentials
-        if: always()
-        run: rm -rf ~/.pub-cache/credentials.json
