@@ -1,8 +1,12 @@
 name: Continous Integration
 
 on:
-  - push
-  - pull_request
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
 
 jobs:
   dart:
@@ -35,3 +39,30 @@ jobs:
         with:
           min_coverage: 95
           exclude: "**/*.g.dart **/*.freezed.dart lib/src/models/*.dart"
+
+  release:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    needs:
+      - dart
+      - flutter
+    steps:
+      - uses: cedx/setup-dart@v2
+      - uses: actions/checkout@v2
+      - name: Check if release is needed
+        id: version
+        run: echo action_dart_version
+      - name: Dump changelog
+        if: steps.version.outputs.run == 'true'
+        run: |
+          pub global activate cider
+          cider describe "[${{steps.version.outputs.new-version}}]" | tail -n +2 > release_body.md
+      - name: Create Release
+        if: steps.version.outputs.run == 'true'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          tag_name: v${{steps.version.outputs.new-version}}
+          release_name: ${{steps.version.outputs.release-name}}
+          body_path: release_body.md
