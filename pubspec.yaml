@@ -21,4 +21,4 @@ dev_dependencies:
   lint: ^1.2.0
   mockito: ^4.1.1
   test_coverage: ^0.4.3
-  cider: ^0.0.4
+  cider: ^0.0.5
