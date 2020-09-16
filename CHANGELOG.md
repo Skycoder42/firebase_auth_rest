@@ -12,14 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 ### Security
 
-## [0.1.1] - 2020-09-16
-### Fixed
-- Automatic upload of releases to pub.dev
-- Automatic upload of release-docs to github pages
-
-## [0.1.0] - 2020-09-14
+## [0.1.0] - 2020-09-16
 ### Added
-- Automatic deployment on new releases
+- Automatic deployment on new releases to pub.dev
+- Automatic upload of release-docs to github pages
 - Complete README
 
 ## [0.0.1] - 2020-09-04

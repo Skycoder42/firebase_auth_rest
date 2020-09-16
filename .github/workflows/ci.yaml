@@ -9,7 +9,7 @@ on:
       - "*"
 
 jobs:
-  dart:
+  test:
     strategy:
       fail-fast: false
       matrix:
@@ -27,22 +27,15 @@ jobs:
       # - run: dartanalyzer lib test  # Skip because currently broken
       - run: pub run test
       - run: pub run test_coverage
+        if: runner.os == 'ubuntu-latest'
       - uses: ChicagoFlutter/lcov-cop@v1.0.2
         if: runner.os == 'ubuntu-latest'
         with:
           min_coverage: 95
           exclude: "**/*.g.dart **/*.freezed.dart lib/src/models/*.dart"
 
-  flutter:
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-latest
-          - windows-latest
-          - macos-latest
-
-    runs-on: ${{ matrix.os }}
+  analyze:
+    runs-on: ubuntu-latest
     steps:
       - uses: subosito/flutter-action@v1
       - run: flutter config --no-analytics
@@ -50,22 +43,16 @@ jobs:
       - run: flutter pub get
       - run: flutter pub run build_runner build
       - run: flutter analyze
-      - run: flutter pub run test
-      - run: flutter pub run test_coverage
-      - uses: ChicagoFlutter/lcov-cop@v1.0.2
-        if: runner.os == 'ubuntu-latest'
-        with:
-          min_coverage: 95
-          exclude: "**/*.g.dart **/*.freezed.dart lib/src/models/*.dart"
 
   release:
     runs-on: ubuntu-latest
     needs:
-      - dart
-      - flutter
+      - test
+      - analyze
     if: github.ref == 'refs/heads/master'
     outputs:
       update: ${{ steps.version.outputs.update }}
+      tag_name: ${{ steps.version.outputs.tag_name }}
     steps:
       - uses: cedx/setup-dart@v2
       - uses: actions/checkout@v2
@@ -116,4 +103,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: doc/api
-          commit_message: ${{ github.ref }}
+          commit_message: Updated documentation to v${{ needs.release.outputs.tag_name }}
