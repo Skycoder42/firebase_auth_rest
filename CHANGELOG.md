@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 ### Security
 
-## [0.1.1] - 2020-09-15
+## [0.1.1] - 2020-09-16
 ### Fixed
 - Automatic upload of releases to pub.dev
 - Automatic upload of release-docs to github pages
