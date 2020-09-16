@@ -28,12 +28,21 @@ jobs:
       - run: pub run test
       - run: pub run test_coverage
       - uses: ChicagoFlutter/lcov-cop@v1.0.2
+        if: runner.os == 'ubuntu-latest'
         with:
           min_coverage: 95
           exclude: "**/*.g.dart **/*.freezed.dart lib/src/models/*.dart"
 
   flutter:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: subosito/flutter-action@v1
       - run: flutter config --no-analytics
@@ -44,6 +53,7 @@ jobs:
       - run: flutter pub run test
       - run: flutter pub run test_coverage
       - uses: ChicagoFlutter/lcov-cop@v1.0.2
+        if: runner.os == 'ubuntu-latest'
         with:
           min_coverage: 95
           exclude: "**/*.g.dart **/*.freezed.dart lib/src/models/*.dart"
