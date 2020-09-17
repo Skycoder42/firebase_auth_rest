@@ -83,7 +83,7 @@ jobs:
         run: |
           mkdir -p ~/.pub-cache
           echo '${{ secrets.PUB_DEV_CREDENTIALS }}' > ~/.pub-cache/credentials.json
-      - run: pub publish
+      - run: pub publish --force
       - name: clean up credentials
         run: shred -fzvu ~/.pub-cache/credentials.json
 

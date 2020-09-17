@@ -22,3 +22,5 @@ dev_dependencies:
   mockito: ^4.1.1
   test_coverage: ^0.4.3
   cider: ^0.0.5
+  git_hooks: ^0.0.4
+  path: ^1.7.0
