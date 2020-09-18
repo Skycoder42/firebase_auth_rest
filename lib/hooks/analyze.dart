@@ -1,7 +1,30 @@
 import 'dart:convert';
 import 'dart:io';
 
-class AnalyzeResult {
+class Analyze {
+  final List<_AnalyzeResult> _resultStream;
+
+  const Analyze._(this._resultStream);
+
+  static Future<Analyze> run() async => Analyze._(await _runAnalyze().toList());
+
+  static Stream<_AnalyzeResult> _runAnalyze() async* {
+    final process = await Process.start(
+      Platform.isWindows ? "dartanalyzer.bat" : "dartanalyzer",
+      const [
+        "--format",
+        "machine",
+      ],
+    );
+    // TODO use stderr
+    yield* process.stdout
+        .transform(utf8.decoder)
+        .transform(const LineSplitter())
+        .parseResult();
+  }
+}
+
+class _AnalyzeResult {
   String severity;
   String category;
   String type;
@@ -12,29 +35,14 @@ class AnalyzeResult {
   String description;
 }
 
-Stream<AnalyzeResult> runAnalyze() async* {
-  final process = await Process.start(
-    Platform.isWindows ? "dartanalyzer.bat" : "dartanalyzer",
-    const [
-      "--format",
-      "machine",
-    ],
-  );
-  // TODO use stderr
-  yield* process.stdout
-      .transform(utf8.decoder)
-      .transform(const LineSplitter())
-      .parseResult();
-}
-
 extension ResultTransformer on Stream<String> {
-  Stream<AnalyzeResult> parseResult() async* {
+  Stream<_AnalyzeResult> parseResult() async* {
     await for (final line in this) {
       final elements = line.trim().split("|");
       if (elements.length < 8) {
         throw "Invalid output from dartanalyzer: $line";
       }
-      yield AnalyzeResult()
+      yield _AnalyzeResult()
         ..severity = elements[0]
         ..category = elements[1]
         ..type = elements[2]

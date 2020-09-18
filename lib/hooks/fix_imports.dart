@@ -7,46 +7,37 @@ import 'package:crypto/crypto.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:path/path.dart';
 
-void main() async {
-  final root = Directory.current;
-  final lib = Directory("lib");
-  await for (final entry in root.list(recursive: true, followLinks: false)) {
-    if (entry is File && entry.path.endsWith(".dart")) {
-      await fixupFile(
-        file: entry,
-        libDir: lib,
-        packageName: "firebase_auth_rest",
-      );
+class FixImports {
+  final String packageName;
+  final Directory libDir;
+
+  const FixImports({
+    @required this.packageName,
+    @required this.libDir,
+  });
+
+  Future<bool> call(File file) async {
+    final inDigest = AccumulatorSink<Digest>();
+    final outDigest = AccumulatorSink<Digest>();
+    final result = await Stream.fromFuture(file.readAsString())
+        .transform(const LineSplitter())
+        .shaSum(inDigest)
+        .relativize(
+          packageName: packageName,
+          filePath: file.path,
+          libDirPath: libDir.path,
+        )
+        .organizeImports()
+        .shaSum(outDigest)
+        .withNewlines()
+        .join();
+
+    if (inDigest.events.single != outDigest.events.single) {
+      await file.writeAsString(result);
+      return true;
+    } else {
+      return false;
     }
-  }
-}
-
-Future<bool> fixupFile({
-  @required File file,
-  @required Directory libDir,
-  @required String packageName,
-}) async {
-  final inDigest = AccumulatorSink<Digest>();
-  final outDigest = AccumulatorSink<Digest>();
-  final result = await Stream.fromFuture(file.readAsString())
-      .transform(const LineSplitter())
-      .shaSum(inDigest)
-      .relativize(
-        packageName: packageName,
-        filePath: file.path,
-        libDirPath: libDir.path,
-      )
-      .organizeImports()
-      .shaSum(outDigest)
-      .withNewlines()
-      .join();
-
-  if (inDigest.events.single != outDigest.events.single) {
-    //await file.writeAsString(result);
-    print("Fixed ${file.path}");
-    return true;
-  } else {
-    return false;
   }
 }
 
