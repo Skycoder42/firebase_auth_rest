@@ -1,7 +1,7 @@
 # files
 .packages: pubspec.yaml
 	@rm pubspec.lock
-	pub get
+	dart pub get
 
 lib/models/%.freezed.dart: .build-runner-trigger .packages
 
@@ -21,17 +21,18 @@ get: .packages
 build: .build-runner-completed
 
 generate: get
-	pub run build_runner build --delete-conflicting-outputs
+	dart pub run build_runner build --delete-conflicting-outputs
 	
 watch: get
-	pub run build_runner watch --delete-conflicting-outputs
+	dart pub run build_runner watch --delete-conflicting-outputs
 
 test: get
-	pub run test
+	dart test
 
 coverage: get
 	@rm -rf coverage
-	pub run test_coverage
+	dart test --coverage=coverage
+	dart pub run coverage:format_coverage --lcov -i coverage -o coverage/lcov.info --packages .packages --report-on lib -c
 	lcov --remove coverage/lcov.info -o coverage/lcov.info \
 		'**/*.g.dart' \
 		'**/*.freezed.dart' \
@@ -46,7 +47,7 @@ doc: get
 
 publish: get
 	rm lib/src/.gitignore
-	pub publish
+	dart pub publish
 	echo '# Generated dart files' > lib/src/.gitignore
 	echo '*.freezed.dart' >> lib/src/.gitignore
 	echo '*.g.dart' >> lib/src/.gitignore

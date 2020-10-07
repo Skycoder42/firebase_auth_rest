@@ -22,33 +22,24 @@ jobs:
     steps:
       - uses: cedx/setup-dart@v2
       - uses: actions/checkout@v2
-      - run: pub get
-      - run: pub run build_runner build
-      # - run: dartanalyzer lib test  # Skip because currently broken
-      - run: pub run test
-      - run: pub run test_coverage
-        if: runner.os == 'ubuntu-latest'
+      - run: dart pub get
+      - run: dart pub run build_runner build
+      - run: dart analyze --fatal-infos
+      - run: dart test
+      - run: dart test --coverage=coverage
+      - run: dart pub run coverage:format_coverage --lcov -i coverage -o coverage/lcov.info --packages .packages --report-on lib -c
+        if: matrix.os == 'ubuntu-latest'
       - uses: ChicagoFlutter/lcov-cop@v1.0.2
-        if: runner.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-latest'
         with:
           min_coverage: 95
           exclude: "**/*.g.dart **/*.freezed.dart lib/src/models/*.dart"
-
-  analyze:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: subosito/flutter-action@v1
-      - run: flutter config --no-analytics
-      - uses: actions/checkout@v2
-      - run: flutter pub get
-      - run: flutter pub run build_runner build
-      - run: flutter analyze
+      - run: dart pub publish --dry-run
 
   release:
     runs-on: ubuntu-latest
     needs:
       - test
-      - analyze
     if: github.ref == 'refs/heads/master'
     outputs:
       update: ${{ steps.version.outputs.update }}
@@ -76,15 +67,16 @@ jobs:
     steps:
       - uses: cedx/setup-dart@v2
       - uses: actions/checkout@v2
-      - run: pub get
-      - run: pub run build_runner build
+      - run: dart pub get
+      - run: dart pub run build_runner build
       - run: rm -rf lib/src/.gitignore
       - name: store credentials
         run: |
           mkdir -p ~/.pub-cache
           echo '${{ secrets.PUB_DEV_CREDENTIALS }}' > ~/.pub-cache/credentials.json
-      - run: pub publish --force
+      - run: dart pub publish --force
       - name: clean up credentials
+        if: always()
         run: shred -fzvu ~/.pub-cache/credentials.json
 
   doc:
@@ -95,8 +87,8 @@ jobs:
     steps:
       - uses: cedx/setup-dart@v2
       - uses: actions/checkout@v2
-      - run: pub get
-      - run: pub run build_runner build
+      - run: dart pub get
+      - run: dart pub run build_runner build
       - run: dartdoc
       - name: upload doc
         uses: peaceiris/actions-gh-pages@v3
