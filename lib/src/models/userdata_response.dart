@@ -9,6 +9,7 @@ part 'userdata_response.g.dart';
 @freezed
 abstract class UserDataResponse with _$UserDataResponse {
   const factory UserDataResponse({
+    /// The account associated with the given Firebase ID token. Check [UserData] for more details.
     List<UserData> users,
   }) = _UserDataResponse;
 

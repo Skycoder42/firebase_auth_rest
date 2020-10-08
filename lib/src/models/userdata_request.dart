@@ -7,6 +7,7 @@ part 'userdata_request.g.dart';
 @freezed
 abstract class UserDataRequest with _$UserDataRequest {
   const factory UserDataRequest({
+    /// The Firebase ID token of the account.
     @required String idToken,
   }) = _UserDataRequest;
 
