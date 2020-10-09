@@ -7,6 +7,7 @@ part 'delete_request.g.dart';
 @freezed
 abstract class DeleteRequest with _$DeleteRequest {
   const factory DeleteRequest({
+    /// The Firebase ID token of the user to delete.
     @required String idToken,
   }) = _DeleteRequest;
 

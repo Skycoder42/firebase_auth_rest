@@ -10,6 +10,7 @@ part 'oob_code_response.g.dart';
 @freezed
 abstract class OobCodeResponse with _$OobCodeResponse {
   const factory OobCodeResponse({
+    /// User's email address.
     String email,
   }) = _OobCodeResponse;
 

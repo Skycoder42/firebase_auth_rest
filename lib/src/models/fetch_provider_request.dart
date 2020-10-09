@@ -7,7 +7,11 @@ part 'fetch_provider_request.g.dart';
 @freezed
 abstract class FetchProviderRequest with _$FetchProviderRequest {
   const factory FetchProviderRequest({
+    /// User's email address
     @required String identifier,
+
+    /// The URI to which the IDP redirects the user back. For this use case,
+    /// this is just the current URL.
     @required Uri continueUri,
   }) = _FetchProviderRequest;
 

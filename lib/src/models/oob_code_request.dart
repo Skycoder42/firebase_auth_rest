@@ -15,13 +15,19 @@ enum OobCodeRequestType {
 abstract class OobCodeRequest with _$OobCodeRequest {
   /// https://firebase.google.com/docs/reference/rest/auth#section-send-email-verification
   const factory OobCodeRequest.verifyEmail({
+    /// The Firebase ID token of the user to verify.
     @required String idToken,
+
+    /// The type of confirmation code to send. Should always be [OobCodeRequestType.VERIFY_EMAIL].
     @Default(OobCodeRequestType.VERIFY_EMAIL) OobCodeRequestType requestType,
   }) = VerifyEmailRequest;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-send-password-reset-email
   const factory OobCodeRequest.passwordReset({
+    /// User's email address.
     @required String email,
+
+    /// The kind of OOB code to return. Should be [OobCodeRequestType.PASSWORD_RESET] for password reset.
     @Default(OobCodeRequestType.PASSWORD_RESET) OobCodeRequestType requestType,
   }) = PasswordRestRequest;
 

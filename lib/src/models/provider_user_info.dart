@@ -10,7 +10,10 @@ part 'provider_user_info.g.dart';
 @freezed
 abstract class ProviderUserInfo with _$ProviderUserInfo {
   const factory ProviderUserInfo({
+    /// The linked provider ID (e.g. "google.com" for the Google provider).
     String providerId,
+
+    /// The unique ID identifies the IdP account.
     String federatedId,
   }) = _ProviderUserInfo;
 

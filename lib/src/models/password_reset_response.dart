@@ -10,7 +10,10 @@ part 'password_reset_response.g.dart';
 @freezed
 abstract class PasswordResetResponse with _$PasswordResetResponse {
   const factory PasswordResetResponse({
+    /// User's email address.
     String email,
+
+    /// Type of the email action code. Should be "PASSWORD_RESET".
     String requestType,
   }) = _PasswordResetResponse;
 

@@ -7,7 +7,10 @@ part 'fetch_provider_response.g.dart';
 @freezed
 abstract class FetchProviderResponse with _$FetchProviderResponse {
   const factory FetchProviderResponse({
+    /// The list of providers that the user has previously signed in with.
     List<String> allProviders,
+
+    /// Whether the email is for an existing account
     bool registered,
   }) = _FetchProviderResponse;
 

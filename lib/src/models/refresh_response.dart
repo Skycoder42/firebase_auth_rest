@@ -8,11 +8,21 @@ part 'refresh_response.g.dart';
 @freezed
 abstract class RefreshResponse with _$RefreshResponse {
   const factory RefreshResponse({
-    String token_type,
-    String id_token,
-    String user_id,
-    String refresh_token,
+    /// The number of seconds in which the ID token expires.
     String expires_in,
+    // The type of the refresh token, always "Bearer".
+    String token_type,
+
+    /// The Firebase Auth refresh token provided in the request or a new refresh token.
+    String refresh_token,
+
+    /// A Firebase Auth ID token.
+    String id_token,
+
+    /// The uid corresponding to the provided ID token.
+    String user_id,
+
+    /// Your Firebase project ID.
     String project_id,
   }) = _RefreshResponse;
 

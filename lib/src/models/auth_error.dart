@@ -1,7 +1,8 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+// ignore_for_file: constant_identifier_names
+import "package:freezed_annotation/freezed_annotation.dart";
 
-part 'auth_error.freezed.dart';
-part 'auth_error.g.dart';
+part "auth_error.freezed.dart";
+part "auth_error.g.dart";
 
 /// https://firebase.google.com/docs/reference/rest/auth#section-error-format
 @freezed
