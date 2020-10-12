@@ -106,7 +106,7 @@ abstract class SignInResponse with _$SignInResponse {
 
     /// Whether the email is for an existing account.
     bool registered,
-  }) = PasswordSignInResponse; // TODO split into two, signUp and signIn
+  }) = PasswordSignInResponse; // TODO split into two
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-verify-custom-token
   const factory SignInResponse.custom({

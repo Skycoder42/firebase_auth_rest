@@ -33,7 +33,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         with:
           min_coverage: 95
-          exclude: "**/*.g.dart **/*.freezed.dart lib/src/models/*.dart"
+          exclude: "**/*.g.dart **/*.freezed.dart **/models/*.dart"
       - run: dart pub publish --dry-run
 
   release:

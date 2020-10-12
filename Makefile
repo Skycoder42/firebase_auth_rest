@@ -36,9 +36,9 @@ coverage: get
 	lcov --remove coverage/lcov.info -o coverage/lcov.info \
 		'**/*.g.dart' \
 		'**/*.freezed.dart' \
-		'lib/src/models/*.dart'
-	genhtml -o coverage coverage/lcov.info
-	xdg-open coverage/index.html || start coverage/index.html
+		'**/models/*.dart'
+	genhtml -o coverage/html coverage/lcov.info
+	xdg-open coverage/html/index.html || start coverage/html/index.html
 
 doc: get
 	@rm -rf doc
