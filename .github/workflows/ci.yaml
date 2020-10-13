@@ -22,19 +22,18 @@ jobs:
     steps:
       - uses: cedx/setup-dart@v2
       - uses: actions/checkout@v2
-      - run: dart pub get
-      - run: dart pub run build_runner build
-      - run: dart analyze --fatal-infos
-      - run: dart test
-      - run: dart test --coverage=coverage
-      - run: dart pub run coverage:format_coverage --lcov -i coverage -o coverage/lcov.info --packages .packages --report-on lib -c
+      - run: make get
+      - run: make build
+      - run: make analyze
+      - run: make test
+        if: matrix.os != 'ubuntu-latest'
+      - run: make coverage
         if: matrix.os == 'ubuntu-latest'
       - uses: ChicagoFlutter/lcov-cop@v1.0.2
         if: matrix.os == 'ubuntu-latest'
         with:
           min_coverage: 95
-          exclude: "**/*.g.dart **/*.freezed.dart **/models/*.dart"
-      - run: dart pub publish --dry-run
+      - run: make publish-dry
 
   release:
     runs-on: ubuntu-latest
@@ -67,14 +66,13 @@ jobs:
     steps:
       - uses: cedx/setup-dart@v2
       - uses: actions/checkout@v2
-      - run: dart pub get
-      - run: dart pub run build_runner build
-      - run: rm -rf lib/src/.gitignore
+      - run: make get
+      - run: make build
       - name: store credentials
         run: |
           mkdir -p ~/.pub-cache
           echo '${{ secrets.PUB_DEV_CREDENTIALS }}' > ~/.pub-cache/credentials.json
-      - run: dart pub publish --force
+      - run: make publish
       - name: clean up credentials
         if: always()
         run: shred -fzvu ~/.pub-cache/credentials.json
@@ -87,9 +85,9 @@ jobs:
     steps:
       - uses: cedx/setup-dart@v2
       - uses: actions/checkout@v2
-      - run: dart pub get
-      - run: dart pub run build_runner build
-      - run: dartdoc
+      - run: make get
+      - run: make build
+      - run: make doc
       - name: upload doc
         uses: peaceiris/actions-gh-pages@v3
         with:
