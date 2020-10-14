@@ -1,17 +1,28 @@
 # files
 .packages: pubspec.yaml
-	@rm -f pubspec.lock
 	dart pub get
 
 # targets
-.PHONY: get build generate watch test coverage doc publish
-
 get: .packages
 
+get-clean:
+	rm -rf .dart_tool
+	rm -rf .packages
+	$(MAKE) get
+
+upgrade: get
+	dart pub upgrade
+
 build: get
+	dart pub run build_runner build
+
+build-clean: upgrade
 	dart pub run build_runner build --delete-conflicting-outputs
 	
 watch: get
+	dart pub run build_runner watch
+	
+watch-clean: upgrade
 	dart pub run build_runner watch --delete-conflicting-outputs
 
 analyze: get
@@ -20,7 +31,7 @@ analyze: get
 test: get
 	dart test
 
-coverage: get
+test-coverage: get
 	@rm -rf coverage
 	dart test --coverage=coverage
 	dart pub run coverage:format_coverage --lcov -i coverage -o coverage/lcov.info --packages .packages --report-on lib -c
@@ -29,13 +40,17 @@ coverage: get
 		'**/*.freezed.dart' \
 		'**/models/*.dart'
 
-coverage-report: coverage
+coverage: test-coverage
 	genhtml -o coverage/html coverage/lcov.info
+
+coverage-open: coverage
 	xdg-open coverage/html/index.html || start coverage/html/index.html
 
 doc: get
 	@rm -rf doc
-	dartdoc --show-progress 
+	dartdoc --show-progress
+
+doc-open: doc
 	xdg-open doc/api/index.html || start doc/api/index.html
 
 pre-publish:
@@ -55,3 +70,5 @@ publish: get
 	$(MAKE) pre-publish
 	dart pub publish --force
 	$(MAKE) post-publish
+
+.PHONY: build test coverage doc
