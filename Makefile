@@ -2,6 +2,13 @@
 .packages: pubspec.yaml
 	dart pub get
 
+# hooks
+hook: get
+ dart pub run hanzo -i pre_commit
+
+unhook: get
+ dart pub run hanzo -r all
+
 # targets
 get: .packages
 

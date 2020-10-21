@@ -6,10 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Full documentation for REST models
 ### Changed
 ### Deprecated
 ### Removed
 ### Fixed
+- Fixed automatic deployments
+- Exchange git hooks backend for improved git performance
 ### Security
 
 ## [0.1.1] - 2020-09-16
