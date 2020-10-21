@@ -16,7 +16,7 @@ analyzer:
 lint:
   rules:
     prefer_single_quotes: false
+    avoid_escaping_inner_quotes: false
     prefer_double_quotes: true
     unawaited_futures: true
-    package_api_docs: true
     public_member_api_docs: true

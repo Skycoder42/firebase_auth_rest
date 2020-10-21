@@ -23,7 +23,8 @@ import 'rest_api.dart';
 /// [FirebaseAccount.restore()], or use one of the various login methods of the
 /// [FirebaseAuth] class.
 class FirebaseAccount {
-  final RestApi _api;
+  /// The internally used [RestApi] instance.
+  final RestApi api;
 
   /// The default locale to be used for E-Mails sent by Firebase.
   String locale;
@@ -41,7 +42,7 @@ class FirebaseAccount {
   );
 
   FirebaseAccount._(
-    this._api,
+    this.api,
     this._localId,
     this._idToken,
     this._refreshToken,
@@ -76,11 +77,11 @@ class FirebaseAccount {
   /// Instead of using this constructor directly, prefer using one of the
   /// [FirebaseAuth] classes signIn/signUp methods.
   ///
-  /// The account is created by using the [_api] for accessing the Firebase REST
+  /// The account is created by using the [api] for accessing the Firebase REST
   /// endpoints. The user credentials are extracted from the [signInResponse].
   /// If [autoRefresh] and [locale] are used to initialize these properties.
   FirebaseAccount.apiCreate(
-    this._api,
+    this.api,
     SignInResponse signInResponse, {
     bool autoRefresh = true,
     this.locale,
@@ -124,7 +125,7 @@ class FirebaseAccount {
   /// user logging in again. Internally, this method calls [refresh()] to obtain
   /// user credentails and the returns a newly created account from the result.
   ///
-  /// The account is created by using the [_api] for accessing the Firebase REST
+  /// The account is created by using the [api] for accessing the Firebase REST
   /// endpoints. If [autoRefresh] and [locale] are used to initialize these
   /// properties.
   ///
@@ -147,9 +148,6 @@ class FirebaseAccount {
     account.autoRefresh = autoRefresh;
     return account;
   }
-
-  /// The internally used [RestApi] instance.
-  RestApi get api => _api;
 
   /// The local id (account-id) of the logged in user.
   String get localId => _localId;
@@ -239,7 +237,7 @@ class FirebaseAccount {
   Future requestEmailConfirmation({
     String locale,
   }) async =>
-      _api.sendOobCode(
+      api.sendOobCode(
         OobCodeRequest.verifyEmail(
           idToken: _idToken,
         ),
@@ -256,7 +254,7 @@ class FirebaseAccount {
   /// If the request fails, including because an invalid code was passed to the
   /// method, an [AuthError] will be thrown.
   Future confirmEmail(String oobCode) async =>
-      _api.confirmEmail(ConfirmEmailRequest(oobCode: oobCode));
+      api.confirmEmail(ConfirmEmailRequest(oobCode: oobCode));
 
   /// Fetches the user profile details of the account.
   ///
@@ -268,7 +266,7 @@ class FirebaseAccount {
   /// with the user, null is returned. In theory, this should never happen, but
   /// it is not guaranteed to never happen.
   Future<UserData> getDetails() async {
-    final response = await _api.getUserData(UserDataRequest(idToken: _idToken));
+    final response = await api.getUserData(UserDataRequest(idToken: _idToken));
     return response.users != null && response.users.isNotEmpty
         ? response.users.first
         : null;
@@ -294,7 +292,7 @@ class FirebaseAccount {
     String newEmail, {
     String locale,
   }) =>
-      _api.updateEmail(
+      api.updateEmail(
         EmailUpdateRequest(
           idToken: _idToken,
           email: newEmail,
@@ -313,7 +311,7 @@ class FirebaseAccount {
   /// request will always fail. You can instead link the account with an email
   /// address and a new password via [linkEmail()].
   Future updatePassword(String newPassword) =>
-      _api.updatePassword(PasswordUpdateRequest(
+      api.updatePassword(PasswordUpdateRequest(
         idToken: _idToken,
         password: newPassword,
         returnSecureToken: false,
@@ -334,7 +332,7 @@ class FirebaseAccount {
     ProfileUpdate<String> displayName,
     ProfileUpdate<Uri> photoUrl,
   }) =>
-      _api.updateProfile(ProfileUpdateRequest(
+      api.updateProfile(ProfileUpdateRequest(
         idToken: _idToken,
         displayName:
             displayName != null && displayName.update ? displayName.data : null,
@@ -370,7 +368,7 @@ class FirebaseAccount {
     bool autoVerify = true,
     String locale,
   }) async {
-    final response = await _api.linkEmail(LinkEmailRequest(
+    final response = await api.linkEmail(LinkEmailRequest(
       idToken: _idToken,
       email: email,
       password: password,
@@ -395,7 +393,7 @@ class FirebaseAccount {
     IdpProvider provider,
     Uri requestUri,
   ) =>
-      _api.linkIdp(LinkIdpRequest(
+      api.linkIdp(LinkIdpRequest(
         idToken: _idToken,
         postBody: provider.postBody,
         requestUri: requestUri,
@@ -412,7 +410,7 @@ class FirebaseAccount {
   /// provider. However, you can always re-add providers via [linkEmail()] or
   /// [linkIdp()].
   Future unlinkProviders(List<String> providers) =>
-      _api.unlinkProvider(UnlinkRequest(
+      api.unlinkProvider(UnlinkRequest(
         idToken: _idToken,
         deleteProvider: providers,
       ));
@@ -433,7 +431,7 @@ class FirebaseAccount {
   /// account by signing in/up again, but he will receive a new [localId] and
   /// will be treated as completely different user by firebase.
   Future delete() async {
-    await _api.delete(DeleteRequest(idToken: _idToken));
+    await api.delete(DeleteRequest(idToken: _idToken));
     _localId = null;
     _idToken = null;
     _refreshToken = null;
@@ -472,7 +470,7 @@ class FirebaseAccount {
 
   Future _updateToken() async {
     try {
-      final response = await _api.token(refresh_token: _refreshToken);
+      final response = await api.token(refresh_token: _refreshToken);
       _idToken = response.id_token;
       _refreshToken = response.refresh_token;
       final expiresIn = _durFromString(response.expires_in);

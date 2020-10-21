@@ -15,7 +15,8 @@ import 'rest_api.dart';
 /// [FirebaseAccount], which can be used to manage an individual account. All
 /// methods provided here are global methods for firebase auth.
 class FirebaseAuth {
-  final RestApi _api;
+  /// The internally used [RestApi] instance.
+  final RestApi api;
 
   /// The default locale to be used for E-Mails sent by Firebase.
   String locale;
@@ -29,20 +30,17 @@ class FirebaseAuth {
     Client client,
     String apiKey, [
     this.locale,
-  ]) : _api = RestApi(client, apiKey);
+  ]) : api = RestApi(client, apiKey);
 
   /// Creates a new firebase auth instance.
   ///
-  /// The instance uses the [_api] for accessing the Firebase REST endpoints. If
+  /// The instance uses the [api] for accessing the Firebase REST endpoints. If
   /// [locale] is specified, it is used to initialize the [FirebaseAuth.locale]
   /// property.
   FirebaseAuth.api(
-    this._api, [
+    this.api, [
     this.locale,
   ]);
-
-  /// The internally used [RestApi] instance.
-  RestApi get api => _api;
 
   /// Returns a list of all providers that can be used to login.
   ///
@@ -56,7 +54,7 @@ class FirebaseAuth {
     String email, [
     Uri continueUri,
   ]) async {
-    final response = await _api.fetchProviders(FetchProviderRequest(
+    final response = await api.fetchProviders(FetchProviderRequest(
       identifier: email,
       continueUri: continueUri ?? Uri.http("localhost", ""),
     ));
@@ -82,8 +80,8 @@ class FirebaseAuth {
   /// preserve any data associated with this account.
   Future<FirebaseAccount> signUpAnonymous({bool autoRefresh = true}) async =>
       FirebaseAccount.apiCreate(
-        _api,
-        await _api.signUpAnonymous(const AnonymousSignInRequest()),
+        api,
+        await api.signUpAnonymous(const AnonymousSignInRequest()),
         autoRefresh: autoRefresh,
         locale: locale,
       );
@@ -113,12 +111,12 @@ class FirebaseAuth {
     bool autoRefresh = true,
     String locale,
   }) async {
-    final response = await _api.signUpWithPassword(PasswordSignInRequest(
+    final response = await api.signUpWithPassword(PasswordSignInRequest(
       email: email,
       password: password,
     ));
     if (autoVerify) {
-      await _api.sendOobCode(
+      await api.sendOobCode(
         OobCodeRequest.verifyEmail(
           idToken: response.idToken,
         ),
@@ -126,7 +124,7 @@ class FirebaseAuth {
       );
     }
     return FirebaseAccount.apiCreate(
-      _api,
+      api,
       response,
       locale: this.locale,
       autoRefresh: autoRefresh,
@@ -152,8 +150,8 @@ class FirebaseAuth {
     bool autoRefresh = true,
   }) async =>
       FirebaseAccount.apiCreate(
-        _api,
-        await _api.signInWithIdp(IdpSignInRequest(
+        api,
+        await api.signInWithIdp(IdpSignInRequest(
           postBody: provider.postBody,
           requestUri: requestUri,
         )),
@@ -180,8 +178,8 @@ class FirebaseAuth {
     bool autoRefresh = true,
   }) async =>
       FirebaseAccount.apiCreate(
-        _api,
-        await _api.signInWithPassword(PasswordSignInRequest(
+        api,
+        await api.signInWithPassword(PasswordSignInRequest(
           email: email,
           password: password,
         )),
@@ -205,8 +203,8 @@ class FirebaseAuth {
     bool autoRefresh = true,
   }) async =>
       FirebaseAccount.apiCreate(
-        _api,
-        await _api.signInWithCustomToken(CustomTokenSignInRequest(
+        api,
+        await api.signInWithCustomToken(CustomTokenSignInRequest(
           token: token,
         )),
         autoRefresh: autoRefresh,
@@ -223,7 +221,7 @@ class FirebaseAuth {
     String email, {
     String locale,
   }) async =>
-      _api.sendOobCode(
+      api.sendOobCode(
         OobCodeRequest.passwordReset(email: email),
         locale ?? this.locale,
       );
@@ -237,7 +235,7 @@ class FirebaseAuth {
   /// If the check succeeds, the future simply resolves without a value. If it
   /// fails instead, an [AuthError] is thrown.
   Future validatePasswordReset(String oobCode) async =>
-      _api.resetPassword(PasswordResetRequest.verify(oobCode: oobCode));
+      api.resetPassword(PasswordResetRequest.verify(oobCode: oobCode));
 
   /// Completes a password reset by setting a new password.
   ///
@@ -249,7 +247,7 @@ class FirebaseAuth {
   /// signing in via [signInWithPassword()]. If it fails, an [AuthError] is
   /// thrown.
   Future resetPassword(String oobCode, String newPassword) async =>
-      _api.resetPassword(PasswordResetRequest.confirm(
+      api.resetPassword(PasswordResetRequest.confirm(
         oobCode: oobCode,
         newPassword: newPassword,
       ));

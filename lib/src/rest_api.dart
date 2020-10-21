@@ -31,23 +31,26 @@ class RestApi {
   static const _authHost = "identitytoolkit.googleapis.com";
   static const _tokenHost = "securetoken.googleapis.com";
 
-  final Client _client;
-  final String _apiKey;
+  /// The HTTP-Client used to access the remote api
+  final Client client;
+
+  /// The Firebase Web-API-Key to authenticate to the remote api
+  final String apiKey;
 
   /// Create a new api instance
   ///
-  /// The api is created with [_client] and [_apiKey] to initialize the
-  /// equivalent properties, [client] and [apiKey].
-  const RestApi(
-    this._client,
-    this._apiKey,
+  /// The api is created with [client] and [apiKey] to initialize the
+  /// equivalent members. They are used to access the firebase servers.
+  ///
+  /// Optionally, a [loggingCategory] can be passed as last parameter to the
+  /// constructor to customize logging. By default, the API logs to
+  /// `"firebase_rest_auth.RestApi"`, but any category can be used here. If you
+  /// pass `null`, logging will be completely disabled. See [Logger] for more
+  /// details about how logging in dart works.
+  RestApi(
+    this.client,
+    this.apiKey,
   );
-
-  /// The HTTP-Client used to access the remote api
-  Client get client => _client;
-
-  /// The Firebase Web-API-Key to authenticate to the remote api
-  String get apiKey => _apiKey;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-refresh-token
   Future<RefreshResponse> token({
@@ -216,7 +219,7 @@ class RestApi {
           path,
         ],
         queryParameters: <String, dynamic>{
-          "key": _apiKey,
+          "key": apiKey,
           ...?queryParameters,
         },
       );
@@ -227,32 +230,45 @@ class RestApi {
     Map<String, String> headers,
     bool noContent = false,
   }) async {
+    final allHeaders = {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+      ...?headers,
+    };
     body.remove("runtimeType");
-    final response = await _client.post(
+    final response = await client.post(
       url,
       body: json.encode(body),
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        ...?headers,
-      },
+      headers: allHeaders,
     );
     return _parseResponse(response, noContent);
   }
 
   Future<Map<String, dynamic>> _postQuery(
-          Uri url, Map<String, String> query) async =>
-      _parseResponse(await _client.post(url, body: query));
+      Uri url, Map<String, String> query) async {
+    const allHeaders = {
+      "Content-Type": " application/x-www-form-urlencoded",
+      "Accept": "application/json",
+    };
+    return _parseResponse(await client.post(
+      url,
+      body: query,
+      headers: allHeaders,
+    ));
+  }
 
-  Map<String, dynamic> _parseResponse(Response response,
-      [bool noContent = false]) {
+  Map<String, dynamic> _parseResponse(
+    Response response, [
+    bool noContent = false,
+  ]) {
     if (response.statusCode >= 300) {
-      throw AuthError.fromJson(
-          json.decode(response.body) as Map<String, dynamic>);
+      final body = json.decode(response.body) as Map<String, dynamic>;
+      throw AuthError.fromJson(body);
     } else if (response.statusCode == 204 || noContent) {
       return null;
     } else {
-      return json.decode(response.body) as Map<String, dynamic>;
+      final body = json.decode(response.body) as Map<String, dynamic>;
+      return body;
     }
   }
 }

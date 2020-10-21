@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Full documentation for REST models
 ### Changed
+- Use final members instead of read-only getters
 ### Deprecated
 ### Removed
 ### Fixed
