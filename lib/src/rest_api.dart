@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:http/http.dart';
+import 'package:logging/logging.dart';
 
 import 'models/auth_error.dart';
 import 'models/delete_request.dart';
@@ -27,9 +28,14 @@ import 'models/userdata_response.dart';
 ///
 /// See https://firebase.google.com/docs/reference/rest/auth for more details.
 class RestApi {
+  /// The default logging tag used by instances of this class
+  static const loggingTag = "firebase_rest_auth.RestApi";
+
   static const _firebaseLocaleHeader = "X-Firebase-Locale";
   static const _authHost = "identitytoolkit.googleapis.com";
   static const _tokenHost = "securetoken.googleapis.com";
+
+  final Logger _logger;
 
   /// The HTTP-Client used to access the remote api
   final Client client;
@@ -44,13 +50,14 @@ class RestApi {
   ///
   /// Optionally, a [loggingCategory] can be passed as last parameter to the
   /// constructor to customize logging. By default, the API logs to
-  /// `"firebase_rest_auth.RestApi"`, but any category can be used here. If you
-  /// pass `null`, logging will be completely disabled. See [Logger] for more
-  /// details about how logging in dart works.
+  /// [loggingTag], but any category can be used here. If you pass `null`,
+  /// logging will be completely disabled. See [Logger] for more details about
+  /// how logging in dart works.
   RestApi(
     this.client,
-    this.apiKey,
-  );
+    this.apiKey, {
+    String loggingCategory = loggingTag,
+  }) : _logger = loggingCategory != null ? Logger(loggingCategory) : null;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-refresh-token
   Future<RefreshResponse> token({
@@ -236,6 +243,9 @@ class RestApi {
       ...?headers,
     };
     body.remove("runtimeType");
+    _logger?.fine("Sending POST $url");
+    _logger?.finer("> Headers: $allHeaders");
+    _logger?.finer("> Body: $body");
     final response = await client.post(
       url,
       body: json.encode(body),
@@ -250,6 +260,9 @@ class RestApi {
       "Content-Type": " application/x-www-form-urlencoded",
       "Accept": "application/json",
     };
+    _logger?.fine("Sending POST $url");
+    _logger?.finer("> Headers: $allHeaders");
+    _logger?.finer("> Body: $query");
     return _parseResponse(await client.post(
       url,
       body: query,
@@ -261,13 +274,18 @@ class RestApi {
     Response response, [
     bool noContent = false,
   ]) {
+    _logger?.fine(
+        "Response for ${response.request.url} with code: ${response.statusCode}");
+    _logger?.finer("> Headers: ${response.headers}");
     if (response.statusCode >= 300) {
       final body = json.decode(response.body) as Map<String, dynamic>;
+      _logger?.finer("> Body: $body");
       throw AuthError.fromJson(body);
     } else if (response.statusCode == 204 || noContent) {
       return null;
     } else {
       final body = json.decode(response.body) as Map<String, dynamic>;
+      _logger?.finer("> Body: $body");
       return body;
     }
   }
