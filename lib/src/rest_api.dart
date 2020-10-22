@@ -257,7 +257,7 @@ class RestApi {
   Future<Map<String, dynamic>> _postQuery(
       Uri url, Map<String, String> query) async {
     const allHeaders = {
-      "Content-Type": " application/x-www-form-urlencoded",
+      "Content-Type": "application/x-www-form-urlencoded",
       "Accept": "application/json",
     };
     _logger?.fine("Sending POST $url");

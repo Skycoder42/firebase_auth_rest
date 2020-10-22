@@ -36,6 +36,10 @@ void main() {
       await api.token(refresh_token: token);
       verify(mockClient.post(
         Uri.parse("https://securetoken.googleapis.com/v1/token?key=apiKey"),
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
         body: {
           "refresh_token": token,
           "grant_type": "refresh_token",

@@ -16,15 +16,11 @@ import 'package:firebase_auth_rest/src/models/userdata_request.dart';
 import 'package:firebase_auth_rest/src/models/userdata_response.dart';
 import 'package:firebase_auth_rest/src/profile_update.dart';
 import 'package:firebase_auth_rest/src/rest_api.dart';
-import 'package:http/http.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
+import 'mocks.dart';
 import 'test_fixture.dart';
-
-class MockResponse extends Mock implements Response {}
-
-class MockClient extends Mock implements Client {}
 
 class RestApiMock extends Mock implements RestApi {}
 
@@ -159,10 +155,9 @@ void main() {
         body: anyNamed("body"),
         headers: anyNamed("headers"),
       )).thenAnswer((i) async {
-        final res = MockResponse();
-        when(res.statusCode).thenReturn(200);
-        when(res.body)
-            .thenReturn(json.encode(RefreshResponse(expires_in: "1").toJson()));
+        final res = MockResponse(
+          body: json.encode(RefreshResponse(expires_in: "1").toJson()),
+        );
         return res;
       });
 

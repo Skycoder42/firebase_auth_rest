@@ -78,4 +78,11 @@ publish: get
 	dart pub publish --force
 	$(MAKE) post-publish
 
+verify: get
+	$(MAKE) build-clean
+	$(MAKE) analyze
+	$(MAKE) coverage-open
+	$(MAKE) doc-open
+	$(MAKE) publish-dry
+
 .PHONY: build test coverage doc
