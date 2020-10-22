@@ -78,12 +78,22 @@ class FirebaseAuth {
   /// you can do so by using [FirebaseAccount.linkEmail()] or
   /// [FirebaseAccount.linkIdp()] to add credentials to the account. This will
   /// preserve any data associated with this account.
-  Future<FirebaseAccount> signUpAnonymous({bool autoRefresh = true}) async =>
+  ///
+  /// Optionally, a [loggingCategory] can be passed as last parameter to the
+  /// constructor to customize logging. By default, the API logs to
+  /// [FirebaseAccount.loggingTag], but any category can be used here. If you
+  /// pass `null`, logging will be completely disabled. See [Logger] for more
+  /// details about how logging in dart works.
+  Future<FirebaseAccount> signUpAnonymous({
+    bool autoRefresh = true,
+    String loggingCategory = FirebaseAccount.loggingTag,
+  }) async =>
       FirebaseAccount.apiCreate(
         api,
         await api.signUpAnonymous(const AnonymousSignInRequest()),
         autoRefresh: autoRefresh,
         locale: locale,
+        loggingCategory: loggingCategory,
       );
 
   /// Signs up to firebase with an email and a password.
@@ -104,12 +114,19 @@ class FirebaseAuth {
   /// automatic token refresh in the background, as soon as the current token
   /// comes close to expiring. See [FirebaseAccount.autoRefresh] for more
   /// details.
+  ///
+  /// Optionally, a [loggingCategory] can be passed as last parameter to the
+  /// constructor to customize logging. By default, the API logs to
+  /// [FirebaseAccount.loggingTag], but any category can be used here. If you
+  /// pass `null`, logging will be completely disabled. See [Logger] for more
+  /// details about how logging in dart works.
   Future<FirebaseAccount> signUpWithPassword(
     String email,
     String password, {
     bool autoVerify = true,
     bool autoRefresh = true,
     String locale,
+    String loggingCategory = FirebaseAccount.loggingTag,
   }) async {
     final response = await api.signUpWithPassword(PasswordSignInRequest(
       email: email,
@@ -128,6 +145,7 @@ class FirebaseAuth {
       response,
       locale: this.locale,
       autoRefresh: autoRefresh,
+      loggingCategory: loggingCategory,
     );
   }
 
@@ -144,10 +162,17 @@ class FirebaseAuth {
   /// automatic token refresh in the background, as soon as the current token
   /// comes close to expiring. See [FirebaseAccount.autoRefresh] for more
   /// details.
+  ///
+  /// Optionally, a [loggingCategory] can be passed as last parameter to the
+  /// constructor to customize logging. By default, the API logs to
+  /// [FirebaseAccount.loggingTag], but any category can be used here. If you
+  /// pass `null`, logging will be completely disabled. See [Logger] for more
+  /// details about how logging in dart works.
   Future<FirebaseAccount> signInWithIdp(
     IdpProvider provider,
     Uri requestUri, {
     bool autoRefresh = true,
+    String loggingCategory = FirebaseAccount.loggingTag,
   }) async =>
       FirebaseAccount.apiCreate(
         api,
@@ -157,6 +182,7 @@ class FirebaseAuth {
         )),
         autoRefresh: autoRefresh,
         locale: locale,
+        loggingCategory: loggingCategory,
       );
 
   /// Signs into firebase with an email and a password.
@@ -171,11 +197,18 @@ class FirebaseAuth {
   /// comes close to expiring. See [FirebaseAccount.autoRefresh] for more
   /// details.
   ///
+  /// Optionally, a [loggingCategory] can be passed as last parameter to the
+  /// constructor to customize logging. By default, the API logs to
+  /// [FirebaseAccount.loggingTag], but any category can be used here. If you
+  /// pass `null`, logging will be completely disabled. See [Logger] for more
+  /// details about how logging in dart works.
+  ///
   /// **Note:** To create a new account, use [signUpWithPassword()].
   Future<FirebaseAccount> signInWithPassword(
     String email,
     String password, {
     bool autoRefresh = true,
+    String loggingCategory = FirebaseAccount.loggingTag,
   }) async =>
       FirebaseAccount.apiCreate(
         api,
@@ -185,6 +218,7 @@ class FirebaseAuth {
         )),
         autoRefresh: autoRefresh,
         locale: locale,
+        loggingCategory: loggingCategory,
       );
 
   /// Signs into firebase with a custom token.
@@ -198,9 +232,16 @@ class FirebaseAuth {
   /// automatic token refresh in the background, as soon as the current token
   /// comes close to expiring. See [FirebaseAccount.autoRefresh] for more
   /// details.
+  ///
+  /// Optionally, a [loggingCategory] can be passed as last parameter to the
+  /// constructor to customize logging. By default, the API logs to
+  /// [FirebaseAccount.loggingTag], but any category can be used here. If you
+  /// pass `null`, logging will be completely disabled. See [Logger] for more
+  /// details about how logging in dart works.
   Future<FirebaseAccount> signInWithCustomToken(
     String token, {
     bool autoRefresh = true,
+    String loggingCategory = FirebaseAccount.loggingTag,
   }) async =>
       FirebaseAccount.apiCreate(
         api,
@@ -209,6 +250,7 @@ class FirebaseAuth {
         )),
         autoRefresh: autoRefresh,
         locale: locale,
+        loggingCategory: loggingCategory,
       );
 
   /// Sends a password reset email to a user.

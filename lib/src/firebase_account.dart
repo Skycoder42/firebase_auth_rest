@@ -185,6 +185,7 @@ class FirebaseAccount {
       loggingCategory != null ? Logger(loggingCategory) : null,
     );
     account.autoRefresh = autoRefresh;
+    account._logger?.finer("Restored account as $response");
     return account;
   }
 
@@ -504,6 +505,7 @@ class FirebaseAccount {
     if (triggerTimer < const Duration(seconds: 1)) {
       triggerTimer = Duration.zero;
     }
+    _logger?.fine("Scheduling next token refresh in: $triggerTimer");
     _refreshTimer = Timer(triggerTimer, _updateTokenTimout);
   }
 
@@ -531,6 +533,7 @@ class FirebaseAccount {
 
   Future _updateTokenTimout() async {
     try {
+      _logger?.finer("Access token about to expire - refreshing...");
       await _updateToken();
     } catch (e, s) {
       _logger?.severe("Failed to refresh access token", e, s);
