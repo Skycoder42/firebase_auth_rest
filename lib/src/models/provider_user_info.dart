@@ -9,6 +9,7 @@ part 'provider_user_info.g.dart';
 /// - [UpdateResponse]
 @freezed
 abstract class ProviderUserInfo with _$ProviderUserInfo {
+  /// Default constructor
   const factory ProviderUserInfo({
     /// The linked provider ID (e.g. "google.com" for the Google provider).
     String providerId,
@@ -17,6 +18,7 @@ abstract class ProviderUserInfo with _$ProviderUserInfo {
     String federatedId,
   }) = _ProviderUserInfo;
 
+  /// JSON constructor
   factory ProviderUserInfo.fromJson(Map<String, dynamic> json) =>
       _$ProviderUserInfoFromJson(json);
 }

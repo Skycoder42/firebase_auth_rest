@@ -164,6 +164,7 @@ abstract class UpdateResponse with _$UpdateResponse {
     bool emailVerified,
   }) = UnlinkResponse;
 
+  /// JSON constructor
   factory UpdateResponse.fromJson(Map<String, dynamic> json) =>
       _$UpdateResponseFromJson(json);
 }

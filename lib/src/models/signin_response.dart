@@ -178,6 +178,7 @@ abstract class SignInResponse with _$SignInResponse {
     String expiresIn,
   }) = LinkIdpResponse;
 
+  /// JSON constructor
   factory SignInResponse.fromJson(Map<String, dynamic> json) =>
       _$SignInResponseFromJson(json);
 }

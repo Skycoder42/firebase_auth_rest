@@ -13,10 +13,16 @@ analyzer:
     missing_return: error
     missing_required_param: error
 
-lint:
+linter:
   rules:
-    prefer_single_quotes: false
-    avoid_escaping_inner_quotes: false
-    prefer_double_quotes: true
-    unawaited_futures: true
     public_member_api_docs: true
+    cascade_invocations: true
+    close_sinks: true
+    lines_longer_than_80_chars: true
+    omit_local_variable_types: true
+    only_throw_errors: true
+    prefer_adjacent_string_concatenation: true
+    prefer_expression_function_bodies: true
+    prefer_foreach: true
+    prefer_single_quotes: true
+    unawaited_futures: true

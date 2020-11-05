@@ -56,7 +56,8 @@ abstract class SignInRequest with _$SignInRequest {
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-link-with-oauth-credential
   const factory SignInRequest.linkIdp({
-    /// The Firebase ID token of the account you are trying to link the credential to.
+    /// The Firebase ID token of the account you are trying to link the
+    /// credential to.
     @required String idToken,
 
     /// The URI to which the IDP redirects the user back.
@@ -74,6 +75,7 @@ abstract class SignInRequest with _$SignInRequest {
     @Default(false) bool returnIdpCredential,
   }) = LinkIdpRequest;
 
+  /// JSON constructor
   factory SignInRequest.fromJson(Map<String, dynamic> json) =>
       _$SignInRequestFromJson(json);
 }

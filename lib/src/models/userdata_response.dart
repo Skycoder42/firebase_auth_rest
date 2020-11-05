@@ -8,11 +8,14 @@ part 'userdata_response.g.dart';
 /// https://firebase.google.com/docs/reference/rest/auth#section-get-account-info
 @freezed
 abstract class UserDataResponse with _$UserDataResponse {
+  /// Default constructor
   const factory UserDataResponse({
-    /// The account associated with the given Firebase ID token. Check [UserData] for more details.
+    /// The account associated with the given Firebase ID token. Check
+    /// [UserData] for more details.
     List<UserData> users,
   }) = _UserDataResponse;
 
+  /// JSON constructor
   factory UserDataResponse.fromJson(Map<String, dynamic> json) =>
       _$UserDataResponseFromJson(json);
 }

@@ -5,7 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:http/http.dart';
 import 'package:logging/logging.dart';
 
-import 'models/auth_error.dart';
+import 'models/auth_exception.dart';
 import 'models/delete_request.dart';
 import 'models/fetch_provider_request.dart';
 import 'models/fetch_provider_response.dart';
@@ -29,11 +29,11 @@ import 'models/userdata_response.dart';
 /// See https://firebase.google.com/docs/reference/rest/auth for more details.
 class RestApi {
   /// The default logging tag used by instances of this class
-  static const loggingTag = "firebase_rest_auth.RestApi";
+  static const loggingTag = 'firebase_rest_auth.RestApi';
 
-  static const _firebaseLocaleHeader = "X-Firebase-Locale";
-  static const _authHost = "identitytoolkit.googleapis.com";
-  static const _tokenHost = "securetoken.googleapis.com";
+  static const _firebaseLocaleHeader = 'X-Firebase-Locale';
+  static const _authHost = 'identitytoolkit.googleapis.com';
+  static const _tokenHost = 'securetoken.googleapis.com';
 
   final Logger _logger;
 
@@ -62,16 +62,16 @@ class RestApi {
   /// https://firebase.google.com/docs/reference/rest/auth#section-refresh-token
   Future<RefreshResponse> token({
     @required String refresh_token,
-    String grant_type = "refresh_token",
+    String grant_type = 'refresh_token',
   }) async =>
       RefreshResponse.fromJson(await _postQuery(
         _buildUri(
-          "token",
+          'token',
           isTokenRequest: true,
         ),
         {
-          "refresh_token": refresh_token,
-          "grant_type": grant_type,
+          'refresh_token': refresh_token,
+          'grant_type': grant_type,
         },
       ));
 
@@ -79,7 +79,7 @@ class RestApi {
   Future<AnonymousSignInResponse> signUpAnonymous(
           AnonymousSignInRequest request) async =>
       AnonymousSignInResponse.fromJson(await _post(
-        _buildUri("accounts:signUp"),
+        _buildUri('accounts:signUp'),
         request.toJson(),
       ));
 
@@ -87,14 +87,14 @@ class RestApi {
   Future<PasswordSignInResponse> signUpWithPassword(
           PasswordSignInRequest request) async =>
       PasswordSignInResponse.fromJson(await _post(
-        _buildUri("accounts:signUp"),
+        _buildUri('accounts:signUp'),
         request.toJson(),
       ));
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-sign-in-with-oauth-credential
   Future<IdpSignInResponse> signInWithIdp(IdpSignInRequest request) async =>
       IdpSignInResponse.fromJson(await _post(
-        _buildUri("accounts:signInWithIdp"),
+        _buildUri('accounts:signInWithIdp'),
         request.toJson(),
       ));
 
@@ -102,7 +102,7 @@ class RestApi {
   Future<PasswordSignInResponse> signInWithPassword(
           PasswordSignInRequest request) async =>
       PasswordSignInResponse.fromJson(await _post(
-        _buildUri("accounts:signInWithPassword"),
+        _buildUri('accounts:signInWithPassword'),
         request.toJson(),
       ));
 
@@ -110,14 +110,14 @@ class RestApi {
   Future<CustomTokenSignInResponse> signInWithCustomToken(
           CustomTokenSignInRequest request) async =>
       CustomTokenSignInResponse.fromJson(await _post(
-        _buildUri("accounts:signInWithCustomToken"),
+        _buildUri('accounts:signInWithCustomToken'),
         request.toJson(),
       ));
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-get-account-info
   Future<UserDataResponse> getUserData(UserDataRequest request) async =>
       UserDataResponse.fromJson(await _post(
-        _buildUri("accounts:lookup"),
+        _buildUri('accounts:lookup'),
         request.toJson(),
       ));
 
@@ -125,7 +125,7 @@ class RestApi {
   Future<EmailUpdateResponse> updateEmail(EmailUpdateRequest request,
           [String locale]) async =>
       EmailUpdateResponse.fromJson(await _post(
-        _buildUri("accounts:update"),
+        _buildUri('accounts:update'),
         request.toJson(),
         headers: locale != null ? {_firebaseLocaleHeader: locale} : null,
       ));
@@ -134,7 +134,7 @@ class RestApi {
   Future<PasswordUpdateResponse> updatePassword(
           PasswordUpdateRequest request) async =>
       PasswordUpdateResponse.fromJson(await _post(
-        _buildUri("accounts:update"),
+        _buildUri('accounts:update'),
         request.toJson(),
       ));
 
@@ -142,7 +142,7 @@ class RestApi {
   Future<ProfileUpdateResponse> updateProfile(
           ProfileUpdateRequest request) async =>
       ProfileUpdateResponse.fromJson(await _post(
-        _buildUri("accounts:update"),
+        _buildUri('accounts:update'),
         request.toJson(),
       ));
 
@@ -153,7 +153,7 @@ class RestApi {
   Future<OobCodeResponse> sendOobCode(OobCodeRequest request,
           [String locale]) async =>
       OobCodeResponse.fromJson(await _post(
-        _buildUri("accounts:sendOobCode"),
+        _buildUri('accounts:sendOobCode'),
         request.toJson(),
         headers: locale != null ? {_firebaseLocaleHeader: locale} : null,
       ));
@@ -165,7 +165,7 @@ class RestApi {
   Future<PasswordResetResponse> resetPassword(
           PasswordResetRequest request) async =>
       PasswordResetResponse.fromJson(await _post(
-        _buildUri("accounts:resetPassword"),
+        _buildUri('accounts:resetPassword'),
         request.toJson(),
       ));
 
@@ -173,7 +173,7 @@ class RestApi {
   Future<ConfirmEmailResponse> confirmEmail(
           ConfirmEmailRequest request) async =>
       ConfirmEmailResponse.fromJson(await _post(
-        _buildUri("accounts:update"),
+        _buildUri('accounts:update'),
         request.toJson(),
       ));
 
@@ -181,34 +181,34 @@ class RestApi {
   Future<FetchProviderResponse> fetchProviders(
           FetchProviderRequest request) async =>
       FetchProviderResponse.fromJson(await _post(
-        _buildUri("accounts:createAuthUri"),
+        _buildUri('accounts:createAuthUri'),
         request.toJson(),
       ));
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-link-with-email-password
   Future<LinkEmailResponse> linkEmail(LinkEmailRequest request) async =>
       LinkEmailResponse.fromJson(await _post(
-        _buildUri("accounts:update"),
+        _buildUri('accounts:update'),
         request.toJson(),
       ));
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-link-with-oauth-credential
   Future<LinkIdpResponse> linkIdp(LinkIdpRequest request) async =>
       LinkIdpResponse.fromJson(await _post(
-        _buildUri("accounts:signInWithIdp"),
+        _buildUri('accounts:signInWithIdp'),
         request.toJson(),
       ));
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-unlink-provider
   Future<UnlinkResponse> unlinkProvider(UnlinkRequest request) async =>
       UnlinkResponse.fromJson(await _post(
-        _buildUri("accounts:update"),
+        _buildUri('accounts:update'),
         request.toJson(),
       ));
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-delete-account
   Future delete(DeleteRequest request) => _post(
-        _buildUri("accounts:delete"),
+        _buildUri('accounts:delete'),
         request.toJson(),
         noContent: true,
       );
@@ -219,14 +219,14 @@ class RestApi {
     Map<String, dynamic> queryParameters,
   }) =>
       Uri(
-        scheme: "https",
+        scheme: 'https',
         host: isTokenRequest ? _tokenHost : _authHost,
         pathSegments: [
-          "v1",
+          'v1',
           path,
         ],
         queryParameters: <String, dynamic>{
-          "key": apiKey,
+          'key': apiKey,
           ...?queryParameters,
         },
       );
@@ -238,14 +238,14 @@ class RestApi {
     bool noContent = false,
   }) async {
     final allHeaders = {
-      "Content-Type": "application/json",
-      "Accept": "application/json",
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
       ...?headers,
     };
-    body.remove("runtimeType");
-    _logger?.fine("Sending POST $url");
-    _logger?.finer("> Headers: $allHeaders");
-    _logger?.finer("> Body: $body");
+    body.remove('runtimeType');
+    _logger?.fine('Sending POST $url');
+    _logger?.finer('> Headers: $allHeaders');
+    _logger?.finer('> Body: $body');
     final response = await client.post(
       url,
       body: json.encode(body),
@@ -257,12 +257,12 @@ class RestApi {
   Future<Map<String, dynamic>> _postQuery(
       Uri url, Map<String, String> query) async {
     const allHeaders = {
-      "Content-Type": "application/x-www-form-urlencoded",
-      "Accept": "application/json",
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Accept': 'application/json',
     };
-    _logger?.fine("Sending POST $url");
-    _logger?.finer("> Headers: $allHeaders");
-    _logger?.finer("> Body: $query");
+    _logger?.fine('Sending POST $url');
+    _logger?.finer('> Headers: $allHeaders');
+    _logger?.finer('> Body: $query');
     return _parseResponse(await client.post(
       url,
       body: query,
@@ -275,17 +275,18 @@ class RestApi {
     bool noContent = false,
   ]) {
     _logger?.fine(
-        "Response for ${response.request.url} with code: ${response.statusCode}");
-    _logger?.finer("> Headers: ${response.headers}");
+      'Response for ${response.request.url} with code: ${response.statusCode}',
+    );
+    _logger?.finer('> Headers: ${response.headers}');
     if (response.statusCode >= 300) {
       final body = json.decode(response.body) as Map<String, dynamic>;
-      _logger?.finer("> Body: $body");
-      throw AuthError.fromJson(body);
+      _logger?.finer('> Body: $body');
+      throw AuthException.fromJson(body);
     } else if (response.statusCode == 204 || noContent) {
       return null;
     } else {
       final body = json.decode(response.body) as Map<String, dynamic>;
-      _logger?.finer("> Body: $body");
+      _logger?.finer('> Body: $body');
       return body;
     }
   }

@@ -60,7 +60,7 @@ class Fixture {
       }
     }
 
-    return data.join(", ");
+    return data.join(', ');
   }
 
   static List<Fixture> mapped([

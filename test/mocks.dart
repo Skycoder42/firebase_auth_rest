@@ -3,14 +3,14 @@ import 'package:mockito/mockito.dart';
 
 class MockRequest extends Mock implements Request {
   MockRequest([Uri url]) {
-    when(this.url).thenReturn(url ?? Uri.http("localhost", "/"));
+    when(this.url).thenReturn(url ?? Uri.http('localhost', '/'));
   }
 }
 
 class MockResponse extends Mock implements Response {
   MockResponse({
     int statusCode = 200,
-    String body = "{}",
+    String body = '{}',
     Uri url,
   }) {
     when(this.statusCode).thenReturn(statusCode);
@@ -24,18 +24,18 @@ class MockClient extends Mock implements Client {
   void setupMock() {
     when(this.post(
       any,
-      body: anyNamed("body"),
-      headers: anyNamed("headers"),
-      encoding: anyNamed("encoding"),
+      body: anyNamed('body'),
+      headers: anyNamed('headers'),
+      encoding: anyNamed('encoding'),
     )).thenAnswer((i) => Future.value(MockResponse()));
   }
 
   void setupError() {
     when(this.post(
       any,
-      body: anyNamed("body"),
-      headers: anyNamed("headers"),
-      encoding: anyNamed("encoding"),
+      body: anyNamed('body'),
+      headers: anyNamed('headers'),
+      encoding: anyNamed('encoding'),
     )).thenAnswer((i) => Future.value(MockResponse(statusCode: 400)));
   }
 }

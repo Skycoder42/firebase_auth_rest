@@ -6,7 +6,10 @@ part 'oob_code_request.g.dart';
 
 /// Possible values for [OobCodeRequest.requestType]
 enum OobCodeRequestType {
+  /// VERIFY_EMAIL
   VERIFY_EMAIL,
+
+  /// PASSWORD_RESET
   PASSWORD_RESET,
 }
 
@@ -18,7 +21,8 @@ abstract class OobCodeRequest with _$OobCodeRequest {
     /// The Firebase ID token of the user to verify.
     @required String idToken,
 
-    /// The type of confirmation code to send. Should always be [OobCodeRequestType.VERIFY_EMAIL].
+    /// The type of confirmation code to send. Should always be
+    /// [OobCodeRequestType.VERIFY_EMAIL].
     @Default(OobCodeRequestType.VERIFY_EMAIL) OobCodeRequestType requestType,
   }) = VerifyEmailRequest;
 
@@ -27,10 +31,12 @@ abstract class OobCodeRequest with _$OobCodeRequest {
     /// User's email address.
     @required String email,
 
-    /// The kind of OOB code to return. Should be [OobCodeRequestType.PASSWORD_RESET] for password reset.
+    /// The kind of OOB code to return. Should be
+    /// [OobCodeRequestType.PASSWORD_RESET] for password reset.
     @Default(OobCodeRequestType.PASSWORD_RESET) OobCodeRequestType requestType,
   }) = PasswordRestRequest;
 
+  /// JSON constructor
   factory OobCodeRequest.fromJson(Map<String, dynamic> json) =>
       _$OobCodeRequestFromJson(json);
 }

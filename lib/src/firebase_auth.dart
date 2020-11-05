@@ -56,10 +56,10 @@ class FirebaseAuth {
   ]) async {
     final response = await api.fetchProviders(FetchProviderRequest(
       identifier: email,
-      continueUri: continueUri ?? Uri.http("localhost", ""),
+      continueUri: continueUri ?? Uri.http('localhost', ''),
     ));
     return [
-      if (response.registered) "email",
+      if (response.registered) 'email',
       ...response.allProviders,
     ];
   }

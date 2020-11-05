@@ -67,7 +67,8 @@ abstract class UpdateRequest with _$UpdateRequest {
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-link-with-email-password
   const factory UpdateRequest.linkEmail({
-    /// The Firebase ID token of the account you are trying to link the credential to.
+    /// The Firebase ID token of the account you are trying to link the
+    /// credential to.
     @required String idToken,
 
     /// The email to link to the account.
@@ -89,6 +90,7 @@ abstract class UpdateRequest with _$UpdateRequest {
     @required List<String> deleteProvider,
   }) = UnlinkRequest;
 
+  /// JSON constructor
   factory UpdateRequest.fromJson(Map<String, dynamic> json) =>
       _$UpdateRequestFromJson(json);
 }

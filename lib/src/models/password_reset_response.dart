@@ -9,6 +9,7 @@ part 'password_reset_response.g.dart';
 /// - https://firebase.google.com/docs/reference/rest/auth#section-confirm-reset-password
 @freezed
 abstract class PasswordResetResponse with _$PasswordResetResponse {
+  /// Default constructor
   const factory PasswordResetResponse({
     /// User's email address.
     String email,
@@ -17,6 +18,7 @@ abstract class PasswordResetResponse with _$PasswordResetResponse {
     String requestType,
   }) = _PasswordResetResponse;
 
+  /// JSON constructor
   factory PasswordResetResponse.fromJson(Map<String, dynamic> json) =>
       _$PasswordResetResponseFromJson(json);
 }

@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 ### Security
 
+## [1.0.1] - 2020-11-05
+### Fixed
+- Repair broken linter config
+- Fixup code based on working lints
+
 ## [1.0.0] - 2020-10-22
 ### Added
 - Full documentation for REST models

@@ -1,12 +1,13 @@
 // ignore_for_file: constant_identifier_names
-import "package:freezed_annotation/freezed_annotation.dart";
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-part "auth_error.freezed.dart";
-part "auth_error.g.dart";
+part 'auth_exception.freezed.dart';
+part 'auth_exception.g.dart';
 
 /// https://firebase.google.com/docs/reference/rest/auth#section-error-format
 @freezed
 abstract class ErrorDetails with _$ErrorDetails {
+  /// Default constructor
   const factory ErrorDetails({
     /// The domain in which the error occured
     String domain,
@@ -18,6 +19,7 @@ abstract class ErrorDetails with _$ErrorDetails {
     String message,
   }) = _ErrorDetails;
 
+  /// JSON constructor
   factory ErrorDetails.fromJson(Map<String, dynamic> json) =>
       _$ErrorDetailsFromJson(json);
 }
@@ -25,6 +27,7 @@ abstract class ErrorDetails with _$ErrorDetails {
 /// https://firebase.google.com/docs/reference/rest/auth#section-error-format
 @freezed
 abstract class ErrorData with _$ErrorData {
+  /// Default constructor
   const factory ErrorData({
     /// The error code
     int code,
@@ -36,18 +39,21 @@ abstract class ErrorData with _$ErrorData {
     List<ErrorDetails> errors,
   }) = _ErrorData;
 
+  /// JSON Constructor
   factory ErrorData.fromJson(Map<String, dynamic> json) =>
       _$ErrorDataFromJson(json);
 }
 
 /// https://firebase.google.com/docs/reference/rest/auth#section-error-format
 @freezed
-abstract class AuthError with _$AuthError {
-  const factory AuthError([
+abstract class AuthException with _$AuthException implements Exception {
+  /// Default constructor
+  const factory AuthException([
     /// The actual error data
     ErrorData error,
-  ]) = _AuthError;
+  ]) = _AuthException;
 
-  factory AuthError.fromJson(Map<String, dynamic> json) =>
-      _$AuthErrorFromJson(json);
+  /// JSON Constructor
+  factory AuthException.fromJson(Map<String, dynamic> json) =>
+      _$AuthExceptionFromJson(json);
 }

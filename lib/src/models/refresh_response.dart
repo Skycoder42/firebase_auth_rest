@@ -7,13 +7,15 @@ part 'refresh_response.g.dart';
 /// https://firebase.google.com/docs/reference/rest/auth#section-refresh-token
 @freezed
 abstract class RefreshResponse with _$RefreshResponse {
+  /// Default constructor
   const factory RefreshResponse({
     /// The number of seconds in which the ID token expires.
     String expires_in,
     // The type of the refresh token, always "Bearer".
     String token_type,
 
-    /// The Firebase Auth refresh token provided in the request or a new refresh token.
+    /// The Firebase Auth refresh token provided in the request or a new refresh
+    /// token.
     String refresh_token,
 
     /// A Firebase Auth ID token.
@@ -26,6 +28,7 @@ abstract class RefreshResponse with _$RefreshResponse {
     String project_id,
   }) = _RefreshResponse;
 
+  /// JSON constructor
   factory RefreshResponse.fromJson(Map<String, dynamic> json) =>
       _$RefreshResponseFromJson(json);
 }

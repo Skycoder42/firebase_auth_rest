@@ -54,9 +54,9 @@ abstract class IdpProvider implements _$IdpProvider {
   ///
   /// The provider id is typically the domain of the provider.
   String get id => when(
-        google: (_) => "google.com",
-        facebook: (_) => "facebook.com",
-        twitter: (_a, _b) => "twitter.com",
+        google: (_) => 'google.com',
+        facebook: (_) => 'facebook.com',
+        twitter: (_a, _b) => 'twitter.com',
         custom: (providerId, _) => providerId,
       );
 
@@ -68,17 +68,17 @@ abstract class IdpProvider implements _$IdpProvider {
   /// factory constructors.
   String get postBody {
     final params = when(
-      google: (idToken) => {"id_token": idToken},
-      facebook: (accessToken) => {"access_token": accessToken},
+      google: (idToken) => {'id_token': idToken},
+      facebook: (accessToken) => {'access_token': accessToken},
       twitter: (accessToken, oauthTokenSecret) => {
-        "access_token": accessToken,
-        "oauth_token_secret": oauthTokenSecret,
+        'access_token': accessToken,
+        'oauth_token_secret': oauthTokenSecret,
       },
       custom: (_, parameters) => parameters,
     );
     return Uri(queryParameters: <String, dynamic>{
       ...params,
-      "providerId": id,
+      'providerId': id,
     }).query;
   }
 }

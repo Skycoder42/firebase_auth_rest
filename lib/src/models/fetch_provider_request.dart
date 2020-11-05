@@ -6,6 +6,7 @@ part 'fetch_provider_request.g.dart';
 /// https://firebase.google.com/docs/reference/rest/auth#section-fetch-providers-for-email
 @freezed
 abstract class FetchProviderRequest with _$FetchProviderRequest {
+  /// Default constructor
   const factory FetchProviderRequest({
     /// User's email address
     @required String identifier,
@@ -15,6 +16,7 @@ abstract class FetchProviderRequest with _$FetchProviderRequest {
     @required Uri continueUri,
   }) = _FetchProviderRequest;
 
+  /// JSON constructor
   factory FetchProviderRequest.fromJson(Map<String, dynamic> json) =>
       _$FetchProviderRequestFromJson(json);
 }

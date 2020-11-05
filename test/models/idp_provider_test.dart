@@ -5,32 +5,34 @@ import 'package:test/test.dart';
 import '../test_fixture.dart';
 
 void main() {
-  testWithData("IdpProvider returns correct id and postBody", [
+  testWithData('IdpProvider returns correct id and postBody', [
     Fixture(
-      IdpProvider.google("idToken"),
-      "google.com",
-      "id_token=idToken&providerId=google.com",
+      IdpProvider.google('idToken'),
+      'google.com',
+      'id_token=idToken&providerId=google.com',
     ),
     Fixture(
-      IdpProvider.facebook("accessToken"),
-      "facebook.com",
-      "access_token=accessToken&providerId=facebook.com",
+      IdpProvider.facebook('accessToken'),
+      'facebook.com',
+      'access_token=accessToken&providerId=facebook.com',
     ),
     Fixture(
       IdpProvider.twitter(
-        accessToken: "accessToken",
-        oauthTokenSecret: "oauthTokenSecret",
+        accessToken: 'accessToken',
+        oauthTokenSecret: 'oauthTokenSecret',
       ),
-      "twitter.com",
-      "access_token=accessToken&oauth_token_secret=oauthTokenSecret&providerId=twitter.com",
+      'twitter.com',
+      'access_token=accessToken'
+          '&oauth_token_secret=oauthTokenSecret'
+          '&providerId=twitter.com',
     ),
     Fixture(
       IdpProvider.custom(
-        providerId: "custom",
-        parameters: <String, dynamic>{"a": "b"},
+        providerId: 'custom',
+        parameters: <String, dynamic>{'a': 'b'},
       ),
-      "custom",
-      "a=b&providerId=custom",
+      'custom',
+      'a=b&providerId=custom',
     ),
   ], (fixture) {
     final provider = fixture.get0<IdpProvider>();

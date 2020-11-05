@@ -9,11 +9,13 @@ part 'oob_code_response.g.dart';
 /// - https://firebase.google.com/docs/reference/rest/auth#section-send-password-reset-email
 @freezed
 abstract class OobCodeResponse with _$OobCodeResponse {
+  /// Default constructor
   const factory OobCodeResponse({
     /// User's email address.
     String email,
   }) = _OobCodeResponse;
 
+  /// JSON constructor
   factory OobCodeResponse.fromJson(Map<String, dynamic> json) =>
       _$OobCodeResponseFromJson(json);
 }

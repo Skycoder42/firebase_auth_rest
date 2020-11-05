@@ -25,7 +25,7 @@ import 'rest_api.dart';
 /// [FirebaseAuth] class.
 class FirebaseAccount {
   /// The default logging tag used by instances of this class
-  static const loggingTag = "firebase_rest_auth.FirebaseAccount";
+  static const loggingTag = 'firebase_rest_auth.FirebaseAccount';
 
   final Logger _logger;
 
@@ -175,7 +175,7 @@ class FirebaseAccount {
     String loggingCategory = loggingTag,
   }) async {
     final response = await api.token(refresh_token: refreshToken);
-    final account = FirebaseAccount._(
+    return FirebaseAccount._(
       api,
       response.user_id,
       response.id_token,
@@ -183,10 +183,9 @@ class FirebaseAccount {
       _expiresInToAt(_durFromString(response.expires_in)),
       locale,
       loggingCategory != null ? Logger(loggingCategory) : null,
-    );
-    account.autoRefresh = autoRefresh;
-    account._logger?.finer("Restored account as $response");
-    return account;
+    )
+      ..autoRefresh = autoRefresh
+      .._logger?.finer('Restored account as $response');
   }
 
   /// The local id (account-id) of the logged in user.
@@ -505,7 +504,7 @@ class FirebaseAccount {
     if (triggerTimer < const Duration(seconds: 1)) {
       triggerTimer = Duration.zero;
     }
-    _logger?.fine("Scheduling next token refresh in: $triggerTimer");
+    _logger?.fine('Scheduling next token refresh in: $triggerTimer');
     _refreshTimer = Timer(triggerTimer, _updateTokenTimout);
   }
 
@@ -533,10 +532,10 @@ class FirebaseAccount {
 
   Future _updateTokenTimout() async {
     try {
-      _logger?.finer("Access token about to expire - refreshing...");
+      _logger?.finer('Access token about to expire - refreshing...');
       await _updateToken();
     } catch (e, s) {
-      _logger?.severe("Failed to refresh access token", e, s);
+      _logger?.severe('Failed to refresh access token', e, s);
     }
   }
 }

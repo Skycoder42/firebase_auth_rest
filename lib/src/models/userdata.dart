@@ -11,6 +11,7 @@ part 'userdata.g.dart';
 /// for more details about the underlying REST request.
 @freezed
 abstract class UserData with _$UserData {
+  /// Default constructor
   const factory UserData({
     /// The uid of the current user.
     String localId,
@@ -54,6 +55,7 @@ abstract class UserData with _$UserData {
     bool customAuth,
   }) = _UserData;
 
+  /// JSON constructor
   factory UserData.fromJson(Map<String, dynamic> json) =>
       _$UserDataFromJson(json);
 }
