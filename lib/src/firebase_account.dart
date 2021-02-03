@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:http/http.dart';
-import 'package:logging/logging.dart';
+import 'package:http/http.dart'; // ignore: import_of_legacy_library_into_null_safe
+import 'package:logging/logging.dart'; // ignore: import_of_legacy_library_into_null_safe
 
 import 'models/delete_request.dart';
 import 'models/idp_provider.dart';
@@ -27,20 +27,20 @@ class FirebaseAccount {
   /// The default logging tag used by instances of this class
   static const loggingTag = 'firebase_rest_auth.FirebaseAccount';
 
-  final Logger _logger;
+  final Logger? _logger;
 
   /// The internally used [RestApi] instance.
   final RestApi api;
 
   /// The default locale to be used for E-Mails sent by Firebase.
-  String locale;
+  String? locale;
 
   String _localId;
   String _idToken;
   String _refreshToken;
   DateTime _expiresAt;
 
-  Timer _refreshTimer;
+  Timer? _refreshTimer;
   final StreamController<String> _refreshController =
       StreamController<String>.broadcast(
     onListen: () {},
@@ -77,8 +77,8 @@ class FirebaseAccount {
     String apiKey,
     SignInResponse signInResponse, {
     bool autoRefresh = true,
-    String locale,
-    String loggingCategory = loggingTag,
+    String? locale,
+    String? loggingCategory = loggingTag,
   }) : this.apiCreate(
           RestApi(client, apiKey),
           signInResponse,
@@ -106,7 +106,7 @@ class FirebaseAccount {
     SignInResponse signInResponse, {
     bool autoRefresh = true,
     this.locale,
-    String loggingCategory = loggingTag,
+    String? loggingCategory = loggingTag,
   })  : _logger = loggingCategory != null ? Logger(loggingCategory) : null,
         _localId = signInResponse.localId,
         _idToken = signInResponse.idToken,
@@ -138,8 +138,8 @@ class FirebaseAccount {
     String apiKey,
     String refreshToken, {
     bool autoRefresh = true,
-    String locale,
-    String loggingCategory = loggingTag,
+    String? locale,
+    String? loggingCategory = loggingTag,
   }) =>
       apiRestore(
         RestApi(client, apiKey),
@@ -171,8 +171,8 @@ class FirebaseAccount {
     RestApi api,
     String refreshToken, {
     bool autoRefresh = true,
-    String locale,
-    String loggingCategory = loggingTag,
+    String? locale,
+    String? loggingCategory = loggingTag,
   }) async {
     final response = await api.token(refresh_token: refreshToken);
     return FirebaseAccount._(
@@ -245,7 +245,7 @@ class FirebaseAccount {
   /// stream, so you can react to these.
   ///
   /// **Note:** If no stream is connected, refresh errors fail silently.
-  Stream<String> get idTokenStream => _refreshController?.stream;
+  Stream<String> get idTokenStream => _refreshController.stream;
 
   /// Refreshes the accounts [idToken] and returns the new token.
   ///
@@ -274,7 +274,7 @@ class FirebaseAccount {
   ///
   /// If the request fails, an [AuthError] will be thrown.
   Future requestEmailConfirmation({
-    String locale,
+    String? locale,
   }) async =>
       api.sendOobCode(
         OobCodeRequest.verifyEmail(
@@ -292,7 +292,7 @@ class FirebaseAccount {
   ///
   /// If the request fails, including because an invalid code was passed to the
   /// method, an [AuthError] will be thrown.
-  Future confirmEmail(String oobCode) async =>
+  Future<void> confirmEmail(String oobCode) async =>
       api.confirmEmail(ConfirmEmailRequest(oobCode: oobCode));
 
   /// Fetches the user profile details of the account.
@@ -304,11 +304,9 @@ class FirebaseAccount {
   /// **Note:** If the request succeeds, but there is not user-data associated
   /// with the user, null is returned. In theory, this should never happen, but
   /// it is not guaranteed to never happen.
-  Future<UserData> getDetails() async {
+  Future<UserData?> getDetails() async {
     final response = await api.getUserData(UserDataRequest(idToken: _idToken));
-    return response.users != null && response.users.isNotEmpty
-        ? response.users.first
-        : null;
+    return response.users.isNotEmpty ? response.users.first : null;
   }
 
   /// Updates the users email address.
@@ -327,9 +325,9 @@ class FirebaseAccount {
   /// can use [getDetails()] or [FirebaseAuth.fetchProviders] to find out which
   /// providers a user has activated for this account. You can instead link the
   /// account with an email address and a new password via [linkEmail()].
-  Future updateEmail(
+  Future<void> updateEmail(
     String newEmail, {
-    String locale,
+    String? locale,
   }) =>
       api.updateEmail(
         EmailUpdateRequest(
@@ -349,7 +347,7 @@ class FirebaseAccount {
   /// email/password. When logged in anonymously or via an IDP-Provider, this
   /// request will always fail. You can instead link the account with an email
   /// address and a new password via [linkEmail()].
-  Future updatePassword(String newPassword) =>
+  Future<void> updatePassword(String newPassword) =>
       api.updatePassword(PasswordUpdateRequest(
         idToken: _idToken,
         password: newPassword,
@@ -367,19 +365,17 @@ class FirebaseAccount {
   ///
   /// If the request fails, an [AuthError] will be thrown. The updated profile
   /// can be fetched via [getDetails()].
-  Future updateProfile({
-    ProfileUpdate<String> displayName,
-    ProfileUpdate<Uri> photoUrl,
+  Future<void> updateProfile({
+    ProfileUpdate<String>? displayName,
+    ProfileUpdate<Uri>? photoUrl,
   }) =>
       api.updateProfile(ProfileUpdateRequest(
         idToken: _idToken,
-        displayName:
-            displayName != null && displayName.update ? displayName.data : null,
-        photoUrl: photoUrl != null && photoUrl.update ? photoUrl.data : null,
+        displayName: displayName?.updateOr(),
+        photoUrl: photoUrl?.updateOr(),
         deleteAttribute: [
-          if (displayName != null && displayName.delete)
-            DeleteAttribute.DISPLAY_NAME,
-          if (photoUrl != null && photoUrl.delete) DeleteAttribute.PHOTO_URL,
+          if (displayName?.isDelete ?? false) DeleteAttribute.DISPLAY_NAME,
+          if (photoUrl?.isDelete ?? false) DeleteAttribute.PHOTO_URL,
         ],
         returnSecureToken: false,
       ));
@@ -405,7 +401,7 @@ class FirebaseAccount {
     String email,
     String password, {
     bool autoVerify = true,
-    String locale,
+    String? locale,
   }) async {
     final response = await api.linkEmail(LinkEmailRequest(
       idToken: _idToken,
@@ -428,7 +424,7 @@ class FirebaseAccount {
   /// twitter, etc.) can be added to allow login with the given [provider] and
   /// [requestUri] via [FirebaseAuth.signInWithIdp()]. If the linking fails, an
   /// [AuthError] is thrown.
-  Future linkIdp(
+  Future<void> linkIdp(
     IdpProvider provider,
     Uri requestUri,
   ) =>
@@ -448,13 +444,15 @@ class FirebaseAccount {
   /// After a provider has been removed, the user cannot login anymore with that
   /// provider. However, you can always re-add providers via [linkEmail()] or
   /// [linkIdp()].
-  Future unlinkProviders(List<String> providers) =>
+  Future<void> unlinkProviders(List<String> providers) =>
       api.unlinkProvider(UnlinkRequest(
         idToken: _idToken,
         deleteProvider: providers,
       ));
 
   /// Delete the account
+  ///
+  /// TODO not true anymore
   ///
   /// Deletes this firebase account. This is a permanent action and cannot be
   /// undone. After deleting, all access credentials will be set to null and
@@ -469,16 +467,9 @@ class FirebaseAccount {
   /// if an IDP-Provider like google was used. The user can always recreate the
   /// account by signing in/up again, but he will receive a new [localId] and
   /// will be treated as completely different user by firebase.
-  Future delete() async {
+  Future<void> delete() async {
     await api.delete(DeleteRequest(idToken: _idToken));
-    _localId = null;
-    _idToken = null;
-    _refreshToken = null;
-    _expiresAt = null;
-    autoRefresh = false;
-    if (_refreshController.hasListener) {
-      _refreshController.add(null);
-    }
+    dispose();
   }
 
   /// Disposes the account
@@ -490,7 +481,9 @@ class FirebaseAccount {
   /// above, you still have to always dispose of an account.
   void dispose() {
     autoRefresh = false;
-    _refreshController.close();
+    if (!_refreshController.isClosed) {
+      _refreshController.close();
+    }
   }
 
   static Duration _durFromString(String expiresIn) =>
@@ -508,7 +501,7 @@ class FirebaseAccount {
     _refreshTimer = Timer(triggerTimer, _updateTokenTimout);
   }
 
-  Future _updateToken() async {
+  Future<void> _updateToken() async {
     try {
       final response = await api.token(refresh_token: _refreshToken);
       _idToken = response.id_token;

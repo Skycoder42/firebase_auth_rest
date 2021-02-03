@@ -12,7 +12,7 @@ abstract class OobCodeResponse with _$OobCodeResponse {
   /// Default constructor
   const factory OobCodeResponse({
     /// User's email address.
-    String email,
+    String? email,
   }) = _OobCodeResponse;
 
   /// JSON constructor

@@ -15,11 +15,11 @@ abstract class SignInRequest with _$SignInRequest {
   /// https://firebase.google.com/docs/reference/rest/auth#section-sign-in-with-oauth-credential
   const factory SignInRequest.idp({
     /// The URI to which the IDP redirects the user back.
-    @required Uri requestUri,
+    required Uri requestUri,
 
     /// Contains the OAuth credential (an ID token or access token) and provider
     /// ID which issues the credential.
-    @required String postBody,
+    required String postBody,
 
     /// Whether or not to return an ID and refresh token. Should always be true.
     @Default(true) bool returnSecureToken,
@@ -35,10 +35,10 @@ abstract class SignInRequest with _$SignInRequest {
   /// - https://firebase.google.com/docs/reference/rest/auth#section-sign-in-email-password
   const factory SignInRequest.password({
     /// The email the user is signing in with.
-    @required String email,
+    required String email,
 
     /// The password for the account.
-    @required String password,
+    required String password,
 
     /// Whether or not to return an ID and refresh token. Should always be true.
     @Default(true) bool returnSecureToken,
@@ -48,7 +48,7 @@ abstract class SignInRequest with _$SignInRequest {
   const factory SignInRequest.customToken({
     /// A Firebase Auth custom token from which to create an ID and refresh
     /// token pair.
-    @required String token,
+    required String token,
 
     /// Whether or not to return an ID and refresh token. Should always be true.
     @Default(true) bool returnSecureToken,
@@ -58,14 +58,14 @@ abstract class SignInRequest with _$SignInRequest {
   const factory SignInRequest.linkIdp({
     /// The Firebase ID token of the account you are trying to link the
     /// credential to.
-    @required String idToken,
+    required String idToken,
 
     /// The URI to which the IDP redirects the user back.
-    @required Uri requestUri,
+    required Uri requestUri,
 
     /// Contains the OAuth credential (an ID token or access token) and provider
     /// ID which issues the credential.
-    @required String postBody,
+    required String postBody,
 
     /// Whether or not to return an ID and refresh token. Should always be true.
     @Default(true) bool returnSecureToken,

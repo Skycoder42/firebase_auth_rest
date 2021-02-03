@@ -1,4 +1,4 @@
-import 'package:http/http.dart';
+import 'package:http/http.dart'; // ignore: import_of_legacy_library_into_null_safe
 
 import 'firebase_account.dart';
 import 'models/fetch_provider_request.dart';
@@ -19,7 +19,7 @@ class FirebaseAuth {
   final RestApi api;
 
   /// The default locale to be used for E-Mails sent by Firebase.
-  String locale;
+  String? locale;
 
   /// Creates a new firebase auth instance.
   ///
@@ -52,7 +52,7 @@ class FirebaseAuth {
   /// If the request fails, an [AuthError] will be thrown.
   Future<List<String>> fetchProviders(
     String email, [
-    Uri continueUri,
+    Uri? continueUri,
   ]) async {
     final response = await api.fetchProviders(FetchProviderRequest(
       identifier: email,
@@ -86,7 +86,7 @@ class FirebaseAuth {
   /// details about how logging in dart works.
   Future<FirebaseAccount> signUpAnonymous({
     bool autoRefresh = true,
-    String loggingCategory = FirebaseAccount.loggingTag,
+    String? loggingCategory = FirebaseAccount.loggingTag,
   }) async =>
       FirebaseAccount.apiCreate(
         api,
@@ -125,8 +125,8 @@ class FirebaseAuth {
     String password, {
     bool autoVerify = true,
     bool autoRefresh = true,
-    String locale,
-    String loggingCategory = FirebaseAccount.loggingTag,
+    String? locale,
+    String? loggingCategory = FirebaseAccount.loggingTag,
   }) async {
     final response = await api.signUpWithPassword(PasswordSignInRequest(
       email: email,
@@ -172,7 +172,7 @@ class FirebaseAuth {
     IdpProvider provider,
     Uri requestUri, {
     bool autoRefresh = true,
-    String loggingCategory = FirebaseAccount.loggingTag,
+    String? loggingCategory = FirebaseAccount.loggingTag,
   }) async =>
       FirebaseAccount.apiCreate(
         api,
@@ -208,7 +208,7 @@ class FirebaseAuth {
     String email,
     String password, {
     bool autoRefresh = true,
-    String loggingCategory = FirebaseAccount.loggingTag,
+    String? loggingCategory = FirebaseAccount.loggingTag,
   }) async =>
       FirebaseAccount.apiCreate(
         api,
@@ -241,7 +241,7 @@ class FirebaseAuth {
   Future<FirebaseAccount> signInWithCustomToken(
     String token, {
     bool autoRefresh = true,
-    String loggingCategory = FirebaseAccount.loggingTag,
+    String? loggingCategory = FirebaseAccount.loggingTag,
   }) async =>
       FirebaseAccount.apiCreate(
         api,
@@ -261,7 +261,7 @@ class FirebaseAuth {
   /// [AuthError] is thrown.
   Future requestPasswordReset(
     String email, {
-    String locale,
+    String? locale,
   }) async =>
       api.sendOobCode(
         OobCodeRequest.passwordReset(email: email),

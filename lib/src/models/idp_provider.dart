@@ -35,8 +35,8 @@ abstract class IdpProvider implements _$IdpProvider {
   /// Together with an [oauthTokenSecret] you can then create a facebook
   /// provider with that data.
   const factory IdpProvider.twitter({
-    String accessToken,
-    String oauthTokenSecret,
+    required String accessToken,
+    required String oauthTokenSecret,
   }) = _TwitterIdpProvider;
 
   /// Create an IDP-Instance for any provider not explicitly supported.
@@ -46,8 +46,8 @@ abstract class IdpProvider implements _$IdpProvider {
   /// typically the domain of the provider) and additional [parameters], that
   /// contain the auth credentials required by firebase to log in the user.
   const factory IdpProvider.custom({
-    String providerId,
-    Map<String, dynamic> parameters,
+    required String providerId,
+    @Default(<String, dynamic>{}) Map<String, dynamic> parameters,
   }) = _CustomIdpProvider;
 
   /// Returns the identifier of this provider.

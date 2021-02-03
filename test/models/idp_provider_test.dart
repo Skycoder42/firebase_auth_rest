@@ -35,7 +35,7 @@ void main() {
       'a=b&providerId=custom',
     ),
   ], (fixture) {
-    final provider = fixture.get0<IdpProvider>();
+    final provider = fixture.get0<IdpProvider>()!;
     final id = fixture.get1<String>();
     final postBody = fixture.get2<String>();
     expect(provider.id, id);

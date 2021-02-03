@@ -11,157 +11,157 @@ abstract class UpdateResponse with _$UpdateResponse {
   /// https://firebase.google.com/docs/reference/rest/auth#section-confirm-email-verification
   const factory UpdateResponse.confirmEmail({
     /// The email of the account.
-    String email,
+    String? email,
 
     /// The display name for the account.
-    String displayName,
+    String? displayName,
 
     /// The photo Url for the account.
-    Uri photoUrl,
+    Uri? photoUrl,
 
     /// The password hash.
-    String passwordHash,
+    String? passwordHash,
 
     /// List of all linked [ProviderUserInfo]s.
-    List<ProviderUserInfo> providerUserInfo,
+    @Default(<ProviderUserInfo>[]) List<ProviderUserInfo> providerUserInfo,
 
     /// Whether or not the account's email has been verified.
-    bool emailVerified,
+    @Default(false) bool emailVerified,
   }) = ConfirmEmailResponse;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-change-email
   const factory UpdateResponse.email({
     /// The uid of the current user.
-    String localId,
+    required String localId,
 
     /// User's email address.
-    String email,
+    String? email,
 
     /// Hash version of the password.
-    String passwordHash,
+    String? passwordHash,
 
     /// List of all linked [ProviderUserInfo]s.
-    List<ProviderUserInfo> providerUserInfo,
+    @Default(<ProviderUserInfo>[]) List<ProviderUserInfo> providerUserInfo,
 
     /// New Firebase Auth ID token for user.
-    String idToken,
+    String? idToken,
 
     /// A Firebase Auth refresh token.
-    String refreshToken,
+    String? refreshToken,
 
     /// The number of seconds in which the ID token expires.
-    String expiresIn,
+    String? expiresIn,
   }) = EmailUpdateResponse;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-change-password
   const factory UpdateResponse.password({
     /// The uid of the current user.
-    String localId,
+    required String localId,
 
     /// User's email address.
-    String email,
+    String? email,
 
     /// Hash version of password.
-    String passwordHash,
+    String? passwordHash,
 
     /// List of all linked [ProviderUserInfo]s.
-    List<ProviderUserInfo> providerUserInfo,
+    @Default(<ProviderUserInfo>[]) List<ProviderUserInfo> providerUserInfo,
 
     /// New Firebase Auth ID token for user.
-    String idToken,
+    String? idToken,
 
     /// A Firebase Auth refresh token.
-    String refreshToken,
+    String? refreshToken,
 
     /// The number of seconds in which the ID token expires.
-    String expiresIn,
+    String? expiresIn,
   }) = PasswordUpdateResponse;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-update-profile
   const factory UpdateResponse.profile({
     /// The uid of the current user.
-    String localId,
+    required String localId,
 
     /// User's email address.
-    String email,
+    String? email,
 
     /// User's new display name.
-    String displayName,
+    String? displayName,
 
     /// User's new photo url.
-    Uri photoUrl,
+    Uri? photoUrl,
 
     /// Hash version of password.
-    String passwordHash,
+    String? passwordHash,
 
     /// List of all linked [ProviderUserInfo]s.
-    List<ProviderUserInfo> providerUserInfo,
+    @Default(<ProviderUserInfo>[]) List<ProviderUserInfo> providerUserInfo,
 
     /// New Firebase Auth ID token for user.
-    String idToken,
+    String? idToken,
 
     /// A Firebase Auth refresh token.
-    String refreshToken,
+    String? refreshToken,
 
     /// The number of seconds in which the ID token expires.
-    String expiresIn,
+    String? expiresIn,
   }) = ProfileUpdateResponse;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-link-with-email-password
   const factory UpdateResponse.linkEmail({
     /// The uid of the current user.
-    String localId,
+    required String localId,
 
     /// The email of the account.
-    String email,
+    String? email,
 
     /// The display name for the account.
-    String displayName,
+    String? displayName,
 
     /// The photo Url for the account.
-    Uri photoUrl,
+    Uri? photoUrl,
 
     /// Hash version of password.
-    String passwordHash,
+    String? passwordHash,
 
     /// List of all linked [ProviderUserInfo]s.
-    List<ProviderUserInfo> providerUserInfo,
+    @Default(<ProviderUserInfo>[]) List<ProviderUserInfo> providerUserInfo,
 
     /// Whether or not the account's email has been verified.
-    bool emailVerified,
+    @Default(false) bool emailVerified,
 
     /// New Firebase Auth ID token for user.
-    String idToken,
+    String? idToken,
 
     /// A Firebase Auth refresh token.
-    String refreshToken,
+    String? refreshToken,
 
     /// The number of seconds in which the ID token expires.
-    String expiresIn,
+    String? expiresIn,
   }) = LinkEmailResponse;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-unlink-provider
   const factory UpdateResponse.unlink({
     /// The uid of the current user.
-    String localId,
+    required String localId,
 
     /// The email of the account.
-    String email,
+    String? email,
 
     /// The display name for the account.
-    String displayName,
+    String? displayName,
 
     /// The photo Url for the account.
-    Uri photoUrl,
+    Uri? photoUrl,
 
     /// Hash version of the password.
-    String passwordHash,
+    String? passwordHash,
 
     /// List of all linked [ProviderUserInfo]s.
-    List<ProviderUserInfo> providerUserInfo,
+    @Default(<ProviderUserInfo>[]) List<ProviderUserInfo> providerUserInfo,
 
     /// Whether or not the account's email has been verified.
-    bool emailVerified,
+    @Default(false) bool emailVerified,
   }) = UnlinkResponse;
 
   /// JSON constructor

@@ -9,11 +9,11 @@ abstract class FetchProviderRequest with _$FetchProviderRequest {
   /// Default constructor
   const factory FetchProviderRequest({
     /// User's email address
-    @required String identifier,
+    required String identifier,
 
     /// The URI to which the IDP redirects the user back. For this use case,
     /// this is just the current URL.
-    @required Uri continueUri,
+    required Uri continueUri,
   }) = _FetchProviderRequest;
 
   /// JSON constructor

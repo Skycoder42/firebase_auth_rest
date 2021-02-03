@@ -4,7 +4,7 @@ analyzer:
   exclude:
     - "**/*.g.dart"
     - "**/*.freezed.dart"
-    - "test/.test_coverage.dart"
+    - "**/*.mocks.dart"
     - "build/**"
   strong-mode:
     implicit-casts: false

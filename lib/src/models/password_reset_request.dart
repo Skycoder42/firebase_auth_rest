@@ -10,17 +10,17 @@ abstract class PasswordResetRequest with _$PasswordResetRequest {
   const factory PasswordResetRequest.verify({
     /// The email action code sent to the user's email for resetting the
     /// password.
-    @required String oobCode,
+    required String oobCode,
   }) = VerifyPasswordResetRequest;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-confirm-reset-password
   const factory PasswordResetRequest.confirm({
     /// The email action code sent to the user's email for resetting the
     /// password.
-    @required String oobCode,
+    required String oobCode,
 
     /// The user's new password.
-    @required String newPassword,
+    required String newPassword,
   }) = ConfirmPasswordResetRequest;
 
   /// JSON constructor

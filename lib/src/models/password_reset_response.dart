@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'oob_code_request.dart';
+
 part 'password_reset_response.freezed.dart';
 part 'password_reset_response.g.dart';
 
@@ -12,10 +14,10 @@ abstract class PasswordResetResponse with _$PasswordResetResponse {
   /// Default constructor
   const factory PasswordResetResponse({
     /// User's email address.
-    String email,
+    String? email,
 
     /// Type of the email action code. Should be "PASSWORD_RESET".
-    String requestType,
+    @Default(OobCodeRequestType.PASSWORD_RESET) OobCodeRequestType requestType,
   }) = _PasswordResetResponse;
 
   /// JSON constructor

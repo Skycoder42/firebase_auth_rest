@@ -14,45 +14,45 @@ abstract class UserData with _$UserData {
   /// Default constructor
   const factory UserData({
     /// The uid of the current user.
-    String localId,
+    required String localId,
 
     /// The email of the account.
-    String email,
+    String? email,
 
     /// Whether or not the account's [email] has been verified.
-    bool emailVerified,
+    @Default(false) bool emailVerified,
 
     /// The display name for the account.
-    String displayName,
+    String? displayName,
 
     /// List of all linked [ProviderUserInfo]s.
-    List<ProviderUserInfo> providerUserInfo,
+    @Default(<ProviderUserInfo>[]) List<ProviderUserInfo> providerUserInfo,
 
     /// The photo Url for the account.
-    Uri photoUrl,
+    Uri? photoUrl,
 
     /// Hash version of password.
-    String passwordHash,
+    String? passwordHash,
 
     /// The timestamp, in milliseconds, that the account password was last
     /// changed.
-    int passwordUpdatedAt,
+    int? passwordUpdatedAt,
 
     /// The timestamp, in seconds, which marks a boundary, before which Firebase
     /// ID token are considered revoked.
-    String validSince,
+    String? validSince,
 
     /// Whether the account is disabled or not.
-    bool disabled,
+    @Default(false) bool disabled,
 
     /// The timestamp, in milliseconds, that the account last logged in at.
-    String lastLoginAt,
+    String? lastLoginAt,
 
     /// The timestamp, in milliseconds, that the account was created at.
-    String createdAt,
+    String? createdAt,
 
     /// Whether the account is authenticated by the developer.
-    bool customAuth,
+    @Default(false) bool customAuth,
   }) = _UserData;
 
   /// JSON constructor

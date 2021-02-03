@@ -26,16 +26,16 @@ class Fixture {
     this._param9,
   ]);
 
-  T get0<T>() => _param0 as T;
-  T get1<T>() => _param1 as T;
-  T get2<T>() => _param2 as T;
-  T get3<T>() => _param3 as T;
-  T get4<T>() => _param4 as T;
-  T get5<T>() => _param5 as T;
-  T get6<T>() => _param6 as T;
-  T get7<T>() => _param7 as T;
-  T get8<T>() => _param8 as T;
-  T get9<T>() => _param9 as T;
+  T? get0<T>() => _param0 as T?;
+  T? get1<T>() => _param1 as T?;
+  T? get2<T>() => _param2 as T?;
+  T? get3<T>() => _param3 as T?;
+  T? get4<T>() => _param4 as T?;
+  T? get5<T>() => _param5 as T?;
+  T? get6<T>() => _param6 as T?;
+  T? get7<T>() => _param7 as T?;
+  T? get8<T>() => _param8 as T?;
+  T? get9<T>() => _param9 as T?;
 
   @override
   String toString() {
@@ -64,16 +64,16 @@ class Fixture {
   }
 
   static List<Fixture> mapped([
-    List<dynamic> param0List,
-    List<dynamic> param1List,
-    List<dynamic> param2List,
-    List<dynamic> param3List,
-    List<dynamic> param4List,
-    List<dynamic> param5List,
-    List<dynamic> param6List,
-    List<dynamic> param7List,
-    List<dynamic> param8List,
-    List<dynamic> param9List,
+    List<dynamic>? param0List,
+    List<dynamic>? param1List,
+    List<dynamic>? param2List,
+    List<dynamic>? param3List,
+    List<dynamic>? param4List,
+    List<dynamic>? param5List,
+    List<dynamic>? param6List,
+    List<dynamic>? param7List,
+    List<dynamic>? param8List,
+    List<dynamic>? param9List,
   ]) {
     final fixtures = <Fixture>[];
 
@@ -119,13 +119,13 @@ void testWithData(
   dynamic description,
   List<Fixture> fixtures,
   dynamic Function(Fixture fixture) body, {
-  String testOn,
-  Timeout timeout,
+  String? testOn,
+  Timeout? timeout,
   dynamic skip,
   dynamic tags,
-  Map<String, dynamic> onPlatform,
-  int retry,
-  String Function(Fixture fixture) fixtureToString,
+  Map<String, dynamic>? onPlatform,
+  int? retry,
+  String Function(Fixture fixture)? fixtureToString,
 }) {
   assert(fixtures.isNotEmpty);
   group(description, () {

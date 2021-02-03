@@ -2,7 +2,7 @@
 import 'dart:io';
 
 import 'package:firebase_auth_rest/firebase_auth_rest.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart'; // ignore: import_of_legacy_library_into_null_safe
 
 Future main(List<String> arguments) async {
   final client = Client();

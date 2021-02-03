@@ -9,10 +9,10 @@ abstract class FetchProviderResponse with _$FetchProviderResponse {
   /// Default constructors
   const factory FetchProviderResponse({
     /// The list of providers that the user has previously signed in with.
-    List<String> allProviders,
+    @Default(<String>[]) List<String> allProviders,
 
     /// Whether the email is for an existing account
-    bool registered,
+    @Default(false) bool registered,
   }) = _FetchProviderResponse;
 
   /// JSON constructor

@@ -1,4 +1,5 @@
 // ignore_for_file: prefer_const_constructors
+import 'package:firebase_auth_rest/rest.dart';
 import 'package:firebase_auth_rest/src/firebase_account.dart';
 import 'package:firebase_auth_rest/src/firebase_auth.dart';
 import 'package:firebase_auth_rest/src/models/fetch_provider_request.dart';
@@ -9,16 +10,18 @@ import 'package:firebase_auth_rest/src/models/password_reset_request.dart';
 import 'package:firebase_auth_rest/src/models/signin_request.dart';
 import 'package:firebase_auth_rest/src/models/signin_response.dart';
 import 'package:firebase_auth_rest/src/rest_api.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart'; // ignore: import_of_legacy_library_into_null_safe
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
+import 'firebase_auth_test.mocks.dart';
 import 'test_fixture.dart';
 
-class MockRestApi extends Mock implements RestApi {}
-
-class MockClient extends Mock implements Client {}
-
+@GenerateMocks([
+  RestApi,
+  Client,
+])
 void main() {
   final mockApi = MockRestApi();
 
@@ -60,8 +63,8 @@ void main() {
     const expiresIn = '60';
     const refreshToken = 'refresh';
 
-    FirebaseAuth auth;
-    FirebaseAccount account;
+    late FirebaseAuth auth;
+    FirebaseAccount? account;
 
     setUp(() {
       auth = FirebaseAuth.api(mockApi, 'ab-CD');
@@ -94,7 +97,7 @@ void main() {
 
         verify(mockApi.fetchProviders(FetchProviderRequest(
           identifier: mail,
-          continueUri: fixture.get1<Uri>(),
+          continueUri: fixture.get1<Uri>()!,
         )));
       });
 
@@ -105,7 +108,7 @@ void main() {
         const providers = ['a', 'b', 'c'];
         when(mockApi.fetchProviders(any))
             .thenAnswer((i) async => FetchProviderResponse(
-                  registered: fixture.get0<bool>(),
+                  registered: fixture.get0<bool>()!,
                   allProviders: providers,
                 ));
 
@@ -144,15 +147,20 @@ void main() {
             DateTime.now().toUtc().add(const Duration(minutes: 1));
         account = await auth.signUpAnonymous(autoRefresh: false);
 
-        expect(account.localId, localId);
-        expect(account.idToken, idToken);
-        expect(account.refreshToken, refreshToken);
-        expect(account.autoRefresh, false);
-        expect(account.expiresAt.difference(expiresAt).inSeconds, 0);
+        expect(account!.localId, localId);
+        expect(account!.idToken, idToken);
+        expect(account!.refreshToken, refreshToken);
+        expect(account!.autoRefresh, false);
+        expect(account!.expiresAt.difference(expiresAt).inSeconds, 0);
       });
     });
 
     group('signUpWithPassword', () {
+      setUp(() {
+        when(mockApi.sendOobCode(any, any))
+            .thenAnswer((i) async => const OobCodeResponse());
+      });
+
       test('sends password sign up request', () async {
         const mail = 'mail';
         const password = 'password';
@@ -224,11 +232,11 @@ void main() {
           autoRefresh: false,
         );
 
-        expect(account.localId, localId);
-        expect(account.idToken, idToken);
-        expect(account.refreshToken, refreshToken);
-        expect(account.autoRefresh, false);
-        expect(account.expiresAt.difference(expiresAt).inSeconds, 0);
+        expect(account!.localId, localId);
+        expect(account!.idToken, idToken);
+        expect(account!.refreshToken, refreshToken);
+        expect(account!.autoRefresh, false);
+        expect(account!.expiresAt.difference(expiresAt).inSeconds, 0);
       });
     });
 
@@ -242,6 +250,8 @@ void main() {
                   localId: '',
                   expiresIn: '1',
                   refreshToken: '',
+                  federatedId: '',
+                  providerId: '',
                 ));
 
         account = await auth.signInWithIdp(provider, uri);
@@ -261,6 +271,8 @@ void main() {
                   localId: localId,
                   expiresIn: expiresIn,
                   refreshToken: refreshToken,
+                  federatedId: '',
+                  providerId: '',
                 ));
 
         final expiresAt =
@@ -271,11 +283,11 @@ void main() {
           autoRefresh: false,
         );
 
-        expect(account.localId, localId);
-        expect(account.idToken, idToken);
-        expect(account.refreshToken, refreshToken);
-        expect(account.autoRefresh, false);
-        expect(account.expiresAt.difference(expiresAt).inSeconds, 0);
+        expect(account!.localId, localId);
+        expect(account!.idToken, idToken);
+        expect(account!.refreshToken, refreshToken);
+        expect(account!.autoRefresh, false);
+        expect(account!.expiresAt.difference(expiresAt).inSeconds, 0);
       });
     });
 
@@ -321,11 +333,11 @@ void main() {
           autoRefresh: false,
         );
 
-        expect(account.localId, localId);
-        expect(account.idToken, idToken);
-        expect(account.refreshToken, refreshToken);
-        expect(account.autoRefresh, false);
-        expect(account.expiresAt.difference(expiresAt).inSeconds, 0);
+        expect(account!.localId, localId);
+        expect(account!.idToken, idToken);
+        expect(account!.refreshToken, refreshToken);
+        expect(account!.autoRefresh, false);
+        expect(account!.expiresAt.difference(expiresAt).inSeconds, 0);
       });
     });
 
@@ -364,11 +376,11 @@ void main() {
           autoRefresh: false,
         );
 
-        expect(account.localId, localId);
-        expect(account.idToken, idToken);
-        expect(account.refreshToken, refreshToken);
-        expect(account.autoRefresh, false);
-        expect(account.expiresAt.difference(expiresAt).inSeconds, 0);
+        expect(account!.localId, localId);
+        expect(account!.idToken, idToken);
+        expect(account!.refreshToken, refreshToken);
+        expect(account!.autoRefresh, false);
+        expect(account!.expiresAt.difference(expiresAt).inSeconds, 0);
       });
     });
 
@@ -376,6 +388,8 @@ void main() {
       Fixture('ee-EE', 'ee-EE'),
       Fixture(null, 'ab-CD'),
     ], (fixture) async {
+      when(mockApi.sendOobCode(any, any))
+          .thenAnswer((i) async => const OobCodeResponse());
       const mail = 'email';
       await auth.requestPasswordReset(
         mail,
@@ -391,6 +405,8 @@ void main() {
     });
 
     test('validatePasswordReset send reset password request', () async {
+      when(mockApi.resetPassword(any))
+          .thenAnswer((i) async => const PasswordResetResponse());
       const code = 'oob-code';
       await auth.validatePasswordReset(code);
 
@@ -400,6 +416,8 @@ void main() {
     });
 
     test('resetPassword send reset password request', () async {
+      when(mockApi.resetPassword(any))
+          .thenAnswer((i) async => const PasswordResetResponse());
       const code = 'oob-code';
       const password = 'password';
       await auth.resetPassword(code, password);

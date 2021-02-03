@@ -3,11 +3,13 @@
 	dart pub get
 
 # hooks
-hook: get
-	dart pub run hanzo -i pre_commit
+hook: get unhook
+	echo '#!/bin/sh' > .git/hooks/pre-commit
+	echo 'exec dart pub run --no-sound-null-safety dart_pre_commit -p -oany -n --ansi' >> .git/hooks/pre-commit
+	chmod a+x .git/hooks/pre-commit
 
-unhook: get
-	dart pub run hanzo -r all
+unhook:
+	rm -f .git/hooks/pre-commit
 
 # targets
 get: .packages
@@ -21,36 +23,49 @@ upgrade: get
 	dart pub upgrade
 
 build: get
-	dart pub run build_runner build
+	dart run build_runner build
 
 build-clean: upgrade
-	dart pub run build_runner build --delete-conflicting-outputs
+	dart run build_runner build --delete-conflicting-outputs
 	
 watch: get
-	dart pub run build_runner watch
+	dart run build_runner watch
 	
 watch-clean: upgrade
-	dart pub run build_runner watch --delete-conflicting-outputs
+	dart run build_runner watch --delete-conflicting-outputs
 
 analyze: get
 	dart analyze --fatal-infos
 
 test: get
-	dart test
+	dart --no-sound-null-safety test
 
-test-coverage: get
+coverage/.generated: $(wildcard test/*.dart) $(wildcard src/*.dart) $(wildcard bin/*.dart)
 	@rm -rf coverage
-	dart test --coverage=coverage
-	dart pub run coverage:format_coverage --lcov -i coverage -o coverage/lcov.info --packages .packages --report-on lib -c
-	lcov --remove coverage/lcov.info -o coverage/lcov.info \
+	dart --no-sound-null-safety test --coverage=coverage
+	touch coverage/.generated
+
+coverage/lcov.info: coverage/.generated
+	dart run coverage:format_coverage --lcov --check-ignore \
+		--in coverage \
+		--out coverage/lcov.info \
+		--packages .packages \
+		--report-on lib
+
+coverage/lcov_cleaned.info: coverage/lcov.info
+	lcov --remove coverage/lcov.info -output-file coverage/lcov_cleaned.info \
 		'**/*.g.dart' \
 		'**/*.freezed.dart' \
 		'**/models/*.dart'
 
-coverage: test-coverage
-	genhtml -o coverage/html coverage/lcov.info
+coverage/html/index.html: coverage/lcov_cleaned.info
+	genhtml -o coverage/html coverage/lcov_cleaned.info
 
-coverage-open: coverage
+coverage: coverage/html/index.html
+
+test-coverage: coverage/lcov.info
+
+coverage-open: coverage/html/index.html
 	xdg-open coverage/html/index.html || start coverage/html/index.html
 
 doc: get

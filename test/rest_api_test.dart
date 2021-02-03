@@ -10,19 +10,37 @@ import 'package:firebase_auth_rest/src/models/signin_request.dart';
 import 'package:firebase_auth_rest/src/models/update_request.dart';
 import 'package:firebase_auth_rest/src/models/userdata_request.dart';
 import 'package:firebase_auth_rest/src/rest_api.dart';
+import 'package:http/http.dart'; // ignore: import_of_legacy_library_into_null_safe
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-import './mocks.dart';
+import 'fakes.dart';
+import 'rest_api_test.mocks.dart';
 
+@GenerateMocks([
+  Client,
+])
 void main() {
   const apiKey = 'apiKey';
   final mockClient = MockClient();
   final api = RestApi(mockClient, apiKey);
 
+  void whenError() => when(mockClient.post(
+        any,
+        body: anyNamed('body'),
+        headers: anyNamed('headers'),
+        encoding: anyNamed('encoding'),
+      )).thenAnswer((i) => Future.value(FakeResponse(statusCode: 400)));
+
   setUp(() {
     reset(mockClient);
-    mockClient.setupMock();
+    when(mockClient.post(
+      any,
+      body: anyNamed('body'),
+      headers: anyNamed('headers'),
+      encoding: anyNamed('encoding'),
+    )).thenAnswer((i) async => FakeResponse());
   });
 
   test('Constructor initializes properties as expected', () {
@@ -48,7 +66,7 @@ void main() {
     });
 
     test('should throw AuthError on failure', () async {
-      mockClient.setupError();
+      whenError();
       expect(() => api.token(refresh_token: 'token'),
           throwsA(isA<AuthException>()));
     });
@@ -71,7 +89,7 @@ void main() {
     });
 
     test('should throw AuthError on failure', () async {
-      mockClient.setupError();
+      whenError();
       expect(() => api.signUpAnonymous(AnonymousSignInRequest()),
           throwsA(isA<AuthException>()));
     });
@@ -99,7 +117,7 @@ void main() {
     });
 
     test('should throw AuthError on failure', () async {
-      mockClient.setupError();
+      whenError();
       expect(
           () => api.signUpWithPassword(PasswordSignInRequest(
                 email: '',
@@ -132,7 +150,7 @@ void main() {
     });
 
     test('should throw AuthError on failure', () async {
-      mockClient.setupError();
+      whenError();
       expect(
           () => api.signInWithIdp(IdpSignInRequest(
                 requestUri: Uri(),
@@ -164,7 +182,7 @@ void main() {
     });
 
     test('should throw AuthError on failure', () async {
-      mockClient.setupError();
+      whenError();
       expect(
           () => api.signInWithPassword(const PasswordSignInRequest(
                 email: '',
@@ -193,7 +211,7 @@ void main() {
     });
 
     test('should throw AuthError on failure', () async {
-      mockClient.setupError();
+      whenError();
       expect(
           () => api.signInWithCustomToken(
               const CustomTokenSignInRequest(token: 'token')),
@@ -220,7 +238,7 @@ void main() {
     });
 
     test('should throw AuthError on failure', () async {
-      mockClient.setupError();
+      whenError();
       expect(
           () => api.getUserData(UserDataRequest(
                 idToken: 'idToken',
@@ -254,7 +272,7 @@ void main() {
     });
 
     test('should throw AuthError on failure', () async {
-      mockClient.setupError();
+      whenError();
       expect(
           () => api.updateEmail(const EmailUpdateRequest(
                 idToken: 'token',
@@ -286,7 +304,7 @@ void main() {
     });
 
     test('should throw AuthError on failure', () async {
-      mockClient.setupError();
+      whenError();
       expect(
           () => api.updatePassword(const PasswordUpdateRequest(
                 idToken: 'token',
@@ -317,7 +335,7 @@ void main() {
     });
 
     test('should throw AuthError on failure', () async {
-      mockClient.setupError();
+      whenError();
       expect(
           () => api.updateProfile(const ProfileUpdateRequest(idToken: 'token')),
           throwsA(isA<AuthException>()));
@@ -345,7 +363,7 @@ void main() {
       });
 
       test('should throw AuthError on failure', () async {
-        mockClient.setupError();
+        whenError();
 
         expect(
             () => api.sendOobCode(
@@ -374,7 +392,7 @@ void main() {
       });
 
       test('should throw AuthError on failure', () async {
-        mockClient.setupError();
+        whenError();
 
         expect(
             () => api.sendOobCode(
@@ -403,7 +421,7 @@ void main() {
       });
 
       test('should throw AuthError on failure', () async {
-        mockClient.setupError();
+        whenError();
 
         expect(
             () => api.resetPassword(
@@ -433,7 +451,7 @@ void main() {
       });
 
       test('should throw AuthError on failure', () async {
-        mockClient.setupError();
+        whenError();
 
         expect(
             () => api.resetPassword(const PasswordResetRequest.confirm(
@@ -462,7 +480,7 @@ void main() {
     });
 
     test('should throw AuthError on failure', () async {
-      mockClient.setupError();
+      whenError();
       expect(() => api.confirmEmail(const ConfirmEmailRequest(oobCode: 'code')),
           throwsA(isA<AuthException>()));
     });
@@ -489,7 +507,7 @@ void main() {
     });
 
     test('should throw AuthError on failure', () async {
-      mockClient.setupError();
+      whenError();
       expect(
           () => api.fetchProviders(FetchProviderRequest(
                 identifier: 'id',
@@ -523,7 +541,7 @@ void main() {
     });
 
     test('should throw AuthError on failure', () async {
-      mockClient.setupError();
+      whenError();
       expect(
           () => api.linkEmail(const LinkEmailRequest(
                 idToken: 'token',
@@ -559,7 +577,7 @@ void main() {
     });
 
     test('should throw AuthError on failure', () async {
-      mockClient.setupError();
+      whenError();
       expect(
           () => api.linkIdp(LinkIdpRequest(
                 idToken: 'token',
@@ -591,7 +609,7 @@ void main() {
     });
 
     test('should throw AuthError on failure', () async {
-      mockClient.setupError();
+      whenError();
       expect(
           () => api.unlinkProvider(const UnlinkRequest(
                 idToken: 'token',
@@ -618,7 +636,7 @@ void main() {
     });
 
     test('should throw AuthError on failure', () async {
-      mockClient.setupError();
+      whenError();
       expect(() => api.delete(const DeleteRequest(idToken: 'token')),
           throwsA(isA<AuthException>()));
     });

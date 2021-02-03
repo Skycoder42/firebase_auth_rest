@@ -4,13 +4,16 @@ class ProfileUpdate<T> {
   ///
   /// If [update] is true, this will return the actual data to be used by the
   /// update. If [delete] is true instead, [data] will always be null.
-  final T data;
+  final T? data;
 
   /// Specifies, if this is an update with new data.
-  bool get update => data != null;
+  bool get isUpdate => data != null;
 
   /// Specifies, if this is an update to delete data.
-  bool get delete => data == null;
+  bool get isDelete => data == null;
+
+  /// Returns the [data] value, if [isUpdate], otherwise [defaultValue].
+  T? updateOr([T? defaultValue]) => data ?? defaultValue;
 
   /// Creates a new profile update to update data.
   ///

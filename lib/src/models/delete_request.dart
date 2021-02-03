@@ -9,7 +9,7 @@ abstract class DeleteRequest with _$DeleteRequest {
   /// Default constructor
   const factory DeleteRequest({
     /// The Firebase ID token of the user to delete.
-    @required String idToken,
+    required String idToken,
   }) = _DeleteRequest;
 
   /// JSON constructor

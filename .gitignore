@@ -20,7 +20,6 @@ doc/api/
 *.js.deps
 *.js.map
 
-# coverage
-test/.test_coverage.dart
+# coverage / testing
+*.mocks.dart
 coverage
-coverage_badge.svg

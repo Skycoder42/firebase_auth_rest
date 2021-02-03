@@ -9,7 +9,7 @@ abstract class UserDataRequest with _$UserDataRequest {
   /// Default constructor
   const factory UserDataRequest({
     /// The Firebase ID token of the account.
-    @required String idToken,
+    required String idToken,
   }) = _UserDataRequest;
 
   /// JSON constructor

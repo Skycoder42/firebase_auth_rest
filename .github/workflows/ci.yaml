@@ -20,33 +20,33 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-      - run: sudo apt-get update && sudo apt-get install -y lcov bc
-        if: matrix.os == 'ubuntu-latest'
       - uses: cedx/setup-dart@v2
+        with:
+          release-channel: beta
       - uses: actions/checkout@v2
       - run: make get
       - run: make build
       - run: make analyze
-      - run: make test
-        if: matrix.os != 'ubuntu-latest'
       - run: make test-coverage
-        if: matrix.os == 'ubuntu-latest'
-      - uses: ChicagoFlutter/lcov-cop@v1.0.2
-        if: matrix.os == 'ubuntu-latest'
+      - uses: VeryGoodOpenSource/very_good_coverage@v1.1.1
         with:
           min_coverage: 95
-      - run: make publish-dry
+          exclude: "**/*.g.dart **/*.freezed.dart **/models/*.dart"
+      - run: make publish-dry || true
 
   release:
     runs-on: ubuntu-latest
     needs:
       - test
-    if: github.ref == 'refs/heads/master'
+    # if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/null-safety'
     outputs:
       update: ${{ steps.version.outputs.update }}
       tag_name: ${{ steps.version.outputs.tag_name }}
     steps:
       - uses: cedx/setup-dart@v2
+        with:
+          release-channel: beta
       - uses: actions/checkout@v2
       - uses: Skycoder42/action-dart-release@v1
         id: version
@@ -67,6 +67,8 @@ jobs:
     if: needs.release.outputs.update == 'true'
     steps:
       - uses: cedx/setup-dart@v2
+        with:
+          release-channel: beta
       - uses: actions/checkout@v2
       - run: make get
       - run: make build
@@ -86,6 +88,8 @@ jobs:
     if: needs.release.outputs.update == 'true'
     steps:
       - uses: cedx/setup-dart@v2
+        with:
+          release-channel: beta
       - uses: actions/checkout@v2
       - run: make get
       - run: make build
