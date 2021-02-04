@@ -10,7 +10,7 @@ import 'package:firebase_auth_rest/src/models/signin_request.dart';
 import 'package:firebase_auth_rest/src/models/update_request.dart';
 import 'package:firebase_auth_rest/src/models/userdata_request.dart';
 import 'package:firebase_auth_rest/src/rest_api.dart';
-import 'package:http/http.dart'; // ignore: import_of_legacy_library_into_null_safe
+import 'package:http/http.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';

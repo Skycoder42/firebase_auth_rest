@@ -1,9 +1,9 @@
-import 'package:http/http.dart'; // ignore: import_of_legacy_library_into_null_safe
+import 'package:http/http.dart';
 import 'package:mockito/mockito.dart';
 
 class FakeRequest extends Fake implements BaseRequest {
   @override
-  Uri? get url => null;
+  Uri get url => Uri.http('localhost', '/');
 }
 
 class FakeResponse extends Fake implements Response {

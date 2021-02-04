@@ -20,6 +20,6 @@ dev_dependencies:
   freezed: ^0.13.0-nullsafety.2
   json_serializable: ^4.0.0-nullsafety.0
   lint: ^1.5.1
-  mockito: ^5.0.0-nullsafety.5
+  mockito: ^5.0.0-nullsafety.6
   test: ^1.16.0-nullsafety.19
   tuple: ^2.0.0-nullsafety.0

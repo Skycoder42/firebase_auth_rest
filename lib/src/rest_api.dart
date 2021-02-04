@@ -1,7 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 import 'dart:convert';
 
-import 'package:http/http.dart'; // ignore: import_of_legacy_library_into_null_safe
+import 'package:http/http.dart';
 import 'package:logging/logging.dart'; // ignore: import_of_legacy_library_into_null_safe
 
 import 'models/auth_exception.dart';

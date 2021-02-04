@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:http/http.dart'; // ignore: import_of_legacy_library_into_null_safe
+import 'package:http/http.dart';
 import 'package:logging/logging.dart'; // ignore: import_of_legacy_library_into_null_safe
 
 import 'models/delete_request.dart';
@@ -452,21 +452,18 @@ class FirebaseAccount {
 
   /// Delete the account
   ///
-  /// TODO not true anymore
-  ///
   /// Deletes this firebase account. This is a permanent action and cannot be
-  /// undone. After deleting, all access credentials will be set to null and
-  /// the account cannot be used anymore.
+  /// undone. After deleting, the account cannot be used anymore.
   ///
-  /// If you were listeting to [idTokenStream], it will publish null as value,
-  /// but not close. In addition [autoRefresh] will be set to false. You should
-  /// still call [dispose()] afterwards.
+  /// If you were listeting to [idTokenStream], it will be closed. In addition
+  /// [autoRefresh] will be set to false. This method automatically calls
+  /// [dispose()], so you don't have to call it again, but it is ok to do so.
   ///
-  /// **Note:** While this operation deletes the firebase account (and all
-  /// associated data in firebase), it does *not* delete the original account,
-  /// if an IDP-Provider like google was used. The user can always recreate the
-  /// account by signing in/up again, but he will receive a new [localId] and
-  /// will be treated as completely different user by firebase.
+  /// **Note:** While this operation deletes the firebase account, it does
+  /// *not* delete the original account, if an IDP-Provider like google was
+  /// used. The user can always recreate the account by signing in/up again,
+  /// but he will receive a new [localId] and will be treated as completely
+  /// different user by firebase.
   Future<void> delete() async {
     await api.delete(DeleteRequest(idToken: _idToken));
     dispose();
