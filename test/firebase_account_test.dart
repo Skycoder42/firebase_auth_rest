@@ -21,10 +21,11 @@ import 'package:http/http.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
+import 'package:tuple/tuple.dart';
 
 import 'fakes.dart';
 import 'firebase_account_test.mocks.dart';
-import 'test_fixture.dart';
+import 'test_data.dart';
 
 @GenerateMocks([
   Client,
@@ -189,6 +190,13 @@ void main() {
   });
 
   group('autoRefresh', () {
+    setUp(() {
+      when(mockApi.token(
+        refresh_token: anyNamed('refresh_token'),
+        grant_type: anyNamed('grant_type'),
+      )).thenAnswer((i) async => defaultRefreshResponse);
+    });
+
     test('does nothing if disabled', () async {
       account = FirebaseAccount.apiCreate(
         mockApi,
@@ -240,6 +248,18 @@ void main() {
       await _wait(1);
 
       verify(mockApi.token(refresh_token: 'refreshToken')).called(1);
+    });
+
+    test('token update errors are streamed', () async {
+      when(mockApi.token(refresh_token: anyNamed('refresh_token')))
+          .thenThrow(AuthException(ErrorData()));
+
+      account = FirebaseAccount.apiCreate(
+        mockApi,
+        defaultSignInResponse,
+      );
+
+      expect(() => account.idTokenStream.first, throwsA(isA<AuthException>()));
     });
   });
 
@@ -294,32 +314,24 @@ void main() {
         await account.refresh();
         expect(await firstElement, idToken);
       });
-
-      test('token update errors are streamed', () async {
-        when(mockApi.token(refresh_token: anyNamed('refresh_token')))
-            .thenThrow(AuthException(ErrorData()));
-
-        final firstElement = account.idTokenStream.first;
-        expect(() => account.refresh(), throwsA(isA<AuthException>()));
-        expect(() => firstElement, throwsA(isA<AuthException>()));
-      });
     });
 
-    testWithData('requestEmailConfirmation sends oobCode request', const [
-      Fixture('ee-EE', 'ee-EE'),
-      Fixture(null, 'ab-CD'),
+    testData<Tuple2<String?, String>>(
+        'requestEmailConfirmation sends oobCode request', const [
+      Tuple2('ee-EE', 'ee-EE'),
+      Tuple2(null, 'ab-CD'),
     ], (fixture) async {
       when(mockApi.sendOobCode(any, any))
           .thenAnswer((i) async => OobCodeResponse());
 
-      await account.requestEmailConfirmation(locale: fixture.get0<String>());
+      await account.requestEmailConfirmation(locale: fixture.item1);
 
       verify(mockApi.sendOobCode(
         OobCodeRequest.verifyEmail(
           idToken: 'idToken',
           requestType: OobCodeRequestType.VERIFY_EMAIL,
         ),
-        fixture.get1<String>(),
+        fixture.item2,
       ));
     });
 
@@ -359,15 +371,16 @@ void main() {
       });
     });
 
-    testWithData('updateEmail sends email update request', const [
-      Fixture('ee-EE', 'ee-EE'),
-      Fixture(null, 'ab-CD'),
+    testData<Tuple2<String?, String>>(
+        'updateEmail sends email update request', const [
+      Tuple2('ee-EE', 'ee-EE'),
+      Tuple2(null, 'ab-CD'),
     ], (fixture) async {
       const newEmail = 'new@mail.de';
       when(mockApi.updateEmail(any, any))
           .thenAnswer((i) async => EmailUpdateResponse(localId: ''));
 
-      await account.updateEmail(newEmail, locale: fixture.get0<String>());
+      await account.updateEmail(newEmail, locale: fixture.item1);
 
       verify(mockApi.updateEmail(
         EmailUpdateRequest(
@@ -375,7 +388,7 @@ void main() {
           email: newEmail,
           returnSecureToken: false,
         ),
-        fixture.get1<String>(),
+        fixture.item2,
       ));
     });
 
@@ -393,64 +406,66 @@ void main() {
       )));
     });
 
-    testWithData('updateProfile sends profile update', [
-      Fixture(
+    testData<
+        Tuple5<ProfileUpdate<String>?, ProfileUpdate<Uri>?, String?, Uri?,
+            List<DeleteAttribute>>>('updateProfile sends profile update', [
+      Tuple5(
         null,
         null,
         null,
         null,
-        const <DeleteAttribute>[],
+        const [],
       ),
-      Fixture(
+      Tuple5(
         null,
         ProfileUpdate<Uri>.update(Uri.parse('http://example.com/image.jpg')),
         null,
         Uri.parse('http://example.com/image.jpg'),
-        const <DeleteAttribute>[],
+        const [],
       ),
-      Fixture(
+      Tuple5(
         null,
         ProfileUpdate<Uri>.delete(),
         null,
         null,
-        const <DeleteAttribute>[DeleteAttribute.PHOTO_URL],
+        const [DeleteAttribute.PHOTO_URL],
       ),
-      Fixture(
+      Tuple5(
         ProfileUpdate<String>.update('name'),
         null,
         'name',
         null,
-        const <DeleteAttribute>[],
+        const [],
       ),
-      Fixture(
+      Tuple5(
         ProfileUpdate<String>.update('name'),
         ProfileUpdate<Uri>.update(Uri.parse('http://example.com/image.jpg')),
         'name',
         Uri.parse('http://example.com/image.jpg'),
-        const <DeleteAttribute>[],
+        const [],
       ),
-      Fixture(
+      Tuple5(
         ProfileUpdate<String>.update('name'),
         ProfileUpdate<Uri>.delete(),
         'name',
         null,
-        const <DeleteAttribute>[DeleteAttribute.PHOTO_URL],
+        const [DeleteAttribute.PHOTO_URL],
       ),
-      Fixture(
+      Tuple5(
         ProfileUpdate<String>.delete(),
         null,
         null,
         null,
-        const <DeleteAttribute>[DeleteAttribute.DISPLAY_NAME],
+        const [DeleteAttribute.DISPLAY_NAME],
       ),
-      Fixture(
+      Tuple5(
         ProfileUpdate<String>.delete(),
         ProfileUpdate<Uri>.update(Uri.parse('http://example.com/image.jpg')),
         null,
         Uri.parse('http://example.com/image.jpg'),
-        const <DeleteAttribute>[DeleteAttribute.DISPLAY_NAME],
+        const [DeleteAttribute.DISPLAY_NAME],
       ),
-      Fixture(
+      Tuple5(
         ProfileUpdate<String>.delete(),
         ProfileUpdate<Uri>.delete(),
         null,
@@ -461,25 +476,17 @@ void main() {
         ],
       ),
     ], (fixture) async {
-      final nameUpdate = fixture.get0<ProfileUpdate<String>>();
-      final photoUpdate = fixture.get1<ProfileUpdate<Uri>>();
-      final nameData = fixture.get2<String>();
-      final photoData = fixture.get3<Uri>();
-      final deleteData = fixture.get4<List<DeleteAttribute>>()!;
-
       when(mockApi.updateProfile(any))
           .thenAnswer((i) async => ProfileUpdateResponse(localId: ''));
 
       await account.updateProfile(
-        displayName: nameUpdate,
-        photoUrl: photoUpdate,
-      );
+          displayName: fixture.item1, photoUrl: fixture.item2);
 
       verify(mockApi.updateProfile(ProfileUpdateRequest(
         idToken: 'idToken',
-        displayName: nameData,
-        photoUrl: photoData,
-        deleteAttribute: deleteData,
+        displayName: fixture.item3,
+        photoUrl: fixture.item4,
+        deleteAttribute: fixture.item5,
         returnSecureToken: false,
       )));
     });
@@ -523,10 +530,10 @@ void main() {
         expect(result, true);
       });
 
-      testWithData(
+      testData<Tuple2<String?, String>>(
           'requests email confirmation if not verified and enabled', const [
-        Fixture('ee-EE', 'ee-EE'),
-        Fixture(null, 'ab-CD'),
+        Tuple2('ee-EE', 'ee-EE'),
+        Tuple2(null, 'ab-CD'),
       ], (fixture) async {
         when(mockApi.linkEmail(any))
             .thenAnswer((i) async => defaultLinkEmailResponse);
@@ -536,7 +543,7 @@ void main() {
         final result = await account.linkEmail(
           'mail',
           'password',
-          locale: fixture.get0<String>(),
+          locale: fixture.item1,
         );
         expect(result, false);
 
@@ -544,7 +551,7 @@ void main() {
           OobCodeRequest.verifyEmail(
             idToken: 'idToken',
           ),
-          fixture.get1<String>(),
+          fixture.item2,
         ));
       });
 

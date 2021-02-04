@@ -14,9 +14,10 @@ import 'package:http/http.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
+import 'package:tuple/tuple.dart';
 
 import 'firebase_auth_test.mocks.dart';
-import 'test_fixture.dart';
+import 'test_data.dart';
 
 @GenerateMocks([
   RestApi,
@@ -76,12 +77,12 @@ void main() {
     });
 
     group('fetchProviders', () {
-      testWithData('sends fetch providers request', [
-        Fixture(
+      testData<Tuple2<Uri?, Uri>>('sends fetch providers request', [
+        Tuple2(
           null,
           Uri.parse('http://localhost'),
         ),
-        Fixture(
+        Tuple2(
           Uri.parse('http://example.com'),
           Uri.parse('http://example.com'),
         ),
@@ -93,27 +94,28 @@ void main() {
                 ));
 
         const mail = 'mail';
-        await auth.fetchProviders(mail, fixture.get0<Uri>());
+        await auth.fetchProviders(mail, fixture.item1);
 
         verify(mockApi.fetchProviders(FetchProviderRequest(
           identifier: mail,
-          continueUri: fixture.get1<Uri>()!,
+          continueUri: fixture.item2,
         )));
       });
 
-      testWithData('returns providers with mail', const [
-        Fixture(false, ['a', 'b', 'c']),
-        Fixture(true, ['email', 'a', 'b', 'c']),
+      testData<Tuple2<bool, List<String>>>(
+          'returns providers with mail', const [
+        Tuple2(false, ['a', 'b', 'c']),
+        Tuple2(true, ['email', 'a', 'b', 'c']),
       ], (fixture) async {
         const providers = ['a', 'b', 'c'];
         when(mockApi.fetchProviders(any))
             .thenAnswer((i) async => FetchProviderResponse(
-                  registered: fixture.get0<bool>()!,
+                  registered: fixture.item1,
                   allProviders: providers,
                 ));
 
         final result = await auth.fetchProviders('email');
-        expect(result, fixture.get1<List<String>>());
+        expect(result, fixture.item2);
       });
     });
 
@@ -186,9 +188,10 @@ void main() {
         verifyNoMoreInteractions(mockApi);
       });
 
-      testWithData('sends oob code request if enabled', const [
-        Fixture('ee-EE', 'ee-EE'),
-        Fixture(null, 'ab-CD'),
+      testData<Tuple2<String?, String>>(
+          'sends oob code request if enabled', const [
+        Tuple2('ee-EE', 'ee-EE'),
+        Tuple2(null, 'ab-CD'),
       ], (fixture) async {
         when(mockApi.signUpWithPassword(any))
             .thenAnswer((i) async => PasswordSignInResponse(
@@ -202,7 +205,7 @@ void main() {
           'email',
           'password',
           autoRefresh: false,
-          locale: fixture.get0<String>(),
+          locale: fixture.item1,
         );
 
         verify(mockApi.sendOobCode(
@@ -210,7 +213,7 @@ void main() {
             idToken: idToken,
             requestType: OobCodeRequestType.VERIFY_EMAIL,
           ),
-          fixture.get1<String>(),
+          fixture.item2,
         ));
       });
 
@@ -384,23 +387,24 @@ void main() {
       });
     });
 
-    testWithData('requestPasswordReset sends oob code request', const [
-      Fixture('ee-EE', 'ee-EE'),
-      Fixture(null, 'ab-CD'),
+    testData<Tuple2<String?, String>>(
+        'requestPasswordReset sends oob code request', const [
+      Tuple2('ee-EE', 'ee-EE'),
+      Tuple2(null, 'ab-CD'),
     ], (fixture) async {
       when(mockApi.sendOobCode(any, any))
           .thenAnswer((i) async => const OobCodeResponse());
       const mail = 'email';
       await auth.requestPasswordReset(
         mail,
-        locale: fixture.get0<String>(),
+        locale: fixture.item1,
       );
 
       verify(mockApi.sendOobCode(
         OobCodeRequest.passwordReset(
           email: mail,
         ),
-        fixture.get1<String>(),
+        fixture.item2,
       ));
     });
 

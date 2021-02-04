@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:http/http.dart';
-import 'package:logging/logging.dart'; // ignore: import_of_legacy_library_into_null_safe
 
 import 'models/delete_request.dart';
 import 'models/idp_provider.dart';
@@ -24,11 +23,6 @@ import 'rest_api.dart';
 /// [FirebaseAccount.restore()], or use one of the various login methods of the
 /// [FirebaseAuth] class.
 class FirebaseAccount {
-  /// The default logging tag used by instances of this class
-  static const loggingTag = 'firebase_rest_auth.FirebaseAccount';
-
-  final Logger? _logger;
-
   /// The internally used [RestApi] instance.
   final RestApi api;
 
@@ -54,7 +48,6 @@ class FirebaseAccount {
     this._refreshToken,
     this._expiresAt,
     this.locale,
-    this._logger,
   );
 
   /// Creates a new account from a successfuly sign in response.
@@ -66,25 +59,17 @@ class FirebaseAccount {
   /// the Firebase REST endpoints. The user credentials are extracted from the
   /// [signInResponse]. If [autoRefresh] and [locale] are used to initialize
   /// these properties.
-  ///
-  /// Optionally, a [loggingCategory] can be passed as last parameter to the
-  /// constructor to customize logging. By default, the API logs to
-  /// [loggingTag], but any category can be used here. If you pass `null`,
-  /// logging will be completely disabled. See [Logger] for more details about
-  /// how logging in dart works.
   FirebaseAccount.create(
     Client client,
     String apiKey,
     SignInResponse signInResponse, {
     bool autoRefresh = true,
     String? locale,
-    String? loggingCategory = loggingTag,
   }) : this.apiCreate(
           RestApi(client, apiKey),
           signInResponse,
           autoRefresh: autoRefresh,
           locale: locale,
-          loggingCategory: loggingCategory,
         );
 
   /// Creates a new account from a successfuly sign in response and a [RestApi].
@@ -95,20 +80,12 @@ class FirebaseAccount {
   /// The account is created by using the [api] for accessing the Firebase REST
   /// endpoints. The user credentials are extracted from the [signInResponse].
   /// If [autoRefresh] and [locale] are used to initialize these properties.
-  ///
-  /// Optionally, a [loggingCategory] can be passed as last parameter to the
-  /// constructor to customize logging. By default, the API logs to
-  /// [loggingTag], but any category can be used here. If you pass `null`,
-  /// logging will be completely disabled. See [Logger] for more details about
-  /// how logging in dart works.
   FirebaseAccount.apiCreate(
     this.api,
     SignInResponse signInResponse, {
     bool autoRefresh = true,
     this.locale,
-    String? loggingCategory = loggingTag,
-  })  : _logger = loggingCategory != null ? Logger(loggingCategory) : null,
-        _localId = signInResponse.localId,
+  })  : _localId = signInResponse.localId,
         _idToken = signInResponse.idToken,
         _refreshToken = signInResponse.refreshToken,
         _expiresAt = _expiresInToAt(_durFromString(signInResponse.expiresIn)) {
@@ -127,26 +104,18 @@ class FirebaseAccount {
   /// initialize these properties.
   ///
   /// If the refreshing fails, an [AuthError] will be thrown.
-  ///
-  /// Optionally, a [loggingCategory] can be passed as last parameter to the
-  /// constructor to customize logging. By default, the API logs to
-  /// [loggingTag], but any category can be used here. If you pass `null`,
-  /// logging will be completely disabled. See [Logger] for more details about
-  /// how logging in dart works.
   static Future<FirebaseAccount> restore(
     Client client,
     String apiKey,
     String refreshToken, {
     bool autoRefresh = true,
     String? locale,
-    String? loggingCategory = loggingTag,
   }) =>
       apiRestore(
         RestApi(client, apiKey),
         refreshToken,
         autoRefresh: autoRefresh,
         locale: locale,
-        loggingCategory: loggingCategory,
       );
 
   /// Restores an account by using a refresh token to log the user in again.
@@ -161,18 +130,11 @@ class FirebaseAccount {
   /// properties.
   ///
   /// If the refreshing fails, an [AuthError] will be thrown.
-  ///
-  /// Optionally, a [loggingCategory] can be passed as last parameter to the
-  /// constructor to customize logging. By default, the API logs to
-  /// [loggingTag], but any category can be used here. If you pass `null`,
-  /// logging will be completely disabled. See [Logger] for more details about
-  /// how logging in dart works.
   static Future<FirebaseAccount> apiRestore(
     RestApi api,
     String refreshToken, {
     bool autoRefresh = true,
     String? locale,
-    String? loggingCategory = loggingTag,
   }) async {
     final response = await api.token(refresh_token: refreshToken);
     return FirebaseAccount._(
@@ -182,10 +144,7 @@ class FirebaseAccount {
       response.refresh_token,
       _expiresInToAt(_durFromString(response.expires_in)),
       locale,
-      loggingCategory != null ? Logger(loggingCategory) : null,
-    )
-      ..autoRefresh = autoRefresh
-      .._logger?.finer('Restored account as $response');
+    )..autoRefresh = autoRefresh;
   }
 
   /// The local id (account-id) of the logged in user.
@@ -494,7 +453,6 @@ class FirebaseAccount {
     if (triggerTimer < const Duration(seconds: 1)) {
       triggerTimer = Duration.zero;
     }
-    _logger?.fine('Scheduling next token refresh in: $triggerTimer');
     _refreshTimer = Timer(triggerTimer, _updateTokenTimout);
   }
 
@@ -511,21 +469,22 @@ class FirebaseAccount {
       if (_refreshController.hasListener) {
         _refreshController.add(_idToken);
       }
-    } catch (e, s) {
+    } catch (_) {
       autoRefresh = false;
-      if (_refreshController.hasListener) {
-        _refreshController.addError(e, s);
-      }
       rethrow;
     }
   }
 
   Future _updateTokenTimout() async {
     try {
-      _logger?.finer('Access token about to expire - refreshing...');
       await _updateToken();
     } catch (e, s) {
-      _logger?.severe('Failed to refresh access token', e, s);
+      // redirect exceptions to listeners, if any
+      if (_refreshController.hasListener) {
+        _refreshController.addError(e, s);
+      } else {
+        rethrow;
+      }
     }
   }
 }
