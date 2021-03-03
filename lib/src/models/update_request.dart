@@ -43,7 +43,7 @@ abstract class UpdateRequest with _$UpdateRequest {
     required String password,
 
     /// Whether or not to return an ID and refresh token.
-    @Default(false) bool returnSecureToken,
+    @Default(true) bool returnSecureToken,
   }) = PasswordUpdateRequest;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-update-profile

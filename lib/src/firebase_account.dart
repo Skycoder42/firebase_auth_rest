@@ -292,7 +292,6 @@ class FirebaseAccount {
         EmailUpdateRequest(
           idToken: _idToken,
           email: newEmail,
-          returnSecureToken: false,
         ),
         locale ?? this.locale,
       );
@@ -306,12 +305,17 @@ class FirebaseAccount {
   /// email/password. When logged in anonymously or via an IDP-Provider, this
   /// request will always fail. You can instead link the account with an email
   /// address and a new password via [linkEmail()].
-  Future<void> updatePassword(String newPassword) =>
-      api.updatePassword(PasswordUpdateRequest(
-        idToken: _idToken,
-        password: newPassword,
-        returnSecureToken: false,
-      ));
+  Future<void> updatePassword(String newPassword) async {
+    final response = await api.updatePassword(PasswordUpdateRequest(
+      idToken: _idToken,
+      password: newPassword,
+    ));
+    _applyToken(
+      idToken: response.idToken,
+      refreshToken: response.refreshToken,
+      expiresIn: response.expiresIn,
+    );
+  }
 
   /// Updates certain aspects of the users profile.
   ///
@@ -336,7 +340,6 @@ class FirebaseAccount {
           if (displayName?.isDelete ?? false) DeleteAttribute.DISPLAY_NAME,
           if (photoUrl?.isDelete ?? false) DeleteAttribute.PHOTO_URL,
         ],
-        returnSecureToken: false,
       ));
 
   /// Links a new email address to this account.
@@ -366,8 +369,12 @@ class FirebaseAccount {
       idToken: _idToken,
       email: email,
       password: password,
-      returnSecureToken: false,
     ));
+    _applyToken(
+      idToken: response.idToken,
+      refreshToken: response.refreshToken,
+      expiresIn: response.expiresIn,
+    );
     if (!response.emailVerified && autoVerify) {
       await requestEmailConfirmation(locale: locale);
     }
@@ -386,13 +393,18 @@ class FirebaseAccount {
   Future<void> linkIdp(
     IdpProvider provider,
     Uri requestUri,
-  ) =>
-      api.linkIdp(LinkIdpRequest(
-        idToken: _idToken,
-        postBody: provider.postBody,
-        requestUri: requestUri,
-        returnSecureToken: false,
-      ));
+  ) async {
+    final response = await api.linkIdp(LinkIdpRequest(
+      idToken: _idToken,
+      postBody: provider.postBody,
+      requestUri: requestUri,
+    ));
+    _applyToken(
+      idToken: response.idToken,
+      refreshToken: response.refreshToken,
+      expiresIn: response.expiresIn,
+    );
+  }
 
   /// Unlinks all specified providers from the account.
   ///
@@ -459,12 +471,30 @@ class FirebaseAccount {
   Future<void> _updateToken() async {
     try {
       final response = await api.token(refresh_token: _refreshToken);
-      _idToken = response.id_token;
-      _refreshToken = response.refresh_token;
-      final expiresIn = _durFromString(response.expires_in);
-      _expiresAt = _expiresInToAt(expiresIn);
-      if (autoRefresh) {
-        _scheduleAutoRefresh(expiresIn);
+      _applyToken(
+        idToken: response.id_token,
+        refreshToken: response.refresh_token,
+        expiresIn: response.expires_in,
+      );
+    } catch (_) {
+      autoRefresh = false;
+      rethrow;
+    }
+  }
+
+  void _applyToken({
+    required String? idToken,
+    required String? refreshToken,
+    required String? expiresIn,
+  }) {
+    try {
+      _idToken = idToken ?? _idToken;
+      _refreshToken = refreshToken ?? _refreshToken;
+      final expiresInDur = expiresIn != null ? _durFromString(expiresIn) : null;
+      _expiresAt =
+          expiresInDur != null ? _expiresInToAt(expiresInDur) : _expiresAt;
+      if (autoRefresh && expiresInDur != null) {
+        _scheduleAutoRefresh(expiresInDur);
       }
       if (_refreshController.hasListener) {
         _refreshController.add(_idToken);
