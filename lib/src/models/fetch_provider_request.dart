@@ -5,7 +5,7 @@ part 'fetch_provider_request.g.dart';
 
 /// https://firebase.google.com/docs/reference/rest/auth#section-fetch-providers-for-email
 @freezed
-abstract class FetchProviderRequest with _$FetchProviderRequest {
+class FetchProviderRequest with _$FetchProviderRequest {
   /// Default constructor
   const factory FetchProviderRequest({
     /// User's email address

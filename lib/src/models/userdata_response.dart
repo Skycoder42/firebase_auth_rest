@@ -7,7 +7,7 @@ part 'userdata_response.g.dart';
 
 /// https://firebase.google.com/docs/reference/rest/auth#section-get-account-info
 @freezed
-abstract class UserDataResponse with _$UserDataResponse {
+class UserDataResponse with _$UserDataResponse {
   /// Default constructor
   const factory UserDataResponse({
     /// The account associated with the given Firebase ID token. Check

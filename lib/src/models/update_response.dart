@@ -7,7 +7,7 @@ part 'update_response.g.dart';
 
 /// Meta-Class for multiple API-Endpoints
 @freezed
-abstract class UpdateResponse with _$UpdateResponse {
+class UpdateResponse with _$UpdateResponse {
   /// https://firebase.google.com/docs/reference/rest/auth#section-confirm-email-verification
   const factory UpdateResponse.confirmEmail({
     /// The email of the account.

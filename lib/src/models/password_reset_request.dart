@@ -5,7 +5,7 @@ part 'password_reset_request.g.dart';
 
 /// Meta-Class for multiple API-Endpoints
 @freezed
-abstract class PasswordResetRequest with _$PasswordResetRequest {
+class PasswordResetRequest with _$PasswordResetRequest {
   /// https://firebase.google.com/docs/reference/rest/auth#section-verify-password-reset-code
   const factory PasswordResetRequest.verify({
     /// The email action code sent to the user's email for resetting the

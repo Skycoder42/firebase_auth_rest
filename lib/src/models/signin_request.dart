@@ -5,7 +5,7 @@ part 'signin_request.g.dart';
 
 /// Meta-Class for multiple API-Endpoints
 @freezed
-abstract class SignInRequest with _$SignInRequest {
+class SignInRequest with _$SignInRequest {
   /// https://firebase.google.com/docs/reference/rest/auth#section-sign-in-anonymously
   const factory SignInRequest.anonymous({
     /// Whether or not to return an ID and refresh token. Should always be true.

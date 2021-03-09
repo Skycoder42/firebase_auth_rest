@@ -10,7 +10,7 @@ part 'userdata.g.dart';
 /// Check https://firebase.google.com/docs/reference/rest/auth#section-get-account-info
 /// for more details about the underlying REST request.
 @freezed
-abstract class UserData with _$UserData {
+class UserData with _$UserData {
   /// Default constructor
   const factory UserData({
     /// The uid of the current user.

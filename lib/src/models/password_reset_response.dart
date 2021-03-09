@@ -10,7 +10,7 @@ part 'password_reset_response.g.dart';
 /// - https://firebase.google.com/docs/reference/rest/auth#section-verify-password-reset-code
 /// - https://firebase.google.com/docs/reference/rest/auth#section-confirm-reset-password
 @freezed
-abstract class PasswordResetResponse with _$PasswordResetResponse {
+class PasswordResetResponse with _$PasswordResetResponse {
   /// Default constructor
   const factory PasswordResetResponse({
     /// User's email address.

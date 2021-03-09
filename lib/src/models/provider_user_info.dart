@@ -8,7 +8,7 @@ part 'provider_user_info.g.dart';
 /// - [UserData]
 /// - [UpdateResponse]
 @freezed
-abstract class ProviderUserInfo with _$ProviderUserInfo {
+class ProviderUserInfo with _$ProviderUserInfo {
   /// Default constructor
   const factory ProviderUserInfo({
     /// The linked provider ID (e.g. "google.com" for the Google provider).

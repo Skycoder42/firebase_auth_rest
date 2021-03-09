@@ -15,7 +15,7 @@ enum DeleteAttribute {
 
 /// Meta-Class for multiple API-Endpoints
 @freezed
-abstract class UpdateRequest with _$UpdateRequest {
+class UpdateRequest with _$UpdateRequest {
   /// https://firebase.google.com/docs/reference/rest/auth#section-confirm-email-verification
   const factory UpdateRequest.confirmEmail({
     /// The action code sent to user's email for email verification.

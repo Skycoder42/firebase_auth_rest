@@ -5,7 +5,7 @@ part 'userdata_request.g.dart';
 
 /// https://firebase.google.com/docs/reference/rest/auth#section-get-account-info
 @freezed
-abstract class UserDataRequest with _$UserDataRequest {
+class UserDataRequest with _$UserDataRequest {
   /// Default constructor
   const factory UserDataRequest({
     /// The Firebase ID token of the account.

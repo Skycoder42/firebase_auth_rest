@@ -5,7 +5,7 @@ part 'fetch_provider_response.g.dart';
 
 /// https://firebase.google.com/docs/reference/rest/auth#section-fetch-providers-for-email
 @freezed
-abstract class FetchProviderResponse with _$FetchProviderResponse {
+class FetchProviderResponse with _$FetchProviderResponse {
   /// Default constructors
   const factory FetchProviderResponse({
     /// The list of providers that the user has previously signed in with.

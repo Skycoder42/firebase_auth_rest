@@ -5,7 +5,7 @@ part 'signin_response.g.dart';
 
 /// Meta-Class for multiple API-Endpoints
 @freezed
-abstract class SignInResponse with _$SignInResponse {
+class SignInResponse with _$SignInResponse {
   /// https://firebase.google.com/docs/reference/rest/auth#section-sign-in-anonymously
   const factory SignInResponse.anonymous({
     /// A Firebase Auth ID token for the newly created user.

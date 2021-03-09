@@ -8,7 +8,7 @@ part 'oob_code_response.g.dart';
 /// - https://firebase.google.com/docs/reference/rest/auth#section-send-email-verification
 /// - https://firebase.google.com/docs/reference/rest/auth#section-send-password-reset-email
 @freezed
-abstract class OobCodeResponse with _$OobCodeResponse {
+class OobCodeResponse with _$OobCodeResponse {
   /// Default constructor
   const factory OobCodeResponse({
     /// User's email address.
