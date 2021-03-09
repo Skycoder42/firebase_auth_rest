@@ -402,7 +402,7 @@ void main() {
       verify(mockApi.updatePassword(PasswordUpdateRequest(
         idToken: 'idToken',
         password: newPassword,
-        returnSecureToken: false,
+        returnSecureToken: true,
       )));
     });
 
@@ -510,7 +510,7 @@ void main() {
           idToken: 'idToken',
           email: mail,
           password: password,
-          returnSecureToken: false,
+          returnSecureToken: true,
         )));
         expect(result, false);
       });
@@ -585,7 +585,7 @@ void main() {
         postBody: provider.postBody,
         requestUri: uri,
         returnIdpCredential: false,
-        returnSecureToken: false,
+        returnSecureToken: true,
       )));
     });
 
