@@ -13,26 +13,44 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - ubuntu-latest
-          - windows-latest
-          - macos-latest
+        platform:
+          - linux
+          - windows
+          - macos
+          - web
+
+        include:
+          - platform: linux
+            os: ubuntu-latest
+            system: vm
+          - platform: windows
+            os: windows-latest
+            system: vm
+          - platform: macos
+            os: macos-latest
+            system: vm
+          - platform: web
+            os: ubuntu-latest
+            system: js
 
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: cedx/setup-dart@v2
+      - uses: dart-lang/setup-dart@v1
       - uses: actions/checkout@v2
       - run: make get
       - run: make build
       - run: make analyze
-      - run: make unit-test-coverage
-      - run: make integration-tests
+      - run: make unit-tests-${{ matrix.system }}-coverage
+      - run: make integration-tests-${{ matrix.system }}
         env:
           FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
       - uses: VeryGoodOpenSource/very_good_coverage@v1.1.1
         with:
           min_coverage: 95
-          exclude: "**/*.g.dart **/*.freezed.dart **/models/*.dart"
+          exclude: |
+            **/*.freezed.dart 
+            **/*.g.dart 
+            **/models/*.dart
       - run: make publish-dry
 
   release:
@@ -44,7 +62,7 @@ jobs:
       update: ${{ steps.version.outputs.update }}
       tag_name: ${{ steps.version.outputs.tag_name }}
     steps:
-      - uses: cedx/setup-dart@v2
+      - uses: dart-lang/setup-dart@v1
       - uses: actions/checkout@v2
       - uses: Skycoder42/action-dart-release@v1
         id: version
@@ -64,7 +82,7 @@ jobs:
       - release
     if: needs.release.outputs.update == 'true'
     steps:
-      - uses: cedx/setup-dart@v2
+      - uses: dart-lang/setup-dart@v1
       - uses: actions/checkout@v2
       - run: make get
       - run: make build
@@ -83,7 +101,7 @@ jobs:
       - release
     if: needs.release.outputs.update == 'true'
     steps:
-      - uses: cedx/setup-dart@v2
+      - uses: dart-lang/setup-dart@v1
       - uses: actions/checkout@v2
       - run: make get
       - run: make build

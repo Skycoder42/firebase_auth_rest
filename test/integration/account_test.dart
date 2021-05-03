@@ -4,7 +4,7 @@ import 'package:firebase_auth_rest/firebase_auth_rest.dart';
 import 'package:http/http.dart';
 import 'package:test/test.dart';
 
-import 'test_config.dart';
+import 'test_config_vm.dart' if (dart.library.js) 'test_config_js.dart';
 
 Matcher isAfter(DateTime after) => predicate<DateTime>(
       (e) => e.isAfter(after),

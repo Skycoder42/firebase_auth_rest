@@ -5,6 +5,8 @@ UNIT_TEST_FILES = $(shell find ./test/unit -type f -iname "*.dart")
 INTEGRATION_TEST_FILES = $(shell find ./test/integration -type f -iname "*.dart")
 TEST_FILES = $(UNIT_TEST_FILES) $(INTEGRATION_TEST_FILES)
 
+MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
+
 #get 
 .packages: pubspec.yaml
 	dart pub get
@@ -14,7 +16,7 @@ get: .packages
 get-clean:
 	rm -rf .dart_tool
 	rm -rf .packages
-	$(MAKE) get
+	$(MAKE) -f $(MAKEFILE) get
 
 upgrade: .packages
 	dart pub upgrade
@@ -22,7 +24,7 @@ upgrade: .packages
 # hooks
 hook: .packages unhook
 	echo '#!/bin/sh' > .git/hooks/pre-commit
-	echo 'exec dart pub run --no-sound-null-safety dart_pre_commit -p -oany -n --ansi' >> .git/hooks/pre-commit
+	echo 'exec dart run dart_pre_commit -t -p -oany --ansi' >> .git/hooks/pre-commit
 	chmod a+x .git/hooks/pre-commit
 
 unhook:
@@ -45,22 +47,47 @@ watch-clean: upgrade
 analyze: .packages
 	dart analyze --fatal-infos
 
-# test
-unit-tests: get
+# unit-tests
+unit-tests-vm: get
 	dart test test/unit
 
-integration-tests: get
+unit-tests-js: get
+	dart test -p chrome test/unit
+
+unit-tests: get
+	$(MAKE) -f $(MAKEFILE) unit-tests-vm
+	$(MAKE) -f $(MAKEFILE) unit-tests-js
+
+# integration-tests
+integration-tests-vm: get
 	@test -n "$(FIREBASE_API_KEY)"
 	dart test test/integration
 
+integration-tests-js: get
+	@test -n "$(FIREBASE_API_KEY)"
+	@echo "part of 'test_config_js.dart';" > test/integration/test_config_js.env.dart
+	@echo "const _firebaseApiKey = '$(FIREBASE_API_KEY)';" >> test/integration/test_config_js.env.dart
+	dart test -p chrome test/integration
+
+integration-tests: get
+	$(MAKE) -f $(MAKEFILE) integration-tests-vm
+	$(MAKE) -f $(MAKEFILE) integration-tests-js
+
 test: get
-	$(MAKE) unit-tests
-	$(MAKE) integration-tests
+	$(MAKE) -f $(MAKEFILE) unit-tests
+	$(MAKE) -f $(MAKEFILE) integration-tests
 
 # coverage
+coverage-vm: .packages
+	dart test --coverage=coverage test/unit
+
+coverage-js: .packages
+	dart test -p chrome --coverage=coverage test/unit
+
 coverage/.generated: .packages $(SRC_FILES) $(UNIT_TEST_FILES)
 	@rm -rf coverage
-	dart test --coverage=coverage test/unit
+	$(MAKE) -f $(MAKEFILE) coverage-vm
+	$(MAKE) -f $(MAKEFILE) coverage-js
 	touch coverage/.generated
 
 coverage/lcov.info: coverage/.generated
@@ -72,16 +99,28 @@ coverage/lcov.info: coverage/.generated
 
 coverage/lcov_cleaned.info: coverage/lcov.info
 	lcov --remove coverage/lcov.info -output-file coverage/lcov_cleaned.info \
-		'**/*.g.dart' \
-		'**/*.freezed.dart' \
-		'**/models/*.dart'
+						'**/*.freezed.dart' \
+						'**/*.g.dart' \
+						'**/models/*.dart'
 
 coverage/html/index.html: coverage/lcov_cleaned.info
 	genhtml --no-function-coverage -o coverage/html coverage/lcov_cleaned.info
 
 coverage: coverage/html/index.html
 
-unit-test-coverage: coverage/lcov.info
+unit-tests-vm-coverage:
+	@rm -rf coverage
+	$(MAKE) -f $(MAKEFILE) coverage-vm
+	touch coverage/.generated
+	$(MAKE) -f $(MAKEFILE) coverage/lcov.info
+
+unit-tests-js-coverage:
+	@rm -rf coverage
+	$(MAKE) -f $(MAKEFILE) coverage-js
+	touch coverage/.generated
+	$(MAKE) -f $(MAKEFILE) coverage/lcov.info
+
+unit-tests-coverage: coverage/lcov.info
 
 coverage-open: coverage/html/index.html
 	xdg-open coverage/html/index.html || start coverage/html/index.html
@@ -106,25 +145,25 @@ post-publish:
 	echo '*.g.dart' >> lib/src/.gitignore
 
 publish-dry: .packages
-	$(MAKE) pre-publish
+	$(MAKE) -f $(MAKEFILE) pre-publish
 	dart pub publish --dry-run
-	$(MAKE) post-publish
+	$(MAKE) -f $(MAKEFILE) post-publish
 
 publish: .packages
-	$(MAKE) pre-publish
+	$(MAKE) -f $(MAKEFILE) pre-publish
 	dart pub publish --force
-	$(MAKE) post-publish
+	$(MAKE) -f $(MAKEFILE) post-publish
 
 # verify
 verify:
-	$(MAKE) build-clean
-	$(MAKE) analyze
-	$(MAKE) unit-test-coverage
-	$(MAKE) integration-tests
-	$(MAKE) coverage-open
-	$(MAKE) doc-open
-	$(MAKE) publish-dry
+	$(MAKE) -f $(MAKEFILE) build-clean
+	$(MAKE) -f $(MAKEFILE) analyze
+	$(MAKE) -f $(MAKEFILE) unit-tests-coverage
+	$(MAKE) -f $(MAKEFILE) integration-tests
+	$(MAKE) -f $(MAKEFILE) coverage-open
+	$(MAKE) -f $(MAKEFILE) doc-open
+	$(MAKE) -f $(MAKEFILE) publish-dry
 
 
 
-.PHONY: build test coverage doc
+.PHONY: build test coverage coverage-vm coverage-js doc
