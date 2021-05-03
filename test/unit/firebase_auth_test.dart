@@ -1,30 +1,43 @@
 // ignore_for_file: prefer_const_constructors
-import 'package:firebase_auth_rest/rest.dart';
 import 'package:firebase_auth_rest/src/firebase_account.dart';
 import 'package:firebase_auth_rest/src/firebase_auth.dart';
 import 'package:firebase_auth_rest/src/models/fetch_provider_request.dart';
 import 'package:firebase_auth_rest/src/models/fetch_provider_response.dart';
 import 'package:firebase_auth_rest/src/models/idp_provider.dart';
 import 'package:firebase_auth_rest/src/models/oob_code_request.dart';
+import 'package:firebase_auth_rest/src/models/oob_code_response.dart';
 import 'package:firebase_auth_rest/src/models/password_reset_request.dart';
+import 'package:firebase_auth_rest/src/models/password_reset_response.dart';
 import 'package:firebase_auth_rest/src/models/signin_request.dart';
 import 'package:firebase_auth_rest/src/models/signin_response.dart';
 import 'package:firebase_auth_rest/src/rest_api.dart';
 import 'package:http/http.dart';
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 import 'package:tuple/tuple.dart';
 
-import 'firebase_auth_test.mocks.dart';
 import 'test_data.dart';
 
-@GenerateMocks([
-  RestApi,
-  Client,
-])
+class MockClient extends Mock implements Client {}
+
+class MockRestApi extends Mock implements RestApi {}
+
 void main() {
   final mockApi = MockRestApi();
+
+  setUpAll(() {
+    registerFallbackValue(Uri());
+    registerFallbackValue(FetchProviderRequest(
+      identifier: '',
+      continueUri: Uri(),
+    ));
+    registerFallbackValue(const AnonymousSignInRequest());
+    registerFallbackValue(const OobCodeRequest.verifyEmail(idToken: ''));
+    registerFallbackValue(IdpSignInRequest(requestUri: Uri(), postBody: ''));
+    registerFallbackValue(const PasswordSignInRequest(email: '', password: ''));
+    registerFallbackValue(const CustomTokenSignInRequest(token: ''));
+    registerFallbackValue(const PasswordResetRequest.verify(oobCode: ''));
+  });
 
   setUp(() {
     reset(mockApi);
@@ -87,7 +100,7 @@ void main() {
           Uri.parse('http://example.com'),
         ),
       ], (fixture) async {
-        when(mockApi.fetchProviders(any))
+        when(() => mockApi.fetchProviders(any()))
             .thenAnswer((i) async => FetchProviderResponse(
                   registered: false,
                   allProviders: [],
@@ -96,10 +109,10 @@ void main() {
         const mail = 'mail';
         await auth.fetchProviders(mail, fixture.item1);
 
-        verify(mockApi.fetchProviders(FetchProviderRequest(
-          identifier: mail,
-          continueUri: fixture.item2,
-        )));
+        verify(() => mockApi.fetchProviders(FetchProviderRequest(
+              identifier: mail,
+              continueUri: fixture.item2,
+            )));
       });
 
       testData<Tuple2<bool, List<String>>>(
@@ -108,7 +121,7 @@ void main() {
         Tuple2(true, ['email', 'a', 'b', 'c']),
       ], (fixture) async {
         const providers = ['a', 'b', 'c'];
-        when(mockApi.fetchProviders(any))
+        when(() => mockApi.fetchProviders(any()))
             .thenAnswer((i) async => FetchProviderResponse(
                   registered: fixture.item1,
                   allProviders: providers,
@@ -121,7 +134,7 @@ void main() {
 
     group('signUpAnonymous', () {
       test('sends anonymous sign up request', () async {
-        when(mockApi.signUpAnonymous(any))
+        when(() => mockApi.signUpAnonymous(any()))
             .thenAnswer((i) async => AnonymousSignInResponse(
                   idToken: '',
                   localId: '',
@@ -131,13 +144,13 @@ void main() {
 
         account = await auth.signUpAnonymous();
 
-        verify(mockApi.signUpAnonymous(AnonymousSignInRequest(
-          returnSecureToken: true,
-        )));
+        verify(() => mockApi.signUpAnonymous(AnonymousSignInRequest(
+              returnSecureToken: true,
+            )));
       });
 
       test('creates account from reply', () async {
-        when(mockApi.signUpAnonymous(any))
+        when(() => mockApi.signUpAnonymous(any()))
             .thenAnswer((i) async => AnonymousSignInResponse(
                   idToken: idToken,
                   localId: localId,
@@ -159,14 +172,14 @@ void main() {
 
     group('signUpWithPassword', () {
       setUp(() {
-        when(mockApi.sendOobCode(any, any))
+        when(() => mockApi.sendOobCode(any(), any()))
             .thenAnswer((i) async => const OobCodeResponse());
       });
 
       test('sends password sign up request', () async {
         const mail = 'mail';
         const password = 'password';
-        when(mockApi.signUpWithPassword(any))
+        when(() => mockApi.signUpWithPassword(any()))
             .thenAnswer((i) async => PasswordSignInResponse(
                   idToken: '',
                   localId: '',
@@ -180,11 +193,11 @@ void main() {
           autoVerify: false,
         );
 
-        verify(mockApi.signUpWithPassword(PasswordSignInRequest(
-          email: mail,
-          password: password,
-          returnSecureToken: true,
-        )));
+        verify(() => mockApi.signUpWithPassword(PasswordSignInRequest(
+              email: mail,
+              password: password,
+              returnSecureToken: true,
+            )));
         verifyNoMoreInteractions(mockApi);
       });
 
@@ -193,7 +206,7 @@ void main() {
         Tuple2('ee-EE', 'ee-EE'),
         Tuple2(null, 'ab-CD'),
       ], (fixture) async {
-        when(mockApi.signUpWithPassword(any))
+        when(() => mockApi.signUpWithPassword(any()))
             .thenAnswer((i) async => PasswordSignInResponse(
                   idToken: idToken,
                   localId: '',
@@ -208,17 +221,17 @@ void main() {
           locale: fixture.item1,
         );
 
-        verify(mockApi.sendOobCode(
-          OobCodeRequest.verifyEmail(
-            idToken: idToken,
-            requestType: OobCodeRequestType.VERIFY_EMAIL,
-          ),
-          fixture.item2,
-        ));
+        verify(() => mockApi.sendOobCode(
+              OobCodeRequest.verifyEmail(
+                idToken: idToken,
+                requestType: OobCodeRequestType.VERIFY_EMAIL,
+              ),
+              fixture.item2,
+            ));
       });
 
       test('creates account from reply', () async {
-        when(mockApi.signUpWithPassword(any))
+        when(() => mockApi.signUpWithPassword(any()))
             .thenAnswer((i) async => PasswordSignInResponse(
                   idToken: idToken,
                   localId: localId,
@@ -247,7 +260,7 @@ void main() {
       test('sends idp sign in request', () async {
         final provider = IdpProvider.google('token');
         final uri = Uri.parse('http://localhost');
-        when(mockApi.signInWithIdp(any))
+        when(() => mockApi.signInWithIdp(any()))
             .thenAnswer((i) async => IdpSignInResponse(
                   idToken: '',
                   localId: '',
@@ -259,16 +272,16 @@ void main() {
 
         account = await auth.signInWithIdp(provider, uri);
 
-        verify(mockApi.signInWithIdp(IdpSignInRequest(
-          postBody: provider.postBody,
-          requestUri: uri,
-          returnIdpCredential: false,
-          returnSecureToken: true,
-        )));
+        verify(() => mockApi.signInWithIdp(IdpSignInRequest(
+              postBody: provider.postBody,
+              requestUri: uri,
+              returnIdpCredential: false,
+              returnSecureToken: true,
+            )));
       });
 
       test('creates account from reply', () async {
-        when(mockApi.signInWithIdp(any))
+        when(() => mockApi.signInWithIdp(any()))
             .thenAnswer((i) async => IdpSignInResponse(
                   idToken: idToken,
                   localId: localId,
@@ -298,7 +311,7 @@ void main() {
       test('sends password sign in request', () async {
         const mail = 'mail';
         const password = 'password';
-        when(mockApi.signInWithPassword(any))
+        when(() => mockApi.signInWithPassword(any()))
             .thenAnswer((i) async => PasswordSignInResponse(
                   idToken: '',
                   localId: '',
@@ -311,16 +324,16 @@ void main() {
           password,
         );
 
-        verify(mockApi.signInWithPassword(PasswordSignInRequest(
-          email: mail,
-          password: password,
-          returnSecureToken: true,
-        )));
+        verify(() => mockApi.signInWithPassword(PasswordSignInRequest(
+              email: mail,
+              password: password,
+              returnSecureToken: true,
+            )));
         verifyNoMoreInteractions(mockApi);
       });
 
       test('creates account from reply', () async {
-        when(mockApi.signInWithPassword(any))
+        when(() => mockApi.signInWithPassword(any()))
             .thenAnswer((i) async => PasswordSignInResponse(
                   idToken: idToken,
                   localId: localId,
@@ -347,7 +360,7 @@ void main() {
     group('signInWithCustomToken', () {
       test('sends custom tken sign in request', () async {
         const token = 'token';
-        when(mockApi.signInWithCustomToken(any))
+        when(() => mockApi.signInWithCustomToken(any()))
             .thenAnswer((i) async => CustomTokenSignInResponse(
                   idToken: '',
                   localId: '',
@@ -357,14 +370,14 @@ void main() {
 
         account = await auth.signInWithCustomToken(token);
 
-        verify(mockApi.signInWithCustomToken(CustomTokenSignInRequest(
-          token: token,
-          returnSecureToken: true,
-        )));
+        verify(() => mockApi.signInWithCustomToken(CustomTokenSignInRequest(
+              token: token,
+              returnSecureToken: true,
+            )));
       });
 
       test('creates account from reply', () async {
-        when(mockApi.signInWithCustomToken(any))
+        when(() => mockApi.signInWithCustomToken(any()))
             .thenAnswer((i) async => CustomTokenSignInResponse(
                   idToken: idToken,
                   localId: localId,
@@ -392,7 +405,7 @@ void main() {
       Tuple2('ee-EE', 'ee-EE'),
       Tuple2(null, 'ab-CD'),
     ], (fixture) async {
-      when(mockApi.sendOobCode(any, any))
+      when(() => mockApi.sendOobCode(any(), any()))
           .thenAnswer((i) async => const OobCodeResponse());
       const mail = 'email';
       await auth.requestPasswordReset(
@@ -400,36 +413,38 @@ void main() {
         locale: fixture.item1,
       );
 
-      verify(mockApi.sendOobCode(
-        OobCodeRequest.passwordReset(
-          email: mail,
-        ),
-        fixture.item2,
-      ));
+      verify(() => mockApi.sendOobCode(
+            OobCodeRequest.passwordReset(
+              email: mail,
+            ),
+            fixture.item2,
+          ));
     });
 
     test('validatePasswordReset send reset password request', () async {
-      when(mockApi.resetPassword(any))
+      when(() => mockApi.resetPassword(any()))
           .thenAnswer((i) async => const PasswordResetResponse());
       const code = 'oob-code';
       await auth.validatePasswordReset(code);
 
-      verify(mockApi.resetPassword(PasswordResetRequest.verify(
-        oobCode: code,
-      )));
+      verify(
+        () => mockApi.resetPassword(
+          PasswordResetRequest.verify(oobCode: code),
+        ),
+      );
     });
 
     test('resetPassword send reset password request', () async {
-      when(mockApi.resetPassword(any))
+      when(() => mockApi.resetPassword(any()))
           .thenAnswer((i) async => const PasswordResetResponse());
       const code = 'oob-code';
       const password = 'password';
       await auth.resetPassword(code, password);
 
-      verify(mockApi.resetPassword(PasswordResetRequest.confirm(
-        oobCode: code,
-        newPassword: password,
-      )));
+      verify(() => mockApi.resetPassword(PasswordResetRequest.confirm(
+            oobCode: code,
+            newPassword: password,
+          )));
     });
   });
 }

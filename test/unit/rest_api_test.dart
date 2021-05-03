@@ -18,35 +18,36 @@ import 'package:firebase_auth_rest/src/models/userdata_request.dart';
 import 'package:firebase_auth_rest/src/models/userdata_response.dart';
 import 'package:firebase_auth_rest/src/rest_api.dart';
 import 'package:http/http.dart';
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
 import 'fakes.dart';
-import 'rest_api_test.mocks.dart';
 
-extension FakeResponseX on PostExpectation<Future<Response>> {
+class MockClient extends Mock implements Client {}
+
+extension FakeResponseX on When<Future<Response>> {
   void thenFake<T>([Map<String, dynamic>? overwrites]) =>
       thenAnswer((i) async => FakeResponse.forModel<T>(overwrites));
 }
 
-@GenerateMocks([
-  Client,
-])
 void main() {
   const apiKey = 'apiKey';
   final mockClient = MockClient();
   final api = RestApi(mockClient, apiKey);
 
-  PostExpectation<Future<Response>> whenPost() => when(mockClient.post(
-        any,
-        body: anyNamed('body'),
-        headers: anyNamed('headers'),
-        encoding: anyNamed('encoding'),
+  When<Future<Response>> whenPost() => when(() => mockClient.post(
+        any(),
+        body: any(named: 'body'),
+        headers: any(named: 'headers'),
+        encoding: any(named: 'encoding'),
       ));
 
   void whenError() =>
       whenPost().thenAnswer((i) => Future.value(FakeResponse(statusCode: 400)));
+
+  setUpAll(() {
+    registerFallbackValue(Uri());
+  });
 
   setUp(() {
     reset(mockClient);
@@ -64,17 +65,17 @@ void main() {
 
       const token = 'token';
       await api.token(refresh_token: token);
-      verify(mockClient.post(
-        Uri.parse('https://securetoken.googleapis.com/v1/token?key=apiKey'),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: {
-          'refresh_token': token,
-          'grant_type': 'refresh_token',
-        },
-      ));
+      verify(() => mockClient.post(
+            Uri.parse('https://securetoken.googleapis.com/v1/token?key=apiKey'),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: {
+              'refresh_token': token,
+              'grant_type': 'refresh_token',
+            },
+          ));
     });
 
     test('should throw AuthError on failure', () async {
@@ -89,17 +90,17 @@ void main() {
       whenPost().thenFake<AnonymousSignInResponse>();
 
       await api.signUpAnonymous(AnonymousSignInRequest());
-      verify(mockClient.post(
-        Uri.parse(
-            'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=apiKey'),
-        body: json.encode({
-          'returnSecureToken': true,
-        }),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      ));
+      verify(() => mockClient.post(
+            Uri.parse(
+                'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=apiKey'),
+            body: json.encode({
+              'returnSecureToken': true,
+            }),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          ));
     });
 
     test('should throw AuthError on failure', () async {
@@ -117,19 +118,19 @@ void main() {
         email: 'email',
         password: 'password',
       ));
-      verify(mockClient.post(
-        Uri.parse(
-            'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=apiKey'),
-        body: json.encode({
-          'email': 'email',
-          'password': 'password',
-          'returnSecureToken': true,
-        }),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      ));
+      verify(() => mockClient.post(
+            Uri.parse(
+                'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=apiKey'),
+            body: json.encode({
+              'email': 'email',
+              'password': 'password',
+              'returnSecureToken': true,
+            }),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          ));
     });
 
     test('should throw AuthError on failure', () async {
@@ -151,20 +152,20 @@ void main() {
         requestUri: Uri.parse('http://localhost'),
         postBody: 'postBody',
       ));
-      verify(mockClient.post(
-        Uri.parse(
-            'https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=apiKey'),
-        body: json.encode({
-          'requestUri': 'http://localhost',
-          'postBody': 'postBody',
-          'returnSecureToken': true,
-          'returnIdpCredential': false,
-        }),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      ));
+      verify(() => mockClient.post(
+            Uri.parse(
+                'https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=apiKey'),
+            body: json.encode({
+              'requestUri': 'http://localhost',
+              'postBody': 'postBody',
+              'returnSecureToken': true,
+              'returnIdpCredential': false,
+            }),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          ));
     });
 
     test('should throw AuthError on failure', () async {
@@ -186,19 +187,19 @@ void main() {
         email: 'email',
         password: 'password',
       ));
-      verify(mockClient.post(
-        Uri.parse(
-            'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=apiKey'),
-        body: json.encode({
-          'email': 'email',
-          'password': 'password',
-          'returnSecureToken': true,
-        }),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      ));
+      verify(() => mockClient.post(
+            Uri.parse(
+                'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=apiKey'),
+            body: json.encode({
+              'email': 'email',
+              'password': 'password',
+              'returnSecureToken': true,
+            }),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          ));
     });
 
     test('should throw AuthError on failure', () async {
@@ -218,18 +219,18 @@ void main() {
 
       await api.signInWithCustomToken(
           const CustomTokenSignInRequest(token: 'token'));
-      verify(mockClient.post(
-        Uri.parse(
-            'https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=apiKey'),
-        body: json.encode({
-          'token': 'token',
-          'returnSecureToken': true,
-        }),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      ));
+      verify(() => mockClient.post(
+            Uri.parse(
+                'https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=apiKey'),
+            body: json.encode({
+              'token': 'token',
+              'returnSecureToken': true,
+            }),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          ));
     });
 
     test('should throw AuthError on failure', () async {
@@ -248,17 +249,17 @@ void main() {
       await api.getUserData(UserDataRequest(
         idToken: 'idToken',
       ));
-      verify(mockClient.post(
-        Uri.parse(
-            'https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=apiKey'),
-        body: json.encode({
-          'idToken': 'idToken',
-        }),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      ));
+      verify(() => mockClient.post(
+            Uri.parse(
+                'https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=apiKey'),
+            body: json.encode({
+              'idToken': 'idToken',
+            }),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          ));
     });
 
     test('should throw AuthError on failure', () async {
@@ -281,20 +282,20 @@ void main() {
             email: 'mail',
           ),
           'de-DE');
-      verify(mockClient.post(
-        Uri.parse(
-            'https://identitytoolkit.googleapis.com/v1/accounts:update?key=apiKey'),
-        body: json.encode({
-          'idToken': 'token',
-          'email': 'mail',
-          'returnSecureToken': false,
-        }),
-        headers: {
-          'X-Firebase-Locale': 'de-DE',
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      ));
+      verify(() => mockClient.post(
+            Uri.parse(
+                'https://identitytoolkit.googleapis.com/v1/accounts:update?key=apiKey'),
+            body: json.encode({
+              'idToken': 'token',
+              'email': 'mail',
+              'returnSecureToken': false,
+            }),
+            headers: {
+              'X-Firebase-Locale': 'de-DE',
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          ));
     });
 
     test('should throw AuthError on failure', () async {
@@ -316,19 +317,19 @@ void main() {
         idToken: 'token',
         password: 'password',
       ));
-      verify(mockClient.post(
-        Uri.parse(
-            'https://identitytoolkit.googleapis.com/v1/accounts:update?key=apiKey'),
-        body: json.encode({
-          'idToken': 'token',
-          'password': 'password',
-          'returnSecureToken': true,
-        }),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      ));
+      verify(() => mockClient.post(
+            Uri.parse(
+                'https://identitytoolkit.googleapis.com/v1/accounts:update?key=apiKey'),
+            body: json.encode({
+              'idToken': 'token',
+              'password': 'password',
+              'returnSecureToken': true,
+            }),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          ));
     });
 
     test('should throw AuthError on failure', () async {
@@ -347,21 +348,21 @@ void main() {
       whenPost().thenFake<ProfileUpdateResponse>();
 
       await api.updateProfile(const ProfileUpdateRequest(idToken: 'token'));
-      verify(mockClient.post(
-        Uri.parse(
-            'https://identitytoolkit.googleapis.com/v1/accounts:update?key=apiKey'),
-        body: json.encode({
-          'idToken': 'token',
-          'displayName': null,
-          'photoUrl': null,
-          'deleteAttribute': const <String>[],
-          'returnSecureToken': false,
-        }),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      ));
+      verify(() => mockClient.post(
+            Uri.parse(
+                'https://identitytoolkit.googleapis.com/v1/accounts:update?key=apiKey'),
+            body: json.encode({
+              'idToken': 'token',
+              'displayName': null,
+              'photoUrl': null,
+              'deleteAttribute': const <String>[],
+              'returnSecureToken': false,
+            }),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          ));
     });
 
     test('should throw AuthError on failure', () async {
@@ -379,19 +380,19 @@ void main() {
 
         await api.sendOobCode(
             const OobCodeRequest.verifyEmail(idToken: 'token'), 'de-DE');
-        verify(mockClient.post(
-          Uri.parse(
-              'https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=apiKey'),
-          body: json.encode({
-            'idToken': 'token',
-            'requestType': 'VERIFY_EMAIL',
-          }),
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'X-Firebase-Locale': 'de-DE',
-          },
-        ));
+        verify(() => mockClient.post(
+              Uri.parse(
+                  'https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=apiKey'),
+              body: json.encode({
+                'idToken': 'token',
+                'requestType': 'VERIFY_EMAIL',
+              }),
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Firebase-Locale': 'de-DE',
+              },
+            ));
       });
 
       test('should throw AuthError on failure', () async {
@@ -410,19 +411,19 @@ void main() {
 
         await api.sendOobCode(
             const OobCodeRequest.passwordReset(email: 'email'), 'de-DE');
-        verify(mockClient.post(
-          Uri.parse(
-              'https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=apiKey'),
-          body: json.encode({
-            'email': 'email',
-            'requestType': 'PASSWORD_RESET',
-          }),
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'X-Firebase-Locale': 'de-DE',
-          },
-        ));
+        verify(() => mockClient.post(
+              Uri.parse(
+                  'https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=apiKey'),
+              body: json.encode({
+                'email': 'email',
+                'requestType': 'PASSWORD_RESET',
+              }),
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Firebase-Locale': 'de-DE',
+              },
+            ));
       });
 
       test('should throw AuthError on failure', () async {
@@ -444,17 +445,17 @@ void main() {
         await api.resetPassword(
           const PasswordResetRequest.verify(oobCode: 'code'),
         );
-        verify(mockClient.post(
-          Uri.parse(
-              'https://identitytoolkit.googleapis.com/v1/accounts:resetPassword?key=apiKey'),
-          body: json.encode({
-            'oobCode': 'code',
-          }),
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          },
-        ));
+        verify(() => mockClient.post(
+              Uri.parse(
+                  'https://identitytoolkit.googleapis.com/v1/accounts:resetPassword?key=apiKey'),
+              body: json.encode({
+                'oobCode': 'code',
+              }),
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+              },
+            ));
       });
 
       test('should throw AuthError on failure', () async {
@@ -475,18 +476,18 @@ void main() {
           oobCode: 'code',
           newPassword: 'password',
         ));
-        verify(mockClient.post(
-          Uri.parse(
-              'https://identitytoolkit.googleapis.com/v1/accounts:resetPassword?key=apiKey'),
-          body: json.encode({
-            'oobCode': 'code',
-            'newPassword': 'password',
-          }),
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          },
-        ));
+        verify(() => mockClient.post(
+              Uri.parse(
+                  'https://identitytoolkit.googleapis.com/v1/accounts:resetPassword?key=apiKey'),
+              body: json.encode({
+                'oobCode': 'code',
+                'newPassword': 'password',
+              }),
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+              },
+            ));
       });
 
       test('should throw AuthError on failure', () async {
@@ -507,17 +508,17 @@ void main() {
       whenPost().thenFake<ConfirmEmailResponse>();
 
       await api.confirmEmail(const ConfirmEmailRequest(oobCode: 'code'));
-      verify(mockClient.post(
-        Uri.parse(
-            'https://identitytoolkit.googleapis.com/v1/accounts:update?key=apiKey'),
-        body: json.encode({
-          'oobCode': 'code',
-        }),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      ));
+      verify(() => mockClient.post(
+            Uri.parse(
+                'https://identitytoolkit.googleapis.com/v1/accounts:update?key=apiKey'),
+            body: json.encode({
+              'oobCode': 'code',
+            }),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          ));
     });
 
     test('should throw AuthError on failure', () async {
@@ -535,18 +536,18 @@ void main() {
         identifier: 'id',
         continueUri: Uri.parse('http://localhost:8080'),
       ));
-      verify(mockClient.post(
-        Uri.parse(
-            'https://identitytoolkit.googleapis.com/v1/accounts:createAuthUri?key=apiKey'),
-        body: json.encode({
-          'identifier': 'id',
-          'continueUri': 'http://localhost:8080',
-        }),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      ));
+      verify(() => mockClient.post(
+            Uri.parse(
+                'https://identitytoolkit.googleapis.com/v1/accounts:createAuthUri?key=apiKey'),
+            body: json.encode({
+              'identifier': 'id',
+              'continueUri': 'http://localhost:8080',
+            }),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          ));
     });
 
     test('should throw AuthError on failure', () async {
@@ -569,20 +570,20 @@ void main() {
         email: 'mail',
         password: 'password',
       ));
-      verify(mockClient.post(
-        Uri.parse(
-            'https://identitytoolkit.googleapis.com/v1/accounts:update?key=apiKey'),
-        body: json.encode({
-          'idToken': 'token',
-          'email': 'mail',
-          'password': 'password',
-          'returnSecureToken': true,
-        }),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      ));
+      verify(() => mockClient.post(
+            Uri.parse(
+                'https://identitytoolkit.googleapis.com/v1/accounts:update?key=apiKey'),
+            body: json.encode({
+              'idToken': 'token',
+              'email': 'mail',
+              'password': 'password',
+              'returnSecureToken': true,
+            }),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          ));
     });
 
     test('should throw AuthError on failure', () async {
@@ -606,21 +607,21 @@ void main() {
         requestUri: Uri.parse('http://localhost'),
         postBody: 'post',
       ));
-      verify(mockClient.post(
-        Uri.parse(
-            'https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=apiKey'),
-        body: json.encode({
-          'idToken': 'token',
-          'requestUri': 'http://localhost',
-          'postBody': 'post',
-          'returnSecureToken': true,
-          'returnIdpCredential': false,
-        }),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      ));
+      verify(() => mockClient.post(
+            Uri.parse(
+                'https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=apiKey'),
+            body: json.encode({
+              'idToken': 'token',
+              'requestUri': 'http://localhost',
+              'postBody': 'post',
+              'returnSecureToken': true,
+              'returnIdpCredential': false,
+            }),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          ));
     });
 
     test('should throw AuthError on failure', () async {
@@ -643,18 +644,18 @@ void main() {
         idToken: 'token',
         deleteProvider: ['a', 'b', 'c'],
       ));
-      verify(mockClient.post(
-        Uri.parse(
-            'https://identitytoolkit.googleapis.com/v1/accounts:update?key=apiKey'),
-        body: json.encode({
-          'idToken': 'token',
-          'deleteProvider': ['a', 'b', 'c'],
-        }),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      ));
+      verify(() => mockClient.post(
+            Uri.parse(
+                'https://identitytoolkit.googleapis.com/v1/accounts:update?key=apiKey'),
+            body: json.encode({
+              'idToken': 'token',
+              'deleteProvider': ['a', 'b', 'c'],
+            }),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          ));
     });
 
     test('should throw AuthError on failure', () async {
@@ -671,17 +672,17 @@ void main() {
   group('delete', () {
     test('should send a post request with correct data', () async {
       await api.delete(const DeleteRequest(idToken: 'token'));
-      verify(mockClient.post(
-        Uri.parse(
-            'https://identitytoolkit.googleapis.com/v1/accounts:delete?key=apiKey'),
-        body: json.encode({
-          'idToken': 'token',
-        }),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      ));
+      verify(() => mockClient.post(
+            Uri.parse(
+                'https://identitytoolkit.googleapis.com/v1/accounts:delete?key=apiKey'),
+            body: json.encode({
+              'idToken': 'token',
+            }),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          ));
     });
 
     test('should throw AuthError on failure', () async {

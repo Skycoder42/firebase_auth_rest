@@ -3,7 +3,7 @@ import 'dart:mirrors';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:http/http.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
 class FakeRequest extends Fake implements BaseRequest {
   @override
