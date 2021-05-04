@@ -26,8 +26,8 @@ import 'fakes.dart';
 class MockClient extends Mock implements Client {}
 
 extension FakeResponseX on When<Future<Response>> {
-  void thenFake<T>([Map<String, dynamic>? overwrites]) =>
-      thenAnswer((i) async => FakeResponse.forModel<T>(overwrites));
+  void thenFake<T>(T model, [Map<String, dynamic>? overwrites]) =>
+      thenAnswer((i) async => FakeResponse.forModel<T>(model, overwrites));
 }
 
 void main() {
@@ -61,7 +61,14 @@ void main() {
 
   group('token', () {
     test('should send a post request with correct data', () async {
-      whenPost().thenFake<RefreshResponse>();
+      whenPost().thenFake(const RefreshResponse(
+        expires_in: '',
+        token_type: '',
+        refresh_token: '',
+        id_token: '',
+        user_id: '',
+        project_id: '',
+      ));
 
       const token = 'token';
       await api.token(refresh_token: token);
@@ -87,7 +94,12 @@ void main() {
 
   group('signUpAnonymous', () {
     test('should send a post request with correct data', () async {
-      whenPost().thenFake<AnonymousSignInResponse>();
+      whenPost().thenFake(AnonymousSignInResponse(
+        idToken: '',
+        refreshToken: '',
+        expiresIn: '',
+        localId: '',
+      ));
 
       await api.signUpAnonymous(AnonymousSignInRequest());
       verify(() => mockClient.post(
@@ -112,7 +124,12 @@ void main() {
 
   group('signUpWithPassword', () {
     test('should send a post request with correct data', () async {
-      whenPost().thenFake<PasswordSignInResponse>();
+      whenPost().thenFake(const PasswordSignInResponse(
+        idToken: '',
+        refreshToken: '',
+        expiresIn: '',
+        localId: '',
+      ));
 
       await api.signUpWithPassword(PasswordSignInRequest(
         email: 'email',
@@ -146,7 +163,14 @@ void main() {
 
   group('signInWithIdp', () {
     test('should send a post request with correct data', () async {
-      whenPost().thenFake<IdpSignInResponse>();
+      whenPost().thenFake(const IdpSignInResponse(
+        federatedId: '',
+        providerId: '',
+        localId: '',
+        idToken: '',
+        refreshToken: '',
+        expiresIn: '',
+      ));
 
       await api.signInWithIdp(IdpSignInRequest(
         requestUri: Uri.parse('http://localhost'),
@@ -181,7 +205,12 @@ void main() {
 
   group('signInWithPassword', () {
     test('should send a post request with correct data', () async {
-      whenPost().thenFake<PasswordSignInResponse>();
+      whenPost().thenFake(const PasswordSignInResponse(
+        idToken: '',
+        refreshToken: '',
+        expiresIn: '',
+        localId: '',
+      ));
 
       await api.signInWithPassword(const PasswordSignInRequest(
         email: 'email',
@@ -215,7 +244,12 @@ void main() {
 
   group('signInWithCustomToken', () {
     test('should send a post request with correct data', () async {
-      whenPost().thenFake<CustomTokenSignInResponse>();
+      whenPost().thenFake(const CustomTokenSignInResponse(
+        idToken: '',
+        refreshToken: '',
+        expiresIn: '',
+        localId: '',
+      ));
 
       await api.signInWithCustomToken(
           const CustomTokenSignInRequest(token: 'token'));
@@ -244,7 +278,7 @@ void main() {
 
   group('getUserData', () {
     test('should send a post request with correct data', () async {
-      whenPost().thenFake<UserDataResponse>();
+      whenPost().thenFake(const UserDataResponse());
 
       await api.getUserData(UserDataRequest(
         idToken: 'idToken',
@@ -274,7 +308,7 @@ void main() {
 
   group('updateEmail', () {
     test('should send a post request with correct data', () async {
-      whenPost().thenFake<EmailUpdateResponse>();
+      whenPost().thenFake(const EmailUpdateResponse(localId: ''));
 
       await api.updateEmail(
           const EmailUpdateRequest(
@@ -311,7 +345,7 @@ void main() {
 
   group('updatePassword', () {
     test('should send a post request with correct data', () async {
-      whenPost().thenFake<PasswordUpdateResponse>();
+      whenPost().thenFake(const PasswordUpdateResponse(localId: ''));
 
       await api.updatePassword(const PasswordUpdateRequest(
         idToken: 'token',
@@ -345,7 +379,7 @@ void main() {
 
   group('updateProfile', () {
     test('should send a post request with correct data', () async {
-      whenPost().thenFake<ProfileUpdateResponse>();
+      whenPost().thenFake(const ProfileUpdateResponse(localId: ''));
 
       await api.updateProfile(const ProfileUpdateRequest(idToken: 'token'));
       verify(() => mockClient.post(
@@ -376,7 +410,7 @@ void main() {
   group('sendOobCode', () {
     group('verifyEmail', () {
       test('should send a post request with correct data', () async {
-        whenPost().thenFake<OobCodeResponse>();
+        whenPost().thenFake(const OobCodeResponse());
 
         await api.sendOobCode(
             const OobCodeRequest.verifyEmail(idToken: 'token'), 'de-DE');
@@ -407,7 +441,7 @@ void main() {
 
     group('passwordReset', () {
       test('should send a post request with correct data', () async {
-        whenPost().thenFake<OobCodeResponse>();
+        whenPost().thenFake(const OobCodeResponse());
 
         await api.sendOobCode(
             const OobCodeRequest.passwordReset(email: 'email'), 'de-DE');
@@ -440,7 +474,7 @@ void main() {
   group('resetPassword', () {
     group('verify', () {
       test('should send a post request with correct data', () async {
-        whenPost().thenFake<PasswordResetResponse>();
+        whenPost().thenFake(const PasswordResetResponse());
 
         await api.resetPassword(
           const PasswordResetRequest.verify(oobCode: 'code'),
@@ -470,7 +504,7 @@ void main() {
 
     group('confirm', () {
       test('should send a post request with correct data', () async {
-        whenPost().thenFake<PasswordResetResponse>();
+        whenPost().thenFake(const PasswordResetResponse());
 
         await api.resetPassword(const PasswordResetRequest.confirm(
           oobCode: 'code',
@@ -505,7 +539,7 @@ void main() {
 
   group('confirmEmail', () {
     test('should send a post request with correct data', () async {
-      whenPost().thenFake<ConfirmEmailResponse>();
+      whenPost().thenFake(const ConfirmEmailResponse());
 
       await api.confirmEmail(const ConfirmEmailRequest(oobCode: 'code'));
       verify(() => mockClient.post(
@@ -530,7 +564,7 @@ void main() {
 
   group('fetchProviders', () {
     test('should send a post request with correct data', () async {
-      whenPost().thenFake<FetchProviderResponse>();
+      whenPost().thenFake(const FetchProviderResponse());
 
       await api.fetchProviders(FetchProviderRequest(
         identifier: 'id',
@@ -563,7 +597,7 @@ void main() {
 
   group('linkEmail', () {
     test('should send a post request with correct data', () async {
-      whenPost().thenFake<LinkEmailResponse>();
+      whenPost().thenFake(const LinkEmailResponse(localId: ''));
 
       await api.linkEmail(const LinkEmailRequest(
         idToken: 'token',
@@ -600,7 +634,14 @@ void main() {
 
   group('linkIdp', () {
     test('should send a post request with correct data', () async {
-      whenPost().thenFake<LinkIdpResponse>();
+      whenPost().thenFake(const LinkIdpResponse(
+        federatedId: '',
+        providerId: '',
+        localId: '',
+        idToken: '',
+        refreshToken: '',
+        expiresIn: '',
+      ));
 
       await api.linkIdp(LinkIdpRequest(
         idToken: 'token',
@@ -638,7 +679,7 @@ void main() {
 
   group('unlinkProvider', () {
     test('should send a post request with correct data', () async {
-      whenPost().thenFake<UnlinkResponse>();
+      whenPost().thenFake(const UnlinkResponse(localId: ''));
 
       await api.unlinkProvider(const UnlinkRequest(
         idToken: 'token',

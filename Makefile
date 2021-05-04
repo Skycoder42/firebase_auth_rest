@@ -67,7 +67,7 @@ integration-tests-js: get
 	@test -n "$(FIREBASE_API_KEY)"
 	@echo "part of 'test_config_js.dart';" > test/integration/test_config_js.env.dart
 	@echo "const _firebaseApiKey = '$(FIREBASE_API_KEY)';" >> test/integration/test_config_js.env.dart
-	dart test -p chrome test/integration
+	dart test -p chrome test/integration; tmp=$$?; rm test/integration/test_config_js.env.dart; exit $$tmp
 
 integration-tests: get
 	$(MAKE) -f $(MAKEFILE) integration-tests-vm
@@ -94,7 +94,6 @@ coverage/lcov.info: coverage/.generated
 	dart run coverage:format_coverage --lcov --check-ignore \
 		--in coverage \
 		--out coverage/lcov.info \
-		--packages .packages \
 		--report-on lib
 
 coverage/lcov_cleaned.info: coverage/lcov.info
