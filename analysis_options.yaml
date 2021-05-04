@@ -6,6 +6,7 @@ analyzer:
     - "**/*.freezed.dart"
     - "**/*.mocks.dart"
     - "build/**"
+    - test/integration/test_config_js.dart
   strong-mode:
     implicit-casts: false
     implicit-dynamic: false
