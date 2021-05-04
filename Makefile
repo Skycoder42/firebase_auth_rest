@@ -94,6 +94,7 @@ coverage/lcov.info: coverage/.generated
 	dart run coverage:format_coverage --lcov --check-ignore \
 		--in coverage \
 		--out coverage/lcov.info \
+		--packages .dart_tool/package_config.json \
 		--report-on lib
 
 coverage/lcov_cleaned.info: coverage/lcov.info
