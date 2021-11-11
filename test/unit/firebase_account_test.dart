@@ -62,25 +62,31 @@ void main() {
     registerFallbackValue(Uri());
     registerFallbackValue(const DeleteRequest(idToken: ''));
     registerFallbackValue(const UnlinkRequest(idToken: '', deleteProvider: []));
-    registerFallbackValue(LinkIdpRequest(
-      idToken: '',
-      requestUri: Uri(),
-      postBody: '',
-    ));
-    registerFallbackValue(const LinkEmailRequest(
-      idToken: '',
-      email: '',
-      password: '',
-    ));
+    registerFallbackValue(
+      LinkIdpRequest(
+        idToken: '',
+        requestUri: Uri(),
+        postBody: '',
+      ),
+    );
+    registerFallbackValue(
+      const LinkEmailRequest(
+        idToken: '',
+        email: '',
+        password: '',
+      ),
+    );
     registerFallbackValue(const OobCodeRequest.verifyEmail(idToken: ''));
     registerFallbackValue(const ProfileUpdateRequest(idToken: ''));
     registerFallbackValue(const EmailUpdateRequest(idToken: '', email: ''));
     registerFallbackValue(const UserDataRequest(idToken: ''));
     registerFallbackValue(const ConfirmEmailRequest(oobCode: ''));
-    registerFallbackValue(const PasswordUpdateRequest(
-      idToken: '',
-      password: '',
-    ));
+    registerFallbackValue(
+      const PasswordUpdateRequest(
+        idToken: '',
+        password: '',
+      ),
+    );
   });
 
   setUp(() {
@@ -159,10 +165,11 @@ void main() {
     test('apiRestore initializes account correctly', () async {
       const refreshToken1 = 'refreshToken1';
       const refreshToken2 = 'refreshToken2';
-      when(() => mockApi.token(refresh_token: refreshToken1))
-          .thenAnswer((i) async => defaultRefreshResponse.copyWith(
-                refresh_token: refreshToken2,
-              ));
+      when(() => mockApi.token(refresh_token: refreshToken1)).thenAnswer(
+        (i) async => defaultRefreshResponse.copyWith(
+          refresh_token: refreshToken2,
+        ),
+      );
 
       final expiresAt = DateTime.now().toUtc().add(Duration(seconds: 5));
       account = await FirebaseAccount.apiRestore(
@@ -190,15 +197,19 @@ void main() {
     });
 
     test('restore initializes api with correct client and key', () async {
-      when(() => mockClient.post(
-            any(),
-            body: any(named: 'body'),
-            headers: any(named: 'headers'),
-          )).thenAnswer((i) async => FakeResponse(
-            body: json.encode(
-              defaultRefreshResponse.copyWith(expires_in: '1').toJson(),
-            ),
-          ));
+      when(
+        () => mockClient.post(
+          any(),
+          body: any(named: 'body'),
+          headers: any(named: 'headers'),
+        ),
+      ).thenAnswer(
+        (i) async => FakeResponse(
+          body: json.encode(
+            defaultRefreshResponse.copyWith(expires_in: '1').toJson(),
+          ),
+        ),
+      );
 
       const apiKey = 'API-KEY';
       account = await FirebaseAccount.restore(
@@ -214,10 +225,12 @@ void main() {
 
   group('autoRefresh', () {
     setUp(() {
-      when(() => mockApi.token(
-            refresh_token: any(named: 'refresh_token'),
-            grant_type: any(named: 'grant_type'),
-          )).thenAnswer((i) async => defaultRefreshResponse);
+      when(
+        () => mockApi.token(
+          refresh_token: any(named: 'refresh_token'),
+          grant_type: any(named: 'grant_type'),
+        ),
+      ).thenAnswer((i) async => defaultRefreshResponse);
     });
 
     test('does nothing if disabled', () async {
@@ -245,10 +258,12 @@ void main() {
 
     test('sends token request again after timeout', () async {
       when(() => mockApi.token(refresh_token: any(named: 'refresh_token')))
-          .thenAnswer((i) async => defaultRefreshResponse.copyWith(
-                refresh_token: 'refreshToken2',
-                expires_in: '62',
-              ));
+          .thenAnswer(
+        (i) async => defaultRefreshResponse.copyWith(
+          refresh_token: 'refreshToken2',
+          expires_in: '62',
+        ),
+      );
 
       account = FirebaseAccount.apiCreate(
         mockApi,
@@ -301,11 +316,13 @@ void main() {
         const idToken = 'id';
         const refreshToken = 'refresh';
         when(() => mockApi.token(refresh_token: any(named: 'refresh_token')))
-            .thenAnswer((i) async => defaultRefreshResponse.copyWith(
-                  id_token: idToken,
-                  refresh_token: refreshToken,
-                  expires_in: '6000',
-                ));
+            .thenAnswer(
+          (i) async => defaultRefreshResponse.copyWith(
+            id_token: idToken,
+            refresh_token: refreshToken,
+            expires_in: '6000',
+          ),
+        );
 
         final expiresAt = DateTime.now().toUtc().add(Duration(seconds: 6000));
         final token = await account.refresh();
@@ -326,10 +343,12 @@ void main() {
       test('token updates are streamed', () async {
         const idToken = 'nextId';
         when(() => mockApi.token(refresh_token: any(named: 'refresh_token')))
-            .thenAnswer((i) async => defaultRefreshResponse.copyWith(
-                  id_token: idToken,
-                  expires_in: '5',
-                ));
+            .thenAnswer(
+          (i) async => defaultRefreshResponse.copyWith(
+            id_token: idToken,
+            expires_in: '5',
+          ),
+        );
 
         expect(account.idTokenStream.isBroadcast, true);
 
@@ -349,13 +368,15 @@ void main() {
 
       await account.requestEmailConfirmation(locale: fixture.item1);
 
-      verify(() => mockApi.sendOobCode(
-            OobCodeRequest.verifyEmail(
-              idToken: 'idToken',
-              requestType: OobCodeRequestType.VERIFY_EMAIL,
-            ),
-            fixture.item2,
-          ));
+      verify(
+        () => mockApi.sendOobCode(
+          OobCodeRequest.verifyEmail(
+            idToken: 'idToken',
+            requestType: OobCodeRequestType.VERIFY_EMAIL,
+          ),
+          fixture.item2,
+        ),
+      );
     });
 
     test('confirmEmail sends confirm email request', () async {
@@ -370,10 +391,11 @@ void main() {
 
     group('getDetails', () {
       test('sends user data request', () async {
-        when(() => mockApi.getUserData(any()))
-            .thenAnswer((i) async => UserDataResponse(
-                  users: [],
-                ));
+        when(() => mockApi.getUserData(any())).thenAnswer(
+          (i) async => UserDataResponse(
+            users: [],
+          ),
+        );
 
         final result = await account.getDetails();
 
@@ -383,13 +405,14 @@ void main() {
 
       test('returns first user data element', () async {
         final userData = defaultUserData.copyWith(displayName: 'Max Muster');
-        when(() => mockApi.getUserData(any()))
-            .thenAnswer((i) async => UserDataResponse(
-                  users: [
-                    userData,
-                    defaultUserData,
-                  ],
-                ));
+        when(() => mockApi.getUserData(any())).thenAnswer(
+          (i) async => UserDataResponse(
+            users: [
+              userData,
+              defaultUserData,
+            ],
+          ),
+        );
 
         final result = await account.getDetails();
         expect(result, userData);
@@ -407,14 +430,16 @@ void main() {
 
       await account.updateEmail(newEmail, locale: fixture.item1);
 
-      verify(() => mockApi.updateEmail(
-            EmailUpdateRequest(
-              idToken: 'idToken',
-              email: newEmail,
-              returnSecureToken: false,
-            ),
-            fixture.item2,
-          ));
+      verify(
+        () => mockApi.updateEmail(
+          EmailUpdateRequest(
+            idToken: 'idToken',
+            email: newEmail,
+            returnSecureToken: false,
+          ),
+          fixture.item2,
+        ),
+      );
     });
 
     test('updatePassword sends password update request', () async {
@@ -424,11 +449,15 @@ void main() {
 
       await account.updatePassword(newPassword);
 
-      verify(() => mockApi.updatePassword(PasswordUpdateRequest(
+      verify(
+        () => mockApi.updatePassword(
+          PasswordUpdateRequest(
             idToken: 'idToken',
             password: newPassword,
             returnSecureToken: true,
-          )));
+          ),
+        ),
+      );
     });
 
     testData<
@@ -505,15 +534,21 @@ void main() {
           .thenAnswer((i) async => ProfileUpdateResponse(localId: ''));
 
       await account.updateProfile(
-          displayName: fixture.item1, photoUrl: fixture.item2);
+        displayName: fixture.item1,
+        photoUrl: fixture.item2,
+      );
 
-      verify(() => mockApi.updateProfile(ProfileUpdateRequest(
+      verify(
+        () => mockApi.updateProfile(
+          ProfileUpdateRequest(
             idToken: 'idToken',
             displayName: fixture.item3,
             photoUrl: fixture.item4,
             deleteAttribute: fixture.item5,
             returnSecureToken: false,
-          )));
+          ),
+        ),
+      );
     });
 
     group('linkEmail', () {
@@ -531,20 +566,25 @@ void main() {
           autoVerify: false,
         );
 
-        verify(() => mockApi.linkEmail(LinkEmailRequest(
+        verify(
+          () => mockApi.linkEmail(
+            LinkEmailRequest(
               idToken: 'idToken',
               email: mail,
               password: password,
               returnSecureToken: true,
-            )));
+            ),
+          ),
+        );
         expect(result, false);
       });
 
       test('returns email verified as result', () async {
-        when(() => mockApi.linkEmail(any()))
-            .thenAnswer((i) async => defaultLinkEmailResponse.copyWith(
-                  emailVerified: true,
-                ));
+        when(() => mockApi.linkEmail(any())).thenAnswer(
+          (i) async => defaultLinkEmailResponse.copyWith(
+            emailVerified: true,
+          ),
+        );
 
         final result = await account.linkEmail(
           'mail',
@@ -572,20 +612,23 @@ void main() {
         );
         expect(result, false);
 
-        verify(() => mockApi.sendOobCode(
-              OobCodeRequest.verifyEmail(
-                idToken: 'idToken',
-              ),
-              fixture.item2,
-            ));
+        verify(
+          () => mockApi.sendOobCode(
+            OobCodeRequest.verifyEmail(
+              idToken: 'idToken',
+            ),
+            fixture.item2,
+          ),
+        );
       });
 
       test('does not request email confirmation if verified and enabled',
           () async {
-        when(() => mockApi.linkEmail(any()))
-            .thenAnswer((i) async => defaultLinkEmailResponse.copyWith(
-                  emailVerified: true,
-                ));
+        when(() => mockApi.linkEmail(any())).thenAnswer(
+          (i) async => defaultLinkEmailResponse.copyWith(
+            emailVerified: true,
+          ),
+        );
 
         final result = await account.linkEmail(
           'mail',
@@ -605,13 +648,17 @@ void main() {
       final uri = Uri.parse('https://localhost:4242');
       await account.linkIdp(provider, uri);
 
-      verify(() => mockApi.linkIdp(LinkIdpRequest(
+      verify(
+        () => mockApi.linkIdp(
+          LinkIdpRequest(
             idToken: 'idToken',
             postBody: provider.postBody,
             requestUri: uri,
             returnIdpCredential: false,
             returnSecureToken: true,
-          )));
+          ),
+        ),
+      );
     });
 
     test('unlinkProvider sends unlink request', () async {
@@ -621,10 +668,14 @@ void main() {
       const providers = ['a', 'b'];
       await account.unlinkProviders(providers);
 
-      verify(() => mockApi.unlinkProvider(UnlinkRequest(
+      verify(
+        () => mockApi.unlinkProvider(
+          UnlinkRequest(
             idToken: 'idToken',
             deleteProvider: providers,
-          )));
+          ),
+        ),
+      );
     });
 
     group('delete', () {
@@ -633,9 +684,13 @@ void main() {
 
         await account.delete();
 
-        verify(() => mockApi.delete(DeleteRequest(
+        verify(
+          () => mockApi.delete(
+            DeleteRequest(
               idToken: 'idToken',
-            )));
+            ),
+          ),
+        );
       });
 
       test('sends null to idToken stream', () async {

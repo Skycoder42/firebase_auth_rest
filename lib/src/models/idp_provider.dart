@@ -76,9 +76,11 @@ class IdpProvider with _$IdpProvider {
       },
       custom: (_, parameters) => parameters,
     );
-    return Uri(queryParameters: <String, dynamic>{
-      ...params,
-      'providerId': id,
-    }).query;
+    return Uri(
+      queryParameters: <String, dynamic>{
+        ...params,
+        'providerId': id,
+      },
+    ).query;
   }
 }

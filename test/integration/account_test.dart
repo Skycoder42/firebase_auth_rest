@@ -1,5 +1,6 @@
 import 'dart:math';
 
+// dart_pre_commit:ignore-library-import
 import 'package:firebase_auth_rest/firebase_auth_rest.dart';
 import 'package:http/http.dart';
 import 'package:test/test.dart';
@@ -108,9 +109,11 @@ void main() {
 
       await account.updateProfile(
         displayName: const ProfileUpdate.delete(),
-        photoUrl: ProfileUpdate.update(Uri.parse(
-          'https://example.org/profile.png',
-        )),
+        photoUrl: ProfileUpdate.update(
+          Uri.parse(
+            'https://example.org/profile.png',
+          ),
+        ),
       );
       details = await account.getDetails();
       expect(details, isNotNull);
@@ -162,7 +165,8 @@ void main() {
       expect(
         details.providerUserInfo,
         contains(
-            predicate<ProviderUserInfo>((p) => p.providerId == 'password')),
+          predicate<ProviderUserInfo>((p) => p.providerId == 'password'),
+        ),
       );
 
       await account.updatePassword(fakePassword + fakePassword);

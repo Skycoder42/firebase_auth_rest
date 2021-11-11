@@ -306,10 +306,12 @@ class FirebaseAccount {
   /// request will always fail. You can instead link the account with an email
   /// address and a new password via [linkEmail()].
   Future<void> updatePassword(String newPassword) async {
-    final response = await api.updatePassword(PasswordUpdateRequest(
-      idToken: _idToken,
-      password: newPassword,
-    ));
+    final response = await api.updatePassword(
+      PasswordUpdateRequest(
+        idToken: _idToken,
+        password: newPassword,
+      ),
+    );
     _applyToken(
       idToken: response.idToken,
       refreshToken: response.refreshToken,
@@ -332,15 +334,17 @@ class FirebaseAccount {
     ProfileUpdate<String>? displayName,
     ProfileUpdate<Uri>? photoUrl,
   }) =>
-      api.updateProfile(ProfileUpdateRequest(
-        idToken: _idToken,
-        displayName: displayName?.updateOr(),
-        photoUrl: photoUrl?.updateOr(),
-        deleteAttribute: [
-          if (displayName?.isDelete ?? false) DeleteAttribute.DISPLAY_NAME,
-          if (photoUrl?.isDelete ?? false) DeleteAttribute.PHOTO_URL,
-        ],
-      ));
+      api.updateProfile(
+        ProfileUpdateRequest(
+          idToken: _idToken,
+          displayName: displayName?.updateOr(),
+          photoUrl: photoUrl?.updateOr(),
+          deleteAttribute: [
+            if (displayName?.isDelete ?? false) DeleteAttribute.DISPLAY_NAME,
+            if (photoUrl?.isDelete ?? false) DeleteAttribute.PHOTO_URL,
+          ],
+        ),
+      );
 
   /// Links a new email address to this account.
   ///
@@ -365,11 +369,13 @@ class FirebaseAccount {
     bool autoVerify = true,
     String? locale,
   }) async {
-    final response = await api.linkEmail(LinkEmailRequest(
-      idToken: _idToken,
-      email: email,
-      password: password,
-    ));
+    final response = await api.linkEmail(
+      LinkEmailRequest(
+        idToken: _idToken,
+        email: email,
+        password: password,
+      ),
+    );
     _applyToken(
       idToken: response.idToken,
       refreshToken: response.refreshToken,
@@ -394,11 +400,13 @@ class FirebaseAccount {
     IdpProvider provider,
     Uri requestUri,
   ) async {
-    final response = await api.linkIdp(LinkIdpRequest(
-      idToken: _idToken,
-      postBody: provider.postBody,
-      requestUri: requestUri,
-    ));
+    final response = await api.linkIdp(
+      LinkIdpRequest(
+        idToken: _idToken,
+        postBody: provider.postBody,
+        requestUri: requestUri,
+      ),
+    );
     _applyToken(
       idToken: response.idToken,
       refreshToken: response.refreshToken,
@@ -415,11 +423,12 @@ class FirebaseAccount {
   /// After a provider has been removed, the user cannot login anymore with that
   /// provider. However, you can always re-add providers via [linkEmail()] or
   /// [linkIdp()].
-  Future<void> unlinkProviders(List<String> providers) =>
-      api.unlinkProvider(UnlinkRequest(
-        idToken: _idToken,
-        deleteProvider: providers,
-      ));
+  Future<void> unlinkProviders(List<String> providers) => api.unlinkProvider(
+        UnlinkRequest(
+          idToken: _idToken,
+          deleteProvider: providers,
+        ),
+      );
 
   /// Delete the account
   ///

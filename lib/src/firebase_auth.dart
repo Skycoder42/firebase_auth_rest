@@ -54,10 +54,12 @@ class FirebaseAuth {
     String email, [
     Uri? continueUri,
   ]) async {
-    final response = await api.fetchProviders(FetchProviderRequest(
-      identifier: email,
-      continueUri: continueUri ?? Uri.http('localhost', ''),
-    ));
+    final response = await api.fetchProviders(
+      FetchProviderRequest(
+        identifier: email,
+        continueUri: continueUri ?? Uri.http('localhost', ''),
+      ),
+    );
     return [
       if (response.registered) 'email',
       ...response.allProviders,
@@ -113,10 +115,12 @@ class FirebaseAuth {
     bool autoRefresh = true,
     String? locale,
   }) async {
-    final response = await api.signUpWithPassword(PasswordSignInRequest(
-      email: email,
-      password: password,
-    ));
+    final response = await api.signUpWithPassword(
+      PasswordSignInRequest(
+        email: email,
+        password: password,
+      ),
+    );
     if (autoVerify) {
       await api.sendOobCode(
         OobCodeRequest.verifyEmail(
@@ -153,10 +157,12 @@ class FirebaseAuth {
   }) async =>
       FirebaseAccount.apiCreate(
         api,
-        await api.signInWithIdp(IdpSignInRequest(
-          postBody: provider.postBody,
-          requestUri: requestUri,
-        )),
+        await api.signInWithIdp(
+          IdpSignInRequest(
+            postBody: provider.postBody,
+            requestUri: requestUri,
+          ),
+        ),
         autoRefresh: autoRefresh,
         locale: locale,
       );
@@ -181,10 +187,12 @@ class FirebaseAuth {
   }) async =>
       FirebaseAccount.apiCreate(
         api,
-        await api.signInWithPassword(PasswordSignInRequest(
-          email: email,
-          password: password,
-        )),
+        await api.signInWithPassword(
+          PasswordSignInRequest(
+            email: email,
+            password: password,
+          ),
+        ),
         autoRefresh: autoRefresh,
         locale: locale,
       );
@@ -206,9 +214,11 @@ class FirebaseAuth {
   }) async =>
       FirebaseAccount.apiCreate(
         api,
-        await api.signInWithCustomToken(CustomTokenSignInRequest(
-          token: token,
-        )),
+        await api.signInWithCustomToken(
+          CustomTokenSignInRequest(
+            token: token,
+          ),
+        ),
         autoRefresh: autoRefresh,
         locale: locale,
       );
@@ -249,8 +259,10 @@ class FirebaseAuth {
   /// signing in via [signInWithPassword()]. If it fails, an [AuthError] is
   /// thrown.
   Future resetPassword(String oobCode, String newPassword) async =>
-      api.resetPassword(PasswordResetRequest.confirm(
-        oobCode: oobCode,
-        newPassword: newPassword,
-      ));
+      api.resetPassword(
+        PasswordResetRequest.confirm(
+          oobCode: oobCode,
+          newPassword: newPassword,
+        ),
+      );
 }
