@@ -6,6 +6,14 @@ part 'signin_response.g.dart';
 /// Meta-Class for multiple API-Endpoints
 @freezed
 class SignInResponse with _$SignInResponse {
+  const SignInResponse._();
+
+  /// The uid of the newly created user.
+  String get localId => maybeMap(
+        custom: (_) => '',
+        orElse: () => throw StateError('Unreachable code was reached!'),
+      );
+
   /// https://firebase.google.com/docs/reference/rest/auth#section-sign-in-anonymously
   const factory SignInResponse.anonymous({
     /// A Firebase Auth ID token for the newly created user.
@@ -118,9 +126,6 @@ class SignInResponse with _$SignInResponse {
 
     /// The number of seconds in which the ID token expires.
     required String expiresIn,
-
-    /// The uid of the authenticated user.
-    required String localId,
   }) = CustomTokenSignInResponse;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-link-with-oauth-credential

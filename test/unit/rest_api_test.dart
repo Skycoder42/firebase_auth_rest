@@ -294,7 +294,6 @@ void main() {
           idToken: '',
           refreshToken: '',
           expiresIn: '',
-          localId: '',
         ),
       );
 

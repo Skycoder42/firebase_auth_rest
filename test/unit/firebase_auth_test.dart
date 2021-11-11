@@ -398,7 +398,6 @@ void main() {
         when(() => mockApi.signInWithCustomToken(any())).thenAnswer(
           (i) async => CustomTokenSignInResponse(
             idToken: '',
-            localId: '',
             expiresIn: '1',
             refreshToken: '',
           ),
@@ -420,7 +419,6 @@ void main() {
         when(() => mockApi.signInWithCustomToken(any())).thenAnswer(
           (i) async => CustomTokenSignInResponse(
             idToken: idToken,
-            localId: localId,
             expiresIn: expiresIn,
             refreshToken: refreshToken,
           ),
@@ -433,7 +431,7 @@ void main() {
           autoRefresh: false,
         );
 
-        expect(account!.localId, localId);
+        expect(account!.localId, isEmpty);
         expect(account!.idToken, idToken);
         expect(account!.refreshToken, refreshToken);
         expect(account!.autoRefresh, false);
