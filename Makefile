@@ -137,12 +137,10 @@ doc-open: doc
 
 # publish
 pre-publish:
-	rm lib/src/.gitignore
+	git rm lib/src/.gitignore
 
 post-publish:
-	echo '# Generated dart files' > lib/src/.gitignore
-	echo '*.freezed.dart' >> lib/src/.gitignore
-	echo '*.g.dart' >> lib/src/.gitignore
+	git checkout HEAD lib/src/.gitignore
 
 publish-dry: .packages
 	$(MAKE) -f $(MAKEFILE) pre-publish
