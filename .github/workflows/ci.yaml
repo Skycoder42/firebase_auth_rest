@@ -20,6 +20,5 @@ jobs:
         "**/*.g.dart"
         "**/*.freezed.dart"
       integrationTestPaths: test/integration
-      integrationTestVmArgs: --define=FIREBASE_API_KEY=${{ secrets.FIREBASE_API_KEY }}
     secrets:
-      FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+      integrationTestVmArgs: --define=FIREBASE_API_KEY=${{ secrets.FIREBASE_API_KEY }}
