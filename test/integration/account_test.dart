@@ -1,11 +1,11 @@
 import 'dart:math';
 
-// dart_pre_commit:ignore-library-import
+// ignore: test_library_import
 import 'package:firebase_auth_rest/firebase_auth_rest.dart';
 import 'package:http/http.dart';
 import 'package:test/test.dart';
 
-import 'test_config_vm.dart' if (dart.library.js) 'test_config_js.dart';
+import 'test_config.dart';
 
 Matcher isAfter(DateTime after) => predicate<DateTime>(
       (e) => e.isAfter(after),
@@ -176,7 +176,7 @@ void main() {
       // expect(newDetails.passwordHash, isNot(details.passwordHash));
       expect(
         newDetails.passwordUpdatedAt,
-        greaterThan(details.passwordUpdatedAt),
+        greaterThan(details.passwordUpdatedAt!),
       );
 
       await account.unlinkProviders(['password']);

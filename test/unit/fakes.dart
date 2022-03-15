@@ -22,9 +22,11 @@ class FakeResponse extends Fake implements Response {
         body: json.encode(
           overwrites != null
               ? <String, dynamic>{
+                  // ignore: avoid_dynamic_calls
                   ...(model as dynamic).toJson(),
                   ...overwrites,
                 }
+              // ignore: avoid_dynamic_calls
               : (model as dynamic).toJson(),
         ),
       );
