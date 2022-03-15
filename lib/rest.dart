@@ -10,4 +10,6 @@ export 'src/models/signin_request.dart';
 export 'src/models/signin_response.dart';
 export 'src/models/update_request.dart';
 export 'src/models/update_response.dart';
+export 'src/models/userdata_request.dart';
+export 'src/models/userdata_response.dart';
 export 'src/rest_api.dart';
