@@ -21,9 +21,9 @@ void main() {
         (i) => Random.secure().nextInt(256).toRadixString(16),
       ).join();
 
-  setUpAll(() {
+  setUpAll(() async {
     client = Client();
-    auth = FirebaseAuth(client, TestConfig.apiKey);
+    auth = FirebaseAuth(client, await TestConfig.apiKey);
   });
 
   tearDownAll(() {

@@ -1,7 +1,8 @@
-import 'dart:io';
+import 'package:dart_test_tools/test.dart';
 
 abstract class TestConfig {
   TestConfig._();
 
-  static String get apiKey => Platform.environment['FIREBASE_API_KEY']!;
+  static Future<String> get apiKey =>
+      TestEnv.load().then((c) => c['FIREBASE_API_KEY']!);
 }
