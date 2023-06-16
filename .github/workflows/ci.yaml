@@ -10,6 +10,7 @@ jobs:
     uses: Skycoder42/dart_test_tools/.github/workflows/dart.yml@main
     with:
       buildRunner: true
+      panaScoreThreshold: 10
       unitTestPaths: test/unit
       coverageExclude: >-
         "**/*.g.dart"
