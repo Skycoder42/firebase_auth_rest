@@ -56,7 +56,7 @@ class IdpProvider with _$IdpProvider {
   String get id => when(
         google: (_) => 'google.com',
         facebook: (_) => 'facebook.com',
-        twitter: (_a, _b) => 'twitter.com',
+        twitter: (_, __) => 'twitter.com',
         custom: (providerId, _) => providerId,
       );
 

@@ -1,6 +1,7 @@
 import 'package:http/http.dart';
 
 import 'firebase_account.dart';
+import 'models/auth_exception.dart';
 import 'models/fetch_provider_request.dart';
 import 'models/idp_provider.dart';
 import 'models/oob_code_request.dart';
@@ -49,7 +50,7 @@ class FirebaseAuth {
   /// [IdpProvider.id] or the string `"email"`, if the user can login with the
   /// email and a password.
   ///
-  /// If the request fails, an [AuthError] will be thrown.
+  /// If the request fails, an [AuthException] will be thrown.
   Future<List<String>> fetchProviders(
     String email, [
     Uri? continueUri,
@@ -57,7 +58,7 @@ class FirebaseAuth {
     final response = await api.fetchProviders(
       FetchProviderRequest(
         identifier: email,
-        continueUri: continueUri ?? Uri.http('localhost', ''),
+        continueUri: continueUri ?? Uri.http('localhost'),
       ),
     );
     return [
@@ -73,8 +74,8 @@ class FirebaseAuth {
   /// refreshing the idToken. This happens automatically if [autoRefresh] is
   /// true or via [FirebaseAccount.refresh()].
   ///
-  /// If the request fails, an [AuthError] will be thrown. This also happens if
-  /// anonymous logins have not been enabled in the firebase console.
+  /// If the request fails, an [AuthException] will be thrown. This also happens
+  /// if anonymous logins have not been enabled in the firebase console.
   ///
   /// If you ever want to "promote" an anonymous account to a normal account,
   /// you can do so by using [FirebaseAccount.linkEmail()] or
@@ -93,9 +94,10 @@ class FirebaseAuth {
   /// Signs up to firebase with an email and a password.
   ///
   /// This creates a new firebase account and returns it's credentials as
-  /// [FirebaseAccount] if the request succeeds, or throws an [AuthError] if it
-  /// fails. From now on, the user can log into this account by using the same
-  /// [email] and [password] used for this request via [signInWithPassword()].
+  /// [FirebaseAccount] if the request succeeds, or throws an [AuthException] if
+  /// it fails. From now on, the user can log into this account by using the
+  /// same [email] and [password] used for this request via
+  /// [signInWithPassword()].
   ///
   /// If [autoVerify] is true (the default), this method will also send an email
   /// confirmation request for that email so the users mail can be verified. See
@@ -143,7 +145,7 @@ class FirebaseAuth {
   /// facebook, twitter, etc. As long as the provider has been enabled in the
   /// firebase console, it can be used. If the passed [provider] and
   /// [requestUri] are valid, the associated firebase account is returned or a
-  /// new one gets created. On a failure, an [AuthError] is thrown instead.
+  /// new one gets created. On a failure, an [AuthException] is thrown instead.
   ///
   /// If [autoRefresh] is enabled (the default), the created accounts
   /// [FirebaseAccount.autoRefresh] is set to true as well, wich will start an
@@ -170,8 +172,8 @@ class FirebaseAuth {
   /// Signs into firebase with an email and a password.
   ///
   /// This logs into an exsiting account and returns it's credentials as
-  /// [FirebaseAccount] if the request succeeds, or throws an [AuthError] if it
-  /// fails.
+  /// [FirebaseAccount] if the request succeeds, or throws an [AuthException] if
+  /// it fails.
   ///
   /// If [autoRefresh] is enabled (the default), the created accounts
   /// [FirebaseAccount.autoRefresh] is set to true as well, wich will start an
@@ -200,8 +202,8 @@ class FirebaseAuth {
   /// Signs into firebase with a custom token.
   ///
   /// This logs into an exsiting account and returns it's credentials as
-  /// [FirebaseAccount] if the request succeeds, or throws an [AuthError] if it
-  /// fails.
+  /// [FirebaseAccount] if the request succeeds, or throws an [AuthException] if
+  /// it fails.
   ///
   /// If [autoRefresh] is enabled (the default), the created accounts
   /// [FirebaseAccount.autoRefresh] is set to true as well, wich will start an
@@ -228,7 +230,7 @@ class FirebaseAuth {
   /// This tells firebase to generate a password reset mail and send it to
   /// [email]. The language of that mail is determined by [locale], if
   /// specified, [FirebaseAuth.locale] otherwise. If the request fails, an
-  /// [AuthError] is thrown.
+  /// [AuthException] is thrown.
   Future requestPasswordReset(
     String email, {
     String? locale,
@@ -245,7 +247,7 @@ class FirebaseAuth {
   /// valid code, before allowing the user to enter a new password.
   ///
   /// If the check succeeds, the future simply resolves without a value. If it
-  /// fails instead, an [AuthError] is thrown.
+  /// fails instead, an [AuthException] is thrown.
   Future validatePasswordReset(String oobCode) async =>
       api.resetPassword(PasswordResetRequest.verify(oobCode: oobCode));
 
@@ -256,7 +258,7 @@ class FirebaseAuth {
   /// reset the users password to [newPassword].
   ///
   /// If this method succeeds, the user must from now on use [newPassword] when
-  /// signing in via [signInWithPassword()]. If it fails, an [AuthError] is
+  /// signing in via [signInWithPassword()]. If it fails, an [AuthException] is
   /// thrown.
   Future resetPassword(String oobCode, String newPassword) async =>
       api.resetPassword(

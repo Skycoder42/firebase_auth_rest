@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 import 'dart:convert';
 
+import 'package:dart_test_tools/test.dart';
 import 'package:firebase_auth_rest/src/firebase_account.dart';
 import 'package:firebase_auth_rest/src/models/auth_exception.dart';
 import 'package:firebase_auth_rest/src/models/delete_request.dart';
@@ -20,10 +21,8 @@ import 'package:firebase_auth_rest/src/rest_api.dart';
 import 'package:http/http.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
-import 'package:tuple/tuple.dart';
 
 import 'fakes.dart';
-import 'test_data.dart';
 
 class MockClient extends Mock implements Client {}
 
@@ -93,8 +92,8 @@ void main() {
     reset(mockApi);
   });
 
-  tearDown(() {
-    account.dispose();
+  tearDown(() async {
+    await account.dispose();
   });
 
   group('create', () {
@@ -143,7 +142,7 @@ void main() {
   group('restore', () {
     final mockClient = MockClient();
 
-    setUp(() {
+    setUp(() async {
       reset(mockClient);
 
       when(() => mockApi.token(refresh_token: any(named: 'refresh_token')))
@@ -224,7 +223,7 @@ void main() {
   });
 
   group('autoRefresh', () {
-    setUp(() {
+    setUp(() async {
       when(
         () => mockApi.token(
           refresh_token: any(named: 'refresh_token'),
@@ -358,23 +357,22 @@ void main() {
       });
     });
 
-    testData<Tuple2<String?, String>>(
+    testData<(String?, String)>(
         'requestEmailConfirmation sends oobCode request', const [
-      Tuple2('ee-EE', 'ee-EE'),
-      Tuple2(null, 'ab-CD'),
+      ('ee-EE', 'ee-EE'),
+      (null, 'ab-CD'),
     ], (fixture) async {
       when(() => mockApi.sendOobCode(any(), any()))
           .thenAnswer((i) async => OobCodeResponse());
 
-      await account.requestEmailConfirmation(locale: fixture.item1);
+      await account.requestEmailConfirmation(locale: fixture.$1);
 
       verify(
         () => mockApi.sendOobCode(
           OobCodeRequest.verifyEmail(
             idToken: 'idToken',
-            requestType: OobCodeRequestType.VERIFY_EMAIL,
           ),
-          fixture.item2,
+          fixture.$2,
         ),
       );
     });
@@ -419,25 +417,24 @@ void main() {
       });
     });
 
-    testData<Tuple2<String?, String>>(
+    testData<(String?, String)>(
         'updateEmail sends email update request', const [
-      Tuple2('ee-EE', 'ee-EE'),
-      Tuple2(null, 'ab-CD'),
+      ('ee-EE', 'ee-EE'),
+      (null, 'ab-CD'),
     ], (fixture) async {
       const newEmail = 'new@mail.de';
       when(() => mockApi.updateEmail(any(), any()))
           .thenAnswer((i) async => EmailUpdateResponse(localId: ''));
 
-      await account.updateEmail(newEmail, locale: fixture.item1);
+      await account.updateEmail(newEmail, locale: fixture.$1);
 
       verify(
         () => mockApi.updateEmail(
           EmailUpdateRequest(
             idToken: 'idToken',
             email: newEmail,
-            returnSecureToken: false,
           ),
-          fixture.item2,
+          fixture.$2,
         ),
       );
     });
@@ -454,72 +451,76 @@ void main() {
           PasswordUpdateRequest(
             idToken: 'idToken',
             password: newPassword,
-            returnSecureToken: true,
           ),
         ),
       );
     });
 
     testData<
-        Tuple5<ProfileUpdate<String>?, ProfileUpdate<Uri>?, String?, Uri?,
-            List<DeleteAttribute>>>('updateProfile sends profile update', [
-      Tuple5(
+        (
+          ProfileUpdate<String>?,
+          ProfileUpdate<Uri>?,
+          String?,
+          Uri?,
+          List<DeleteAttribute>
+        )>('updateProfile sends profile update', [
+      (
         null,
         null,
         null,
         null,
         const [],
       ),
-      Tuple5(
+      (
         null,
         ProfileUpdate<Uri>.update(Uri.parse('http://example.com/image.jpg')),
         null,
         Uri.parse('http://example.com/image.jpg'),
         const [],
       ),
-      Tuple5(
+      (
         null,
         ProfileUpdate<Uri>.delete(),
         null,
         null,
         const [DeleteAttribute.PHOTO_URL],
       ),
-      Tuple5(
+      (
         ProfileUpdate<String>.update('name'),
         null,
         'name',
         null,
         const [],
       ),
-      Tuple5(
+      (
         ProfileUpdate<String>.update('name'),
         ProfileUpdate<Uri>.update(Uri.parse('http://example.com/image.jpg')),
         'name',
         Uri.parse('http://example.com/image.jpg'),
         const [],
       ),
-      Tuple5(
+      (
         ProfileUpdate<String>.update('name'),
         ProfileUpdate<Uri>.delete(),
         'name',
         null,
         const [DeleteAttribute.PHOTO_URL],
       ),
-      Tuple5(
+      (
         ProfileUpdate<String>.delete(),
         null,
         null,
         null,
         const [DeleteAttribute.DISPLAY_NAME],
       ),
-      Tuple5(
+      (
         ProfileUpdate<String>.delete(),
         ProfileUpdate<Uri>.update(Uri.parse('http://example.com/image.jpg')),
         null,
         Uri.parse('http://example.com/image.jpg'),
         const [DeleteAttribute.DISPLAY_NAME],
       ),
-      Tuple5(
+      (
         ProfileUpdate<String>.delete(),
         ProfileUpdate<Uri>.delete(),
         null,
@@ -534,18 +535,17 @@ void main() {
           .thenAnswer((i) async => ProfileUpdateResponse(localId: ''));
 
       await account.updateProfile(
-        displayName: fixture.item1,
-        photoUrl: fixture.item2,
+        displayName: fixture.$1,
+        photoUrl: fixture.$2,
       );
 
       verify(
         () => mockApi.updateProfile(
           ProfileUpdateRequest(
             idToken: 'idToken',
-            displayName: fixture.item3,
-            photoUrl: fixture.item4,
-            deleteAttribute: fixture.item5,
-            returnSecureToken: false,
+            displayName: fixture.$3,
+            photoUrl: fixture.$4,
+            deleteAttribute: fixture.$5,
           ),
         ),
       );
@@ -572,7 +572,6 @@ void main() {
               idToken: 'idToken',
               email: mail,
               password: password,
-              returnSecureToken: true,
             ),
           ),
         );
@@ -595,10 +594,10 @@ void main() {
         expect(result, true);
       });
 
-      testData<Tuple2<String?, String>>(
+      testData<(String?, String)>(
           'requests email confirmation if not verified and enabled', const [
-        Tuple2('ee-EE', 'ee-EE'),
-        Tuple2(null, 'ab-CD'),
+        ('ee-EE', 'ee-EE'),
+        (null, 'ab-CD'),
       ], (fixture) async {
         when(() => mockApi.linkEmail(any()))
             .thenAnswer((i) async => defaultLinkEmailResponse);
@@ -608,7 +607,7 @@ void main() {
         final result = await account.linkEmail(
           'mail',
           'password',
-          locale: fixture.item1,
+          locale: fixture.$1,
         );
         expect(result, false);
 
@@ -617,7 +616,7 @@ void main() {
             OobCodeRequest.verifyEmail(
               idToken: 'idToken',
             ),
-            fixture.item2,
+            fixture.$2,
           ),
         );
       });
@@ -654,8 +653,6 @@ void main() {
             idToken: 'idToken',
             postBody: provider.postBody,
             requestUri: uri,
-            returnIdpCredential: false,
-            returnSecureToken: true,
           ),
         ),
       );
@@ -702,9 +699,8 @@ void main() {
     });
 
     test('dispose disables auto refresh and clears controller', () async {
-      account
-        ..autoRefresh = true
-        ..dispose();
+      account.autoRefresh = true;
+      await account.dispose();
 
       expect(account.autoRefresh, false);
       expect(await account.idTokenStream.length, 0);

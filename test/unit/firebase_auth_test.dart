@@ -1,4 +1,5 @@
 // ignore_for_file: prefer_const_constructors
+import 'package:dart_test_tools/test.dart';
 import 'package:firebase_auth_rest/src/firebase_account.dart';
 import 'package:firebase_auth_rest/src/firebase_auth.dart';
 import 'package:firebase_auth_rest/src/models/fetch_provider_request.dart';
@@ -14,9 +15,6 @@ import 'package:firebase_auth_rest/src/rest_api.dart';
 import 'package:http/http.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
-import 'package:tuple/tuple.dart';
-
-import 'test_data.dart';
 
 class MockClient extends Mock implements Client {}
 
@@ -86,57 +84,55 @@ void main() {
       auth = FirebaseAuth.api(mockApi, 'ab-CD');
     });
 
-    tearDown(() {
-      account?.dispose();
+    tearDown(() async {
+      await account?.dispose();
       account = null;
     });
 
     group('fetchProviders', () {
-      testData<Tuple2<Uri?, Uri>>('sends fetch providers request', [
-        Tuple2(
+      testData<(Uri?, Uri)>('sends fetch providers request', [
+        (
           null,
           Uri.parse('http://localhost'),
         ),
-        Tuple2(
+        (
           Uri.parse('http://example.com'),
           Uri.parse('http://example.com'),
         ),
       ], (fixture) async {
         when(() => mockApi.fetchProviders(any())).thenAnswer(
           (i) async => FetchProviderResponse(
-            registered: false,
             allProviders: [],
           ),
         );
 
         const mail = 'mail';
-        await auth.fetchProviders(mail, fixture.item1);
+        await auth.fetchProviders(mail, fixture.$1);
 
         verify(
           () => mockApi.fetchProviders(
             FetchProviderRequest(
               identifier: mail,
-              continueUri: fixture.item2,
+              continueUri: fixture.$2,
             ),
           ),
         );
       });
 
-      testData<Tuple2<bool, List<String>>>(
-          'returns providers with mail', const [
-        Tuple2(false, ['a', 'b', 'c']),
-        Tuple2(true, ['email', 'a', 'b', 'c']),
+      testData<(bool, List<String>)>('returns providers with mail', const [
+        (false, ['a', 'b', 'c']),
+        (true, ['email', 'a', 'b', 'c']),
       ], (fixture) async {
         const providers = ['a', 'b', 'c'];
         when(() => mockApi.fetchProviders(any())).thenAnswer(
           (i) async => FetchProviderResponse(
-            registered: fixture.item1,
+            registered: fixture.$1,
             allProviders: providers,
           ),
         );
 
         final result = await auth.fetchProviders('email');
-        expect(result, fixture.item2);
+        expect(result, fixture.$2);
       });
     });
 
@@ -155,9 +151,7 @@ void main() {
 
         verify(
           () => mockApi.signUpAnonymous(
-            AnonymousSignInRequest(
-              returnSecureToken: true,
-            ),
+            AnonymousSignInRequest(),
           ),
         );
       });
@@ -185,7 +179,7 @@ void main() {
     });
 
     group('signUpWithPassword', () {
-      setUp(() {
+      setUp(() async {
         when(() => mockApi.sendOobCode(any(), any()))
             .thenAnswer((i) async => const OobCodeResponse());
       });
@@ -213,17 +207,15 @@ void main() {
             PasswordSignInRequest(
               email: mail,
               password: password,
-              returnSecureToken: true,
             ),
           ),
         );
         verifyNoMoreInteractions(mockApi);
       });
 
-      testData<Tuple2<String?, String>>(
-          'sends oob code request if enabled', const [
-        Tuple2('ee-EE', 'ee-EE'),
-        Tuple2(null, 'ab-CD'),
+      testData<(String?, String)>('sends oob code request if enabled', const [
+        ('ee-EE', 'ee-EE'),
+        (null, 'ab-CD'),
       ], (fixture) async {
         when(() => mockApi.signUpWithPassword(any())).thenAnswer(
           (i) async => PasswordSignInResponse(
@@ -238,16 +230,15 @@ void main() {
           'email',
           'password',
           autoRefresh: false,
-          locale: fixture.item1,
+          locale: fixture.$1,
         );
 
         verify(
           () => mockApi.sendOobCode(
             OobCodeRequest.verifyEmail(
               idToken: idToken,
-              requestType: OobCodeRequestType.VERIFY_EMAIL,
             ),
-            fixture.item2,
+            fixture.$2,
           ),
         );
       });
@@ -301,8 +292,6 @@ void main() {
             IdpSignInRequest(
               postBody: provider.postBody,
               requestUri: uri,
-              returnIdpCredential: false,
-              returnSecureToken: true,
             ),
           ),
         );
@@ -359,7 +348,6 @@ void main() {
             PasswordSignInRequest(
               email: mail,
               password: password,
-              returnSecureToken: true,
             ),
           ),
         );
@@ -409,7 +397,6 @@ void main() {
           () => mockApi.signInWithCustomToken(
             CustomTokenSignInRequest(
               token: token,
-              returnSecureToken: true,
             ),
           ),
         );
@@ -439,17 +426,17 @@ void main() {
       });
     });
 
-    testData<Tuple2<String?, String>>(
+    testData<(String?, String)>(
         'requestPasswordReset sends oob code request', const [
-      Tuple2('ee-EE', 'ee-EE'),
-      Tuple2(null, 'ab-CD'),
+      ('ee-EE', 'ee-EE'),
+      (null, 'ab-CD'),
     ], (fixture) async {
       when(() => mockApi.sendOobCode(any(), any()))
           .thenAnswer((i) async => const OobCodeResponse());
       const mail = 'email';
       await auth.requestPasswordReset(
         mail,
-        locale: fixture.item1,
+        locale: fixture.$1,
       );
 
       verify(
@@ -457,7 +444,7 @@ void main() {
           OobCodeRequest.passwordReset(
             email: mail,
           ),
-          fixture.item2,
+          fixture.$2,
         ),
       );
     });

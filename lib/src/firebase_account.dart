@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:http/http.dart';
 
+import 'firebase_auth.dart';
+import 'models/auth_exception.dart';
 import 'models/delete_request.dart';
 import 'models/idp_provider.dart';
 import 'models/oob_code_request.dart';
@@ -103,7 +105,7 @@ class FirebaseAccount {
   /// the Firebase REST endpoints. If [autoRefresh] and [locale] are used to
   /// initialize these properties.
   ///
-  /// If the refreshing fails, an [AuthError] will be thrown.
+  /// If the refreshing fails, an [AuthException] will be thrown.
   static Future<FirebaseAccount> restore(
     Client client,
     String apiKey,
@@ -129,7 +131,7 @@ class FirebaseAccount {
   /// endpoints. If [autoRefresh] and [locale] are used to initialize these
   /// properties.
   ///
-  /// If the refreshing fails, an [AuthError] will be thrown.
+  /// If the refreshing fails, an [AuthException] will be thrown.
   static Future<FirebaseAccount> apiRestore(
     RestApi api,
     String refreshToken, {
@@ -200,8 +202,8 @@ class FirebaseAccount {
   ///
   /// Whenever a new token is returned, [idToken] has also been updated.
   /// However, no intial event is sent to the stream when you subscribe. If an
-  /// error happens during a refresh, the [AuthError] is passed as error to the
-  /// stream, so you can react to these.
+  /// error happens during a refresh, the [AuthException] is passed as error to
+  /// the stream, so you can react to these.
   ///
   /// **Note:** If no stream is connected, refresh errors fail silently.
   Stream<String> get idTokenStream => _refreshController.stream;
@@ -210,8 +212,8 @@ class FirebaseAccount {
   ///
   /// Sends the [refreshToken] to the firebase server to obtain a new [idToken].
   /// On a success, the [idToken] and [refreshToken] properties are updated and
-  /// [idTokenStream] provides a new value. If the request fails, an [AuthError]
-  /// is thrown.
+  /// [idTokenStream] provides a new value. If the request fails, an
+  /// [AuthException] is thrown.
   ///
   /// **Note:** Instead of manually refreshing whenever [expiresAt] comes close,
   /// you can simply set [autoRefresh] to true to enable automatic refreshing of
@@ -231,7 +233,7 @@ class FirebaseAccount {
   /// The language of the email is determined by [locale]. If not specified, the
   /// accounts [FirebaseAccount.locale] will be used.
   ///
-  /// If the request fails, an [AuthError] will be thrown.
+  /// If the request fails, an [AuthException] will be thrown.
   Future requestEmailConfirmation({
     String? locale,
   }) async =>
@@ -250,7 +252,7 @@ class FirebaseAccount {
   /// that code from the email to complete the process with this method.
   ///
   /// If the request fails, including because an invalid code was passed to the
-  /// method, an [AuthError] will be thrown.
+  /// method, an [AuthException] will be thrown.
   Future<void> confirmEmail(String oobCode) async =>
       api.confirmEmail(ConfirmEmailRequest(oobCode: oobCode));
 
@@ -258,7 +260,7 @@ class FirebaseAccount {
   ///
   /// Requests the account details that firebase itself has about the current
   /// account and returns them as [UserData]. If the request fails, an
-  /// [AuthError] is thrown instead.
+  /// [AuthException] is thrown instead.
   ///
   /// **Note:** If the request succeeds, but there is not user-data associated
   /// with the user, null is returned. In theory, this should never happen, but
@@ -272,7 +274,7 @@ class FirebaseAccount {
   ///
   /// This is the email that is used by the user to login with a password. The
   /// current email is replaced by [newEmail]. If the request fails, an
-  /// [AuthError] will be thrown.
+  /// [AuthException] will be thrown.
   ///
   /// Firebase sents a notification email to the old email address to notify the
   /// user that his email has changed. The user may revoke the change via that
@@ -299,7 +301,7 @@ class FirebaseAccount {
   /// Updates the users login password.
   ///
   /// Replaces the users current password with [newPassword]. If the request
-  /// fails, an [AuthError] will be thrown.
+  /// fails, an [AuthException] will be thrown.
   ///
   /// This request can only be used, if the user has logged in via
   /// email/password. When logged in anonymously or via an IDP-Provider, this
@@ -328,8 +330,8 @@ class FirebaseAccount {
   /// - Pass [ProfileUpdate.delete()] to remove the property. This will erase
   /// the data on firebase servers and set them to null.
   ///
-  /// If the request fails, an [AuthError] will be thrown. The updated profile
-  /// can be fetched via [getDetails()].
+  /// If the request fails, an [AuthException] will be thrown. The updated
+  /// profile can be fetched via [getDetails()].
   Future<void> updateProfile({
     ProfileUpdate<String>? displayName,
     ProfileUpdate<Uri>? photoUrl,
@@ -354,7 +356,7 @@ class FirebaseAccount {
   /// With this method, an email address can be added to allow login with the
   /// given [email] and [password] via [FirebaseAuth.signInWithPassword()]. The
   /// method returns, whether the given [email] has already been verified. If
-  /// the linking fails, an [AuthError] is thrown instead.
+  /// the linking fails, an [AuthException] is thrown instead.
   ///
   /// By default, a verification email is sent automatically to the user, the
   /// language of the email is determined by [locale]. If not specified, the
@@ -395,7 +397,7 @@ class FirebaseAccount {
   /// With this method, an IDP-Provider based account (like google, facebook,
   /// twitter, etc.) can be added to allow login with the given [provider] and
   /// [requestUri] via [FirebaseAuth.signInWithIdp()]. If the linking fails, an
-  /// [AuthError] is thrown.
+  /// [AuthException] is thrown.
   Future<void> linkIdp(
     IdpProvider provider,
     Uri requestUri,
@@ -418,7 +420,8 @@ class FirebaseAccount {
   ///
   /// This removes all login providers from the account that are specified via
   /// [providers]. The expected IDs are the same as returned by
-  /// [IdpProvider.id]. If the unlinking fails, an [AuthError] will be thrown.
+  /// [IdpProvider.id]. If the unlinking fails, an [AuthException] will be
+  /// thrown.
   ///
   /// After a provider has been removed, the user cannot login anymore with that
   /// provider. However, you can always re-add providers via [linkEmail()] or
@@ -446,7 +449,7 @@ class FirebaseAccount {
   /// different user by firebase.
   Future<void> delete() async {
     await api.delete(DeleteRequest(idToken: _idToken));
-    dispose();
+    await dispose();
   }
 
   /// Disposes the account
@@ -456,10 +459,10 @@ class FirebaseAccount {
   ///
   /// **Important:** Even if you do not use any of the two properties mentioned
   /// above, you still have to always dispose of an account.
-  void dispose() {
+  Future<void> dispose() async {
     autoRefresh = false;
     if (!_refreshController.isClosed) {
-      _refreshController.close();
+      await _refreshController.close();
     }
   }
 
@@ -474,7 +477,7 @@ class FirebaseAccount {
     if (triggerTimer < const Duration(seconds: 1)) {
       triggerTimer = Duration.zero;
     }
-    _refreshTimer = Timer(triggerTimer, _updateTokenTimout);
+    _refreshTimer = Timer(triggerTimer, _updateTokenTimeout);
   }
 
   Future<void> _updateToken() async {
@@ -485,6 +488,7 @@ class FirebaseAccount {
         refreshToken: response.refresh_token,
         expiresIn: response.expires_in,
       );
+      // ignore: avoid_catches_without_on_clauses
     } catch (_) {
       autoRefresh = false;
       rethrow;
@@ -508,15 +512,17 @@ class FirebaseAccount {
       if (_refreshController.hasListener) {
         _refreshController.add(_idToken);
       }
+      // ignore: avoid_catches_without_on_clauses
     } catch (_) {
       autoRefresh = false;
       rethrow;
     }
   }
 
-  Future _updateTokenTimout() async {
+  Future _updateTokenTimeout() async {
     try {
       await _updateToken();
+      // ignore: avoid_catches_without_on_clauses
     } catch (e, s) {
       // redirect exceptions to listeners, if any
       if (_refreshController.hasListener) {

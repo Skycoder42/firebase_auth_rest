@@ -1,0 +1,14 @@
+name: CD - Publish to pub.dev
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  publish:
+    name: Publish
+    uses: Skycoder42/dart_test_tools/.github/workflows/publish.yml@main
+    with:
+      environment: pub-deploy
+      buildRunner: true

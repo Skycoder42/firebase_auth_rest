@@ -36,6 +36,7 @@ void main() {
   final api = RestApi(mockClient, apiKey);
 
   When<Future<Response>> whenPost() => when(
+        // ignore: discarded_futures
         () => mockClient.post(
           any(),
           body: any(named: 'body'),
@@ -91,7 +92,7 @@ void main() {
       );
     });
 
-    test('should throw AuthError on failure', () async {
+    test('should throw AuthException on failure', () async {
       whenError();
       expect(
         () => api.token(refresh_token: 'token'),
@@ -128,7 +129,7 @@ void main() {
       );
     });
 
-    test('should throw AuthError on failure', () async {
+    test('should throw AuthException on failure', () async {
       whenError();
       expect(
         () => api.signUpAnonymous(AnonymousSignInRequest()),
@@ -172,7 +173,7 @@ void main() {
       );
     });
 
-    test('should throw AuthError on failure', () async {
+    test('should throw AuthException on failure', () async {
       whenError();
       expect(
         () => api.signUpWithPassword(
@@ -224,7 +225,7 @@ void main() {
       );
     });
 
-    test('should throw AuthError on failure', () async {
+    test('should throw AuthException on failure', () async {
       whenError();
       expect(
         () => api.signInWithIdp(
@@ -273,7 +274,7 @@ void main() {
       );
     });
 
-    test('should throw AuthError on failure', () async {
+    test('should throw AuthException on failure', () async {
       whenError();
       expect(
         () => api.signInWithPassword(
@@ -317,7 +318,7 @@ void main() {
       );
     });
 
-    test('should throw AuthError on failure', () async {
+    test('should throw AuthException on failure', () async {
       whenError();
       expect(
         () => api.signInWithCustomToken(
@@ -353,7 +354,7 @@ void main() {
       );
     });
 
-    test('should throw AuthError on failure', () async {
+    test('should throw AuthException on failure', () async {
       whenError();
       expect(
         () => api.getUserData(
@@ -396,7 +397,7 @@ void main() {
       );
     });
 
-    test('should throw AuthError on failure', () async {
+    test('should throw AuthException on failure', () async {
       whenError();
       expect(
         () => api.updateEmail(
@@ -438,7 +439,7 @@ void main() {
       );
     });
 
-    test('should throw AuthError on failure', () async {
+    test('should throw AuthException on failure', () async {
       whenError();
       expect(
         () => api.updatePassword(
@@ -477,7 +478,7 @@ void main() {
       );
     });
 
-    test('should throw AuthError on failure', () async {
+    test('should throw AuthException on failure', () async {
       whenError();
       expect(
         () => api.updateProfile(const ProfileUpdateRequest(idToken: 'token')),
@@ -513,7 +514,7 @@ void main() {
         );
       });
 
-      test('should throw AuthError on failure', () async {
+      test('should throw AuthException on failure', () async {
         whenError();
 
         expect(
@@ -551,7 +552,7 @@ void main() {
         );
       });
 
-      test('should throw AuthError on failure', () async {
+      test('should throw AuthException on failure', () async {
         whenError();
 
         expect(
@@ -588,7 +589,7 @@ void main() {
         );
       });
 
-      test('should throw AuthError on failure', () async {
+      test('should throw AuthException on failure', () async {
         whenError();
 
         expect(
@@ -627,7 +628,7 @@ void main() {
         );
       });
 
-      test('should throw AuthError on failure', () async {
+      test('should throw AuthException on failure', () async {
         whenError();
 
         expect(
@@ -664,7 +665,7 @@ void main() {
       );
     });
 
-    test('should throw AuthError on failure', () async {
+    test('should throw AuthException on failure', () async {
       whenError();
       expect(
         () => api.confirmEmail(const ConfirmEmailRequest(oobCode: 'code')),
@@ -700,7 +701,7 @@ void main() {
       );
     });
 
-    test('should throw AuthError on failure', () async {
+    test('should throw AuthException on failure', () async {
       whenError();
       expect(
         () => api.fetchProviders(
@@ -744,7 +745,7 @@ void main() {
       );
     });
 
-    test('should throw AuthError on failure', () async {
+    test('should throw AuthException on failure', () async {
       whenError();
       expect(
         () => api.linkEmail(
@@ -799,7 +800,7 @@ void main() {
       );
     });
 
-    test('should throw AuthError on failure', () async {
+    test('should throw AuthException on failure', () async {
       whenError();
       expect(
         () => api.linkIdp(
@@ -841,7 +842,7 @@ void main() {
       );
     });
 
-    test('should throw AuthError on failure', () async {
+    test('should throw AuthException on failure', () async {
       whenError();
       expect(
         () => api.unlinkProvider(
@@ -874,7 +875,7 @@ void main() {
       );
     });
 
-    test('should throw AuthError on failure', () async {
+    test('should throw AuthException on failure', () async {
       whenError();
       expect(
         () => api.delete(const DeleteRequest(idToken: 'token')),

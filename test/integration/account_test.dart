@@ -1,6 +1,6 @@
 import 'dart:math';
 
-// ignore: test_library_import
+// ignore: no_self_package_imports
 import 'package:firebase_auth_rest/firebase_auth_rest.dart';
 import 'package:http/http.dart';
 import 'package:test/test.dart';
@@ -16,7 +16,7 @@ void main() {
   late final Client client;
   late final FirebaseAuth auth;
 
-  String _generateRnd(int length) => List<String>.generate(
+  String generateRnd(int length) => List<String>.generate(
         length ~/ 2,
         (i) => Random.secure().nextInt(256).toRadixString(16),
       ).join();
@@ -44,7 +44,7 @@ void main() {
       if (!deleted) {
         await account.delete();
       }
-      account.dispose();
+      await account.dispose();
     });
 
     test('setUp and tearDown work', () {
@@ -141,13 +141,13 @@ void main() {
 
         expect(restoredAccount.getDetails(), completes);
       } finally {
-        restoredAccount.dispose();
+        await restoredAccount.dispose();
       }
     });
 
     test('account linking with fake email works', () async {
-      final fakeMail = '${_generateRnd(32)}@example.org';
-      final fakePassword = _generateRnd(64);
+      final fakeMail = '${generateRnd(32)}@example.org';
+      final fakePassword = generateRnd(64);
 
       final ok = await account.linkEmail(
         fakeMail,
@@ -194,8 +194,8 @@ void main() {
   });
 
   test('email', () async {
-    final fakeMail = '${_generateRnd(32)}@example.org';
-    final fakePassword = _generateRnd(64);
+    final fakeMail = '${generateRnd(32)}@example.org';
+    final fakePassword = generateRnd(64);
 
     FirebaseAccount? account1;
     FirebaseAccount? account2;
@@ -229,8 +229,8 @@ void main() {
       expect(account2.refreshToken, isNotNull);
       expect(account2.expiresAt, isAfter(account1.expiresAt));
     } finally {
-      account1?.dispose();
-      account2?.dispose();
+      await account1?.dispose();
+      await account2?.dispose();
     }
   });
 }

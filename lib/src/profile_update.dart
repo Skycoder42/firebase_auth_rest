@@ -2,8 +2,8 @@
 class ProfileUpdate<T> {
   /// Returns the data associated with this update.
   ///
-  /// If [update] is true, this will return the actual data to be used by the
-  /// update. If [delete] is true instead, [data] will always be null.
+  /// If [isUpdate] is true, this will return the actual data to be used by the
+  /// update. If [isDelete] is true instead, [data] will always be null.
   final T? data;
 
   /// Specifies, if this is an update with new data.
@@ -17,13 +17,13 @@ class ProfileUpdate<T> {
 
   /// Creates a new profile update to update data.
   ///
-  /// This method sets [data] to [_data], [update] to true and [delete] to
-  /// false.
+  /// This method sets [this.data] to [data], [isUpdate] to true and [isDelete]
+  /// to false.
   const ProfileUpdate.update(this.data);
 
   /// Creates a new profile update to delete data.
   ///
-  /// This method sets [data] to null, [update] to false and [delete] to
+  /// This method sets [data] to null, [isUpdate] to false and [isDelete] to
   /// true.
   const ProfileUpdate.delete() : data = null;
 }

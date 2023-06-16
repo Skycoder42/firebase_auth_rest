@@ -1,0 +1,31 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/alpine
+{
+  "name": "Flutter (Stable)",
+  "image": "skycoder42/devcontainers-flutter:latest",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "blaxou.freezed",
+        "dart-code.dart-code",
+        "Gruntfuggly.todo-tree",
+        "me-dutour-mathieu.vscode-github-actions",
+        "mhutchie.git-graph",
+        "ryanluker.vscode-coverage-gutters",
+        "streetsidesoftware.code-spell-checker",
+        "streetsidesoftware.code-spell-checker-german",
+        "timonwong.shellcheck"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh"
+      }
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers-contrib/features/zsh-plugins:0": {
+      "plugins": "git colorize vscode",
+      "omzPlugins": "https://github.com/zsh-users/zsh-autosuggestions"
+    }
+  },
+  "postCreateCommand": "./tool/init_commit_hooks.sh"
+}

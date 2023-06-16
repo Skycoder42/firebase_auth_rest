@@ -30,8 +30,10 @@ Future main(List<String> arguments) async {
       print('Account deleted!');
     } finally {
       // dispose of the account instance to clean up resources
-      account.dispose();
+      await account.dispose();
     }
+
+    // ignore: avoid_catches_without_on_clauses
   } catch (e) {
     print(e);
     print(
