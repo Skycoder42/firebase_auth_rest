@@ -12,6 +12,7 @@ jobs:
       buildRunner: true
       panaScoreThreshold: 10
       unitTestPaths: test/unit
+      minCoverage: 90
       coverageExclude: >-
         "**/*.g.dart"
         "**/*.freezed.dart"
