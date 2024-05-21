@@ -1,3 +1,5 @@
+// coverage:ignore-file
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'oob_code_request.dart';

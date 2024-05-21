@@ -1,3 +1,5 @@
+// coverage:ignore-file
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'provider_user_info.freezed.dart';

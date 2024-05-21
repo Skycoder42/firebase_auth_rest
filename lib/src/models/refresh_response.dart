@@ -1,4 +1,6 @@
+// coverage:ignore-file
 // ignore_for_file: non_constant_identifier_names
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'refresh_response.freezed.dart';

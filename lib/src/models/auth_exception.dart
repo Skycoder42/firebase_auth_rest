@@ -1,4 +1,5 @@
-// ignore_for_file: constant_identifier_names
+// coverage:ignore-file
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'auth_exception.freezed.dart';
