@@ -10,5 +10,4 @@ jobs:
     name: Publish
     uses: Skycoder42/dart_test_tools/.github/workflows/publish.yml@main
     with:
-      environment: pub-deploy
       buildRunner: true
