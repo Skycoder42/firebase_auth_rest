@@ -11,3 +11,5 @@ jobs:
     uses: Skycoder42/dart_test_tools/.github/workflows/publish.yml@main
     with:
       buildRunner: true
+    permissions:
+      contents: write
