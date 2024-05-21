@@ -12,4 +12,4 @@ jobs:
     with:
       buildRunner: true
     permissions:
-      contents: write
+      id-token: write
