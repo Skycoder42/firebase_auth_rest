@@ -6,7 +6,7 @@ part 'refresh_response.g.dart';
 
 /// https://firebase.google.com/docs/reference/rest/auth#section-refresh-token
 @freezed
-class RefreshResponse with _$RefreshResponse {
+sealed class RefreshResponse with _$RefreshResponse {
   /// Default constructor
   const factory RefreshResponse({
     /// The number of seconds in which the ID token expires.

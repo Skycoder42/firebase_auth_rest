@@ -7,11 +7,11 @@ import 'package:test/test.dart';
 
 import 'test_config.dart';
 
-Matcher isAfter(DateTime after) => predicate<DateTime>(
-      (e) => e.isAfter(after),
-      'is after $after',
-    );
-
+/// Running the integration tests requires the following settings:
+/// - Anonymous Authentication
+/// - E-Mail/Password based authentication
+/// - Account Registration
+/// - Email Enumeration
 void main() {
   late final Client client;
   late final FirebaseAuth auth;
@@ -63,7 +63,7 @@ void main() {
       expect(result, isNotNull);
       expect(account.idToken, result);
       expect(account.localId, oldId);
-      expect(account.expiresAt, isAfter(oldExpires));
+      expect(account.expiresAt, _isAfter(oldExpires));
     });
 
     test('getDetails returns account details', () async {
@@ -87,7 +87,7 @@ void main() {
           int.parse(details.createdAt!),
           isUtc: true,
         ),
-        isAfter(createdAt),
+        _isAfter(createdAt),
       );
       expect(details.lastLoginAt, details.createdAt);
       expect(details.customAuth, false);
@@ -185,7 +185,7 @@ void main() {
       expect(clearedDetails!.providerUserInfo, isEmpty);
     });
 
-    test('requets fail after account was deleted', () async {
+    test('requests fail after account was deleted', () async {
       await account.delete();
       deleted = true;
 
@@ -227,10 +227,15 @@ void main() {
       expect(account2.localId, account1.localId);
       expect(account2.idToken, isNotNull);
       expect(account2.refreshToken, isNotNull);
-      expect(account2.expiresAt, isAfter(account1.expiresAt));
+      expect(account2.expiresAt, _isAfter(account1.expiresAt));
     } finally {
       await account1?.dispose();
       await account2?.dispose();
     }
   });
 }
+
+Matcher _isAfter(DateTime after) => predicate<DateTime>(
+      (e) => e.isAfter(after),
+      'is after $after',
+    );

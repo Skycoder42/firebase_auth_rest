@@ -6,7 +6,7 @@ part 'auth_exception.g.dart';
 
 /// https://firebase.google.com/docs/reference/rest/auth#section-error-format
 @freezed
-class ErrorDetails with _$ErrorDetails {
+sealed class ErrorDetails with _$ErrorDetails {
   /// Default constructor
   const factory ErrorDetails({
     /// The domain in which the error occured
@@ -26,7 +26,7 @@ class ErrorDetails with _$ErrorDetails {
 
 /// https://firebase.google.com/docs/reference/rest/auth#section-error-format
 @freezed
-class ErrorData with _$ErrorData {
+sealed class ErrorData with _$ErrorData {
   /// Default constructor
   const factory ErrorData({
     /// The error code
@@ -46,7 +46,7 @@ class ErrorData with _$ErrorData {
 
 /// https://firebase.google.com/docs/reference/rest/auth#section-error-format
 @freezed
-class AuthException with _$AuthException implements Exception {
+sealed class AuthException with _$AuthException implements Exception {
   /// Default constructor
   const factory AuthException(
     /// The actual error data

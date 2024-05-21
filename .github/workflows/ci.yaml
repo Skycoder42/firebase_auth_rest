@@ -2,6 +2,8 @@ name: CI/CD
 
 on:
   push:
+    branches:
+      - "**"
   workflow_dispatch:
 
 jobs:
@@ -11,20 +13,19 @@ jobs:
     with:
       buildRunner: true
       panaScoreThreshold: 10
-      unitTestPaths: test/unit
-      minCoverage: 90
+      unitTestPaths: -P unit
       coverageExclude: >-
         "**/*.g.dart"
         "**/*.freezed.dart"
-      integrationTestPaths: test/integration
+      integrationTestPaths: -P integration
     secrets:
       integrationTestEnvVars: |
         FIREBASE_API_KEY=${{ secrets.FIREBASE_API_KEY }}
 
   cd:
     name: CD
+    uses: Skycoder42/dart_test_tools/.github/workflows/release.yml@main
     needs:
       - ci
-    uses: Skycoder42/dart_test_tools/.github/workflows/release.yml@main
     secrets:
       githubToken: ${{ secrets.GH_PAT }}

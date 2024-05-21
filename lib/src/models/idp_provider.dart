@@ -14,7 +14,7 @@ part 'idp_provider.freezed.dart';
 /// If you want to use a provider other then the ones specified above, you can
 /// use [IdpProvider.custom()] to create a custom provider instance.
 @freezed
-class IdpProvider with _$IdpProvider {
+sealed class IdpProvider with _$IdpProvider {
   const IdpProvider._();
 
   /// Create an IDP-Instance for google.com.
@@ -53,12 +53,12 @@ class IdpProvider with _$IdpProvider {
   /// Returns the identifier of this provider.
   ///
   /// The provider id is typically the domain of the provider.
-  String get id => when(
-        google: (_) => 'google.com',
-        facebook: (_) => 'facebook.com',
-        twitter: (_, __) => 'twitter.com',
-        custom: (providerId, _) => providerId,
-      );
+  String get id => switch (this) {
+        _GoogleIdpProvider() => 'google.com',
+        _FacebookIdpProvider() => 'facebook.com',
+        _TwitterIdpProvider() => 'twitter.com',
+        _CustomIdpProvider(providerId: final providerId) => providerId,
+      };
 
   /// Generates a HTTP-POST body to be used by the REST-API.
   ///
@@ -67,15 +67,23 @@ class IdpProvider with _$IdpProvider {
   /// provider [id] as well as provider-specific parameters as specified in the
   /// factory constructors.
   String get postBody {
-    final params = when(
-      google: (idToken) => {'id_token': idToken},
-      facebook: (accessToken) => {'access_token': accessToken},
-      twitter: (accessToken, oauthTokenSecret) => {
-        'access_token': accessToken,
-        'oauth_token_secret': oauthTokenSecret,
-      },
-      custom: (_, parameters) => parameters,
-    );
+    final params = switch (this) {
+      _GoogleIdpProvider(idToken: final idToken) => {
+          'id_token': idToken,
+        },
+      _FacebookIdpProvider(accessToken: final accessToken) => {
+          'access_token': accessToken,
+        },
+      _TwitterIdpProvider(
+        accessToken: final accessToken,
+        oauthTokenSecret: final oauthTokenSecret
+      ) =>
+        {
+          'access_token': accessToken,
+          'oauth_token_secret': oauthTokenSecret,
+        },
+      _CustomIdpProvider(parameters: final parameters) => parameters,
+    };
     return Uri(
       queryParameters: <String, dynamic>{
         ...params,

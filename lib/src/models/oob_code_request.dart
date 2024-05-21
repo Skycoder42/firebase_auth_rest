@@ -15,7 +15,7 @@ enum OobCodeRequestType {
 
 /// Meta-Class for multiple API-Endpoints
 @freezed
-class OobCodeRequest with _$OobCodeRequest {
+sealed class OobCodeRequest with _$OobCodeRequest {
   /// https://firebase.google.com/docs/reference/rest/auth#section-send-email-verification
   const factory OobCodeRequest.verifyEmail({
     /// The Firebase ID token of the user to verify.
