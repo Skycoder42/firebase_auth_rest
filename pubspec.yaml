@@ -1,6 +1,6 @@
 name: firebase_auth_rest
 description: A platform independent Dart/Flutter Wrapper for the Firebase Authentication API based on REST
-version: 2.0.5
+version: 2.0.6
 homepage: https://github.com/Skycoder42/firebase_auth_rest
 
 environment:
@@ -16,9 +16,9 @@ dev_dependencies:
   coverage: ^1.8.0
   custom_lint: ^0.6.4
   dart_pre_commit: ^5.3.0
-  dart_test_tools: ^5.10.2+1
+  dart_test_tools: ^5.11.0
   freezed: ^2.5.3
   json_serializable: ^6.8.0
   meta: ^1.15.0
   mocktail: ^1.0.3
-  test: ^1.25.5
+  test: ^1.25.6

@@ -267,4 +267,31 @@ class FirebaseAuth {
           newPassword: newPassword,
         ),
       );
+
+  /// Restores an account by using a refresh token to log the user in again.
+  ///
+  /// If a user has logged in once normally, you can store the [refreshToken]
+  /// and the later use this method to recreate the account instance without the
+  /// user logging in again. Internally, this method calls
+  /// [FirebaseAccount.refresh] to obtain user credentials and the returns a
+  /// newly created account from the result.
+  ///
+  /// The account is created by using the [api] for accessing the Firebase REST
+  /// endpoints. [autoRefresh] and [locale] will be used to initialize the
+  /// [FirebaseAccount]. If [locale] is not set, the [FirebaseAuth.locale] will
+  /// be used, or none if that one is `null` as well.
+  ///
+  /// If the refreshing fails, an [AuthException] will be thrown.
+  Future<FirebaseAccount> restoreAccount(
+    String refreshToken, {
+    bool autoRefresh = true,
+    String? locale,
+  }) async =>
+      // ignore: deprecated_member_use_from_same_package
+      FirebaseAccount.apiRestore(
+        api,
+        refreshToken,
+        autoRefresh: autoRefresh,
+        locale: locale ?? this.locale,
+      );
 }

@@ -9,6 +9,7 @@ import 'package:firebase_auth_rest/src/models/oob_code_request.dart';
 import 'package:firebase_auth_rest/src/models/oob_code_response.dart';
 import 'package:firebase_auth_rest/src/models/password_reset_request.dart';
 import 'package:firebase_auth_rest/src/models/password_reset_response.dart';
+import 'package:firebase_auth_rest/src/models/refresh_response.dart';
 import 'package:firebase_auth_rest/src/models/signin_request.dart';
 import 'package:firebase_auth_rest/src/models/signin_response.dart';
 import 'package:firebase_auth_rest/src/rest_api.dart';
@@ -477,6 +478,26 @@ void main() {
           ),
         ),
       );
+    });
+
+    test('restoreAccount restores account with api', () async {
+      when(() => mockApi.token(refresh_token: any(named: 'refresh_token')))
+          .thenAnswer(
+        (i) async => RefreshResponse(
+          expires_in: '5',
+          token_type: 'token_type',
+          refresh_token: 'refresh_token',
+          id_token: 'id_token',
+          user_id: 'user_id',
+          project_id: 'project_id',
+        ),
+      );
+
+      account = await auth.restoreAccount(refreshToken, autoRefresh: false);
+
+      expect(account, isNotNull);
+      expect(account!.api, mockApi);
+      verify(() => mockApi.token(refresh_token: refreshToken));
     });
   });
 }

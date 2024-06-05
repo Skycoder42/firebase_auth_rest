@@ -1,5 +1,4 @@
 // ignore_for_file: prefer_const_constructors
-import 'dart:convert';
 
 import 'package:dart_test_tools/test.dart';
 import 'package:firebase_auth_rest/src/firebase_account.dart';
@@ -21,8 +20,6 @@ import 'package:firebase_auth_rest/src/rest_api.dart';
 import 'package:http/http.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
-
-import 'fakes.dart';
 
 class MockClient extends Mock implements Client {}
 
@@ -152,6 +149,7 @@ void main() {
     test('apiRestore calls api.token with refreshToken', () async {
       const refreshToken = 'refreshToken';
 
+      // ignore: deprecated_member_use_from_same_package
       account = await FirebaseAccount.apiRestore(
         mockApi,
         refreshToken,
@@ -171,6 +169,7 @@ void main() {
       );
 
       final expiresAt = DateTime.now().toUtc().add(Duration(seconds: 5));
+      // ignore: deprecated_member_use_from_same_package
       account = await FirebaseAccount.apiRestore(
         mockApi,
         refreshToken1,
@@ -189,36 +188,11 @@ void main() {
 
     test('apiRestore starts refresh timer', () async {
       final expiresAt = DateTime.now().toUtc().add(Duration(seconds: 5));
+      // ignore: deprecated_member_use_from_same_package
       account = await FirebaseAccount.apiRestore(mockApi, 'refreshToken');
 
       expect(account.autoRefresh, true);
       expect(account.expiresAt.difference(expiresAt).inSeconds, 0);
-    });
-
-    test('restore initializes api with correct client and key', () async {
-      when(
-        () => mockClient.post(
-          any(),
-          body: any(named: 'body'),
-          headers: any(named: 'headers'),
-        ),
-      ).thenAnswer(
-        (i) async => FakeResponse(
-          body: json.encode(
-            defaultRefreshResponse.copyWith(expires_in: '1').toJson(),
-          ),
-        ),
-      );
-
-      const apiKey = 'API-KEY';
-      account = await FirebaseAccount.restore(
-        mockClient,
-        apiKey,
-        'refreshToken',
-      );
-
-      expect(account.api.client, mockClient);
-      expect(account.api.apiKey, apiKey);
     });
   });
 

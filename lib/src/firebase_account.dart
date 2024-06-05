@@ -94,18 +94,8 @@ class FirebaseAccount {
     this.autoRefresh = autoRefresh;
   }
 
-  /// Restores an account by using a refresh token to log the user in again.
-  ///
-  /// If a user has logged in once normally, you can store the [refreshToken]
-  /// and the later use this method to recreate the account instance without the
-  /// user logging in again. Internally, this method calls [refresh()] to obtain
-  /// user credentails and the returns a newly created account from the result.
-  ///
-  /// The account is created by using the [client] and [apiKey] for accessing
-  /// the Firebase REST endpoints. If [autoRefresh] and [locale] are used to
-  /// initialize these properties.
-  ///
-  /// If the refreshing fails, an [AuthException] will be thrown.
+  /// @nodoc
+  @Deprecated('Use FirebaseAuth.restoreAccount instead')
   static Future<FirebaseAccount> restore(
     Client client,
     String apiKey,
@@ -120,18 +110,8 @@ class FirebaseAccount {
         locale: locale,
       );
 
-  /// Restores an account by using a refresh token to log the user in again.
-  ///
-  /// If a user has logged in once normally, you can store the [refreshToken]
-  /// and the later use this method to recreate the account instance without the
-  /// user logging in again. Internally, this method calls [refresh()] to obtain
-  /// user credentails and the returns a newly created account from the result.
-  ///
-  /// The account is created by using the [api] for accessing the Firebase REST
-  /// endpoints. If [autoRefresh] and [locale] are used to initialize these
-  /// properties.
-  ///
-  /// If the refreshing fails, an [AuthException] will be thrown.
+  /// @nodoc
+  @Deprecated('Use FirebaseAuth.restoreAccount instead')
   static Future<FirebaseAccount> apiRestore(
     RestApi api,
     String refreshToken, {
@@ -436,9 +416,10 @@ class FirebaseAccount {
   /// Delete the account
   ///
   /// Deletes this firebase account. This is a permanent action and cannot be
-  /// undone. After deleting, the account cannot be used anymore.
+  /// undone. After deleting, the account cannot be used anymore. Internally
+  /// [dispose]s the account as well.
   ///
-  /// If you were listeting to [idTokenStream], it will be closed. In addition
+  /// If you were listening to [idTokenStream], it will be closed. In addition
   /// [autoRefresh] will be set to false. This method automatically calls
   /// [dispose()], so you don't have to call it again, but it is ok to do so.
   ///
@@ -461,6 +442,7 @@ class FirebaseAccount {
   /// above, you still have to always dispose of an account.
   Future<void> dispose() async {
     autoRefresh = false;
+    _refreshTimer?.cancel();
     if (!_refreshController.isClosed) {
       await _refreshController.close();
     }

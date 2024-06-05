@@ -130,11 +130,7 @@ void main() {
     });
 
     test('can restore account from refresh token', () async {
-      final restoredAccount = await FirebaseAccount.restore(
-        client,
-        account.api.apiKey,
-        account.refreshToken,
-      );
+      final restoredAccount = await auth.restoreAccount(account.refreshToken);
       try {
         expect(restoredAccount, isNotNull);
         expect(restoredAccount.refreshToken, account.refreshToken);
