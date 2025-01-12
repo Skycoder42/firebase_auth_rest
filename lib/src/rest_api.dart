@@ -36,11 +36,22 @@ class RestApi {
   /// The Firebase Web-API-Key to authenticate to the remote api
   final String apiKey;
 
+  /// The URL host of the firebase auth emulator
+  final String? emulatorHost;
+
+  /// The port of the firebase auth emulator
+  final int? emulatorPort;
+
   /// Create a new api instance
   ///
   /// The api is created with [client] and [apiKey] to initialize the
   /// equivalent members. They are used to access the firebase servers.
-  const RestApi(this.client, this.apiKey);
+  const RestApi(
+    this.client,
+    this.apiKey, {
+    required this.emulatorHost,
+    required this.emulatorPort,
+  });
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-refresh-token
   Future<RefreshResponse> token({
@@ -247,19 +258,29 @@ class RestApi {
     String path, {
     bool isTokenRequest = false,
     Map<String, dynamic>? queryParameters,
-  }) =>
-      Uri(
-        scheme: 'https',
-        host: isTokenRequest ? _tokenHost : _authHost,
-        pathSegments: [
-          'v1',
-          path,
-        ],
-        queryParameters: <String, dynamic>{
-          'key': apiKey,
-          ...?queryParameters,
-        },
-      );
+  }) {
+    String host;
+    final productionDomain = isTokenRequest ? _tokenHost : _authHost;
+    if (emulatorHost != null) {
+      host = emulatorHost!;
+    } else {
+      host = productionDomain;
+    }
+    return Uri(
+      scheme: emulatorHost != null ? 'http' : 'https',
+      host: host,
+      port: emulatorPort,
+      pathSegments: [
+        if (emulatorHost != null) productionDomain,
+        'v1',
+        path,
+      ],
+      queryParameters: <String, dynamic>{
+        'key': apiKey,
+        ...?queryParameters,
+      },
+    );
+  }
 
   Future<Map<String, dynamic>> _post(
     Uri url,

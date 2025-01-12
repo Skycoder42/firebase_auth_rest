@@ -6,9 +6,28 @@ import 'package:http/http.dart';
 
 Future main(List<String> arguments) async {
   final client = Client();
+
+  // optional:
+  // parse the 2nd and 3rd args to get the emulatorHost and emulatorPort
+  // make sure to run firebase emulators:start before doing this
+  final emulatorHost = arguments.asMap().containsKey(1) ? arguments[1] : null;
+  final emulatorPort =
+      arguments.asMap().containsKey(2) ? int.tryParse(arguments[2]) : null;
+  if (emulatorHost != null && emulatorPort != null) {
+    print(
+      'Connecting to firebase auth emulator at http://$emulatorHost:$emulatorPort',
+    );
+  }
+
   try {
     // create a firebase auth instance
-    final fbAuth = FirebaseAuth(client, arguments[0], 'en-US');
+    final fbAuth = FirebaseAuth(
+      client,
+      arguments[0],
+      locale: 'en-US',
+      emulatorHost: emulatorHost,
+      emulatorPort: emulatorPort,
+    );
 
     // login, set autoRefresh to true to automatically refresh the idToken in
     // the background

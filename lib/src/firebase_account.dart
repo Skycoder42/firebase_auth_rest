@@ -65,10 +65,17 @@ class FirebaseAccount {
     Client client,
     String apiKey,
     SignInResponse signInResponse, {
+    String? emulatorHost,
+    int? emulatorPort,
     bool autoRefresh = true,
     String? locale,
   }) : this.apiCreate(
-          RestApi(client, apiKey),
+          RestApi(
+            client,
+            apiKey,
+            emulatorHost: emulatorHost,
+            emulatorPort: emulatorPort,
+          ),
           signInResponse,
           autoRefresh: autoRefresh,
           locale: locale,
@@ -100,11 +107,18 @@ class FirebaseAccount {
     Client client,
     String apiKey,
     String refreshToken, {
+    String? emulatorHost,
+    int? emulatorPort,
     bool autoRefresh = true,
     String? locale,
   }) =>
       apiRestore(
-        RestApi(client, apiKey),
+        RestApi(
+          client,
+          apiKey,
+          emulatorHost: emulatorHost,
+          emulatorPort: emulatorPort,
+        ),
         refreshToken,
         autoRefresh: autoRefresh,
         locale: locale,

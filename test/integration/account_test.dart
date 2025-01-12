@@ -23,7 +23,18 @@ void main() {
 
   setUpAll(() async {
     client = Client();
-    auth = FirebaseAuth(client, await TestConfig.apiKey);
+    auth = FirebaseAuth(
+      client,
+      await TestConfig.apiKey,
+      emulatorHost: await TestConfig.emulatorHost,
+      emulatorPort: await TestConfig.emulatorPort,
+    );
+    if (auth.emulatorHost != null && auth.emulatorPort != null) {
+      // ignore: avoid_print
+      print(
+        'running tests against firebase emulator located at http://${auth.emulatorHost}:${auth.emulatorPort}',
+      );
+    }
   });
 
   tearDownAll(() {

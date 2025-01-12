@@ -33,7 +33,12 @@ extension FakeResponseX on When<Future<Response>> {
 void main() {
   const apiKey = 'apiKey';
   final mockClient = MockClient();
-  final api = RestApi(mockClient, apiKey);
+  final api = RestApi(
+    mockClient,
+    apiKey,
+    emulatorHost: null,
+    emulatorPort: null,
+  );
 
   When<Future<Response>> whenPost() => when(
         // ignore: discarded_futures

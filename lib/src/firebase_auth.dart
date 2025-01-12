@@ -22,6 +22,12 @@ class FirebaseAuth {
   /// The default locale to be used for E-Mails sent by Firebase.
   String? locale;
 
+  /// The URL host of the firebase auth emulator
+  final String? emulatorHost;
+
+  /// The port of the firebase auth emulator
+  final int? emulatorPort;
+
   /// Creates a new firebase auth instance.
   ///
   /// The instance uses [client] and [apiKey] for accessing the Firebase REST
@@ -29,9 +35,16 @@ class FirebaseAuth {
   /// the [FirebaseAuth.locale] property.
   FirebaseAuth(
     Client client,
-    String apiKey, [
+    String apiKey, {
+    this.emulatorHost,
+    this.emulatorPort,
     this.locale,
-  ]) : api = RestApi(client, apiKey);
+  }) : api = RestApi(
+          client,
+          apiKey,
+          emulatorHost: emulatorHost,
+          emulatorPort: emulatorPort,
+        );
 
   /// Creates a new firebase auth instance.
   ///
@@ -39,9 +52,11 @@ class FirebaseAuth {
   /// [locale] is specified, it is used to initialize the [FirebaseAuth.locale]
   /// property.
   FirebaseAuth.api(
-    this.api, [
+    this.api, {
+    this.emulatorHost,
+    this.emulatorPort,
     this.locale,
-  ]);
+  });
 
   /// Returns a list of all providers that can be used to login.
   ///

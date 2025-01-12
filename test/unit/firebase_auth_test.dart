@@ -52,7 +52,7 @@ void main() {
     final auth = FirebaseAuth(
       mockClient,
       apiKey,
-      locale,
+      locale: locale,
     );
 
     expect(auth.api, isNotNull);
@@ -65,7 +65,7 @@ void main() {
     const locale = 'locale';
     final auth = FirebaseAuth.api(
       mockApi,
-      locale,
+      locale: locale,
     );
 
     expect(auth.api, mockApi);
@@ -82,7 +82,7 @@ void main() {
     FirebaseAccount? account;
 
     setUp(() {
-      auth = FirebaseAuth.api(mockApi, 'ab-CD');
+      auth = FirebaseAuth.api(mockApi, locale: 'ab-CD');
     });
 
     tearDown(() async {
