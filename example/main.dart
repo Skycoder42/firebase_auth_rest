@@ -60,6 +60,10 @@ Future main(List<String> arguments) async {
       'Pass your API-Key as first parameter and make sure, anonymous '
       'authentication has been enabled!',
     );
+    print(
+      'Optionally you can also pass in the emulator host and emulator port '
+      'as the second and third parameters',
+    );
     exitCode = 127;
   } finally {
     // close the client - fbAuth and all attached accounts will stop working
