@@ -1,3 +1,4 @@
+export 'src/emulator_config.dart';
 export 'src/firebase_account.dart';
 export 'src/firebase_auth.dart';
 export 'src/models/auth_exception.dart';

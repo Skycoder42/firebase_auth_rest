@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:http/http.dart';
 
+import 'emulator_config.dart';
 import 'firebase_auth.dart';
 import 'models/auth_exception.dart';
 import 'models/delete_request.dart';
@@ -65,16 +66,14 @@ class FirebaseAccount {
     Client client,
     String apiKey,
     SignInResponse signInResponse, {
-    String? emulatorHost,
-    int? emulatorPort,
-    bool autoRefresh = true,
     String? locale,
+    bool autoRefresh = true,
+    EmulatorConfig? emulator,
   }) : this.apiCreate(
           RestApi(
             client,
             apiKey,
-            emulatorHost: emulatorHost,
-            emulatorPort: emulatorPort,
+            emulator: emulator,
           ),
           signInResponse,
           autoRefresh: autoRefresh,
@@ -107,17 +106,15 @@ class FirebaseAccount {
     Client client,
     String apiKey,
     String refreshToken, {
-    String? emulatorHost,
-    int? emulatorPort,
     bool autoRefresh = true,
     String? locale,
+    EmulatorConfig? emulator,
   }) =>
       apiRestore(
         RestApi(
           client,
           apiKey,
-          emulatorHost: emulatorHost,
-          emulatorPort: emulatorPort,
+          emulator: emulator,
         ),
         refreshToken,
         autoRefresh: autoRefresh,

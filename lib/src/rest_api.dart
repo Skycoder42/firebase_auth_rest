@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 
+import 'emulator_config.dart';
 import 'models/auth_exception.dart';
 import 'models/delete_request.dart';
 import 'models/fetch_provider_request.dart';
@@ -36,11 +37,11 @@ class RestApi {
   /// The Firebase Web-API-Key to authenticate to the remote api
   final String apiKey;
 
-  /// The URL host of the firebase auth emulator
-  final String? emulatorHost;
-
-  /// The port of the firebase auth emulator
-  final int? emulatorPort;
+  /// Config to connect to the Firebase auth emulator
+  ///
+  /// When set requests will be sent to the Firebase auth emulator
+  /// instead of the production endpoints
+  final EmulatorConfig? emulator;
 
   /// Create a new api instance
   ///
@@ -49,8 +50,7 @@ class RestApi {
   const RestApi(
     this.client,
     this.apiKey, {
-    required this.emulatorHost,
-    required this.emulatorPort,
+    this.emulator,
   });
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-refresh-token
@@ -260,18 +260,22 @@ class RestApi {
     Map<String, dynamic>? queryParameters,
   }) {
     String host;
-    final productionDomain = isTokenRequest ? _tokenHost : _authHost;
-    if (emulatorHost != null) {
-      host = emulatorHost!;
+    var protocol = 'https';
+    int? port;
+    final targetDomain = isTokenRequest ? _tokenHost : _authHost;
+    if (emulator != null) {
+      host = emulator!.host;
+      protocol = emulator!.protocol;
+      port = emulator!.port;
     } else {
-      host = productionDomain;
+      host = targetDomain;
     }
     return Uri(
-      scheme: emulatorHost != null ? 'http' : 'https',
+      scheme: protocol,
       host: host,
-      port: emulatorPort,
+      port: port,
       pathSegments: [
-        if (emulatorHost != null) productionDomain,
+        if (emulator != null) targetDomain,
         'v1',
         path,
       ],

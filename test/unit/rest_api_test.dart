@@ -36,8 +36,6 @@ void main() {
   final api = RestApi(
     mockClient,
     apiKey,
-    emulatorHost: null,
-    emulatorPort: null,
   );
 
   When<Future<Response>> whenPost() => when(

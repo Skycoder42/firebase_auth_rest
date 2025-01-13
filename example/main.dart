@@ -13,10 +13,12 @@ Future main(List<String> arguments) async {
   final emulatorHost = arguments.asMap().containsKey(1) ? arguments[1] : null;
   final emulatorPort =
       arguments.asMap().containsKey(2) ? int.tryParse(arguments[2]) : null;
+  EmulatorConfig? emulator;
   if (emulatorHost != null && emulatorPort != null) {
     print(
       'Connecting to firebase auth emulator at http://$emulatorHost:$emulatorPort',
     );
+    emulator = EmulatorConfig(host: emulatorHost, port: emulatorPort);
   }
 
   try {
@@ -25,8 +27,7 @@ Future main(List<String> arguments) async {
       client,
       arguments[0],
       locale: 'en-US',
-      emulatorHost: emulatorHost,
-      emulatorPort: emulatorPort,
+      emulator: emulator,
     );
 
     // login, set autoRefresh to true to automatically refresh the idToken in

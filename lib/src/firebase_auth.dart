@@ -1,5 +1,6 @@
 import 'package:http/http.dart';
 
+import 'emulator_config.dart';
 import 'firebase_account.dart';
 import 'models/auth_exception.dart';
 import 'models/fetch_provider_request.dart';
@@ -22,11 +23,8 @@ class FirebaseAuth {
   /// The default locale to be used for E-Mails sent by Firebase.
   String? locale;
 
-  /// The URL host of the firebase auth emulator
-  final String? emulatorHost;
-
-  /// The port of the firebase auth emulator
-  final int? emulatorPort;
+  /// options for connect to the firebase auth emulator
+  final EmulatorConfig? emulator;
 
   /// Creates a new firebase auth instance.
   ///
@@ -36,14 +34,12 @@ class FirebaseAuth {
   FirebaseAuth(
     Client client,
     String apiKey, {
-    this.emulatorHost,
-    this.emulatorPort,
     this.locale,
+    this.emulator,
   }) : api = RestApi(
           client,
           apiKey,
-          emulatorHost: emulatorHost,
-          emulatorPort: emulatorPort,
+          emulator: emulator,
         );
 
   /// Creates a new firebase auth instance.
@@ -53,9 +49,8 @@ class FirebaseAuth {
   /// property.
   FirebaseAuth.api(
     this.api, {
-    this.emulatorHost,
-    this.emulatorPort,
     this.locale,
+    this.emulator,
   });
 
   /// Returns a list of all providers that can be used to login.
