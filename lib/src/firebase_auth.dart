@@ -1,8 +1,8 @@
 import 'package:http/http.dart';
 
-import 'emulator_config.dart';
 import 'firebase_account.dart';
 import 'models/auth_exception.dart';
+import 'models/emulator_config.dart';
 import 'models/fetch_provider_request.dart';
 import 'models/idp_provider.dart';
 import 'models/oob_code_request.dart';
@@ -23,35 +23,32 @@ class FirebaseAuth {
   /// The default locale to be used for E-Mails sent by Firebase.
   String? locale;
 
-  /// options for connect to the firebase auth emulator
-  final EmulatorConfig? emulator;
-
   /// Creates a new firebase auth instance.
   ///
   /// The instance uses [client] and [apiKey] for accessing the Firebase REST
   /// endpoints. If [locale] is specified, it is used to initialize
   /// the [FirebaseAuth.locale] property.
-  FirebaseAuth(
-    Client client,
-    String apiKey, {
-    this.locale,
-    this.emulator,
-  }) : api = RestApi(
-          client,
-          apiKey,
-          emulator: emulator,
-        );
+  FirebaseAuth(Client client, String apiKey, [this.locale])
+      : api = RestApi(client, apiKey);
 
   /// Creates a new firebase auth instance.
   ///
   /// The instance uses the [api] for accessing the Firebase REST endpoints. If
   /// [locale] is specified, it is used to initialize the [FirebaseAuth.locale]
   /// property.
-  FirebaseAuth.api(
-    this.api, {
+  FirebaseAuth.api(this.api, [this.locale]);
+
+  /// Create a new firebase auth instance that connects to the firebase emulator
+  ///
+  /// The instance uses [client], [apiKey], and [emulator] for accessing the
+  /// Firebase auth emulator REST endpoints. If [locale] is specified, it is
+  /// used to initialize the [FirebaseAuth.locale] property.
+  FirebaseAuth.emulator(
+    Client client,
+    String apiKey,
+    EmulatorConfig emulator, {
     this.locale,
-    this.emulator,
-  });
+  }) : api = RestApi(client, apiKey, emulator: emulator);
 
   /// Returns a list of all providers that can be used to login.
   ///

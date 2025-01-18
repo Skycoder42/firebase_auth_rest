@@ -1,7 +1,7 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, no_self_package_imports
 import 'dart:convert';
 
-import 'package:firebase_auth_rest/src/models/auth_exception.dart';
+import 'package:firebase_auth_rest/firebase_auth_rest.dart';
 import 'package:firebase_auth_rest/src/models/delete_request.dart';
 import 'package:firebase_auth_rest/src/models/fetch_provider_request.dart';
 import 'package:firebase_auth_rest/src/models/fetch_provider_response.dart';
@@ -30,13 +30,10 @@ extension FakeResponseX on When<Future<Response>> {
       thenAnswer((i) async => FakeResponse.forModel<T>(model, overwrites));
 }
 
-void main() {
+void main() async {
   const apiKey = 'apiKey';
   final mockClient = MockClient();
-  final api = RestApi(
-    mockClient,
-    apiKey,
-  );
+  final api = RestApi(mockClient, apiKey);
 
   When<Future<Response>> whenPost() => when(
         // ignore: discarded_futures
@@ -883,6 +880,75 @@ void main() {
       expect(
         () => api.delete(const DeleteRequest(idToken: 'token')),
         throwsA(isA<AuthException>()),
+      );
+    });
+  });
+
+  group('emulator', () {
+    // Random IP just to ensure we don't accidentally hard code
+    // 127.0.0.1 or localhost
+    const emulatorHost = '192.123.1.123';
+    const emulatorPort = 3124;
+    final apiWithEmulator = RestApi(
+      mockClient,
+      apiKey,
+      emulator: EmulatorConfig(host: emulatorHost, port: emulatorPort),
+    );
+    test('should construct emulator version of auth endpoints', () async {
+      whenPost().thenFake(
+        AnonymousSignInResponse(
+          idToken: '',
+          refreshToken: '',
+          expiresIn: '',
+          localId: '',
+        ),
+      );
+
+      await apiWithEmulator.signUpAnonymous(AnonymousSignInRequest());
+      verify(
+        () => mockClient.post(
+          Uri.parse(
+            'http://$emulatorHost:$emulatorPort/identitytoolkit.googleapis.com/v1/accounts:signUp?key=apiKey',
+          ),
+          body: json.encode({
+            'returnSecureToken': true,
+          }),
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+    });
+
+    test('should construct emulator version of the token endpoints', () async {
+      whenPost().thenFake(
+        const RefreshResponse(
+          expires_in: '',
+          token_type: '',
+          refresh_token: '',
+          id_token: '',
+          user_id: '',
+          project_id: '',
+        ),
+      );
+
+      const token = 'token';
+      await apiWithEmulator.token(refresh_token: token);
+      verify(
+        () => mockClient.post(
+          Uri.parse(
+            'http://$emulatorHost:$emulatorPort/securetoken.googleapis.com/v1/token?key=apiKey',
+          ),
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: {
+            'refresh_token': token,
+            'grant_type': 'refresh_token',
+          },
+        ),
       );
     });
   });

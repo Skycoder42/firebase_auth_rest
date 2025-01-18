@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:http/http.dart';
 
-import 'emulator_config.dart';
 import 'firebase_auth.dart';
 import 'models/auth_exception.dart';
 import 'models/delete_request.dart';
+import 'models/emulator_config.dart';
 import 'models/idp_provider.dart';
 import 'models/oob_code_request.dart';
 import 'models/signin_request.dart';
@@ -53,7 +53,7 @@ class FirebaseAccount {
     this.locale,
   );
 
-  /// Creates a new account from a successfuly sign in response.
+  /// Creates a new account from a successfully sign in response.
   ///
   /// Instead of using this constructor directly, prefer using one of the
   /// [FirebaseAuth] classes signIn/signUp methods.
@@ -61,7 +61,9 @@ class FirebaseAccount {
   /// The account is created by using the [client] and [apiKey] for accessing
   /// the Firebase REST endpoints. The user credentials are extracted from the
   /// [signInResponse]. If [autoRefresh] and [locale] are used to initialize
-  /// these properties.
+  /// these properties. If [emulator] is specified, requests
+  /// will be made against the Firebase auth emulator instead of the production
+  /// endpoints using the provided [EmulatorConfig].
   FirebaseAccount.create(
     Client client,
     String apiKey,

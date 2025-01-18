@@ -3,9 +3,9 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 
-import 'emulator_config.dart';
 import 'models/auth_exception.dart';
 import 'models/delete_request.dart';
+import 'models/emulator_config.dart';
 import 'models/fetch_provider_request.dart';
 import 'models/fetch_provider_response.dart';
 import 'models/oob_code_request.dart';
@@ -46,12 +46,11 @@ class RestApi {
   /// Create a new api instance
   ///
   /// The api is created with [client] and [apiKey] to initialize the
-  /// equivalent members. They are used to access the firebase servers.
-  const RestApi(
-    this.client,
-    this.apiKey, {
-    this.emulator,
-  });
+  /// equivalent members. They are used to access the firebase servers. If
+  /// [emulator] is specified, requests will be made against the Firebase auth
+  /// emulator instead of the production endpoints using the provided
+  /// [EmulatorConfig].
+  const RestApi(this.client, this.apiKey, {this.emulator});
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-refresh-token
   Future<RefreshResponse> token({
