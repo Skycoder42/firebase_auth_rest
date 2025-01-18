@@ -39,7 +39,7 @@ class RestApi {
 
   /// Config to connect to the Firebase auth emulator
   ///
-  /// When set requests will be sent to the Firebase auth emulator
+  /// When set, requests will be sent to the Firebase auth emulator
   /// instead of the production endpoints
   final EmulatorConfig? emulator;
 
