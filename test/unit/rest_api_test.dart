@@ -1,8 +1,9 @@
-// ignore_for_file: prefer_const_constructors, no_self_package_imports
+// ignore_for_file: prefer_const_constructors
 import 'dart:convert';
 
-import 'package:firebase_auth_rest/firebase_auth_rest.dart';
+import 'package:firebase_auth_rest/src/models/auth_exception.dart';
 import 'package:firebase_auth_rest/src/models/delete_request.dart';
+import 'package:firebase_auth_rest/src/models/emulator_config.dart';
 import 'package:firebase_auth_rest/src/models/fetch_provider_request.dart';
 import 'package:firebase_auth_rest/src/models/fetch_provider_response.dart';
 import 'package:firebase_auth_rest/src/models/oob_code_request.dart';
