@@ -53,7 +53,7 @@ class FirebaseAccount {
     this.locale,
   );
 
-  /// Creates a new account from a successfully sign in response.
+  /// Creates a new account from a successful sign in response.
   ///
   /// Instead of using this constructor directly, prefer using one of the
   /// [FirebaseAuth] classes signIn/signUp methods.
@@ -82,7 +82,7 @@ class FirebaseAccount {
           locale: locale,
         );
 
-  /// Creates a new account from a successfuly sign in response and a [RestApi].
+  /// Creates a new account from a successful sign in response and a [RestApi].
   ///
   /// Instead of using this constructor directly, prefer using one of the
   /// [FirebaseAuth] classes signIn/signUp methods.
