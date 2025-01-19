@@ -458,7 +458,13 @@ void main() async {
     test('should send a post request with correct data', () async {
       whenPost().thenFake(const ProfileUpdateResponse(localId: ''));
 
-      await api.updateProfile(const ProfileUpdateRequest(idToken: 'token'));
+      await api.updateProfile(
+        ProfileUpdateRequest(
+          idToken: 'token',
+          displayName: 'name',
+          photoUrl: Uri.http('example.com'),
+        ),
+      );
       verify(
         () => mockClient.post(
           Uri.parse(
@@ -466,8 +472,8 @@ void main() async {
           ),
           body: json.encode({
             'idToken': 'token',
-            'displayName': null,
-            'photoUrl': null,
+            'displayName': 'name',
+            'photoUrl': 'http://example.com',
             'deleteAttribute': const <String>[],
             'returnSecureToken': false,
           }),
