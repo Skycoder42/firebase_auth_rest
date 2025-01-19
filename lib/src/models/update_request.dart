@@ -1,5 +1,5 @@
 // coverage:ignore-file
-// ignore_for_file: constant_identifier_names
+// ignore_for_file: constant_identifier_names, invalid_annotation_target
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -54,10 +54,10 @@ sealed class UpdateRequest with _$UpdateRequest {
     required String idToken,
 
     /// User's new display name.
-    String? displayName,
+    @JsonKey(includeIfNull: false) String? displayName,
 
     /// User's new photo url.
-    Uri? photoUrl,
+    @JsonKey(includeIfNull: false) Uri? photoUrl,
 
     /// List of attributes to delete, [DeleteAttribute.DISPLAY_NAME] or
     /// [DeleteAttribute.PHOTO_URL]. This will nullify these values.
