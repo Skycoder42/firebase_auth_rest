@@ -249,7 +249,7 @@ void main() {
       verify(() => mockApi.token(refresh_token: 'refreshToken2')).called(2);
     });
 
-    test('sends token request immediatly if timeout is below 60 seconds',
+    test('sends token request immediately if timeout is below 60 seconds',
         () async {
       account = FirebaseAccount.apiCreate(
         mockApi,

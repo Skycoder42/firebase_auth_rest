@@ -5,6 +5,7 @@ import 'package:http/http.dart';
 
 import 'models/auth_exception.dart';
 import 'models/delete_request.dart';
+import 'models/emulator_config.dart';
 import 'models/fetch_provider_request.dart';
 import 'models/fetch_provider_response.dart';
 import 'models/oob_code_request.dart';
@@ -36,11 +37,20 @@ class RestApi {
   /// The Firebase Web-API-Key to authenticate to the remote api
   final String apiKey;
 
+  /// Config to connect to the Firebase auth emulator
+  ///
+  /// When set, requests will be sent to the Firebase auth emulator
+  /// instead of the production endpoints
+  final EmulatorConfig? emulator;
+
   /// Create a new api instance
   ///
   /// The api is created with [client] and [apiKey] to initialize the
-  /// equivalent members. They are used to access the firebase servers.
-  const RestApi(this.client, this.apiKey);
+  /// equivalent members. They are used to access the firebase servers. If
+  /// [emulator] is specified, requests will be made against the Firebase auth
+  /// emulator instead of the production endpoints using the provided
+  /// [EmulatorConfig].
+  const RestApi(this.client, this.apiKey, {this.emulator});
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-refresh-token
   Future<RefreshResponse> token({
@@ -247,19 +257,33 @@ class RestApi {
     String path, {
     bool isTokenRequest = false,
     Map<String, dynamic>? queryParameters,
-  }) =>
-      Uri(
-        scheme: 'https',
-        host: isTokenRequest ? _tokenHost : _authHost,
-        pathSegments: [
-          'v1',
-          path,
-        ],
-        queryParameters: <String, dynamic>{
-          'key': apiKey,
-          ...?queryParameters,
-        },
-      );
+  }) {
+    String host;
+    var protocol = 'https';
+    int? port;
+    final targetDomain = isTokenRequest ? _tokenHost : _authHost;
+    if (emulator != null) {
+      host = emulator!.host;
+      protocol = emulator!.protocol;
+      port = emulator!.port;
+    } else {
+      host = targetDomain;
+    }
+    return Uri(
+      scheme: protocol,
+      host: host,
+      port: port,
+      pathSegments: [
+        if (emulator != null) targetDomain,
+        'v1',
+        path,
+      ],
+      queryParameters: <String, dynamic>{
+        'key': apiKey,
+        ...?queryParameters,
+      },
+    );
+  }
 
   Future<Map<String, dynamic>> _post(
     Uri url,

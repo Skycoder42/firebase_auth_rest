@@ -1,6 +1,7 @@
 export 'src/firebase_account.dart';
 export 'src/firebase_auth.dart';
 export 'src/models/auth_exception.dart';
+export 'src/models/emulator_config.dart';
 export 'src/models/idp_provider.dart';
 export 'src/models/provider_user_info.dart';
 export 'src/models/userdata.dart';
