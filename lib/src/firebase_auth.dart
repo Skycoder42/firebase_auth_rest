@@ -238,7 +238,7 @@ class FirebaseAuth {
   /// [email]. The language of that mail is determined by [locale], if
   /// specified, [FirebaseAuth.locale] otherwise. If the request fails, an
   /// [AuthException] is thrown.
-  Future requestPasswordReset(
+  Future<void> requestPasswordReset(
     String email, {
     String? locale,
   }) async =>
@@ -255,7 +255,7 @@ class FirebaseAuth {
   ///
   /// If the check succeeds, the future simply resolves without a value. If it
   /// fails instead, an [AuthException] is thrown.
-  Future validatePasswordReset(String oobCode) async =>
+  Future<void> validatePasswordReset(String oobCode) async =>
       api.resetPassword(PasswordResetRequest.verify(oobCode: oobCode));
 
   /// Completes a password reset by setting a new password.
@@ -267,7 +267,7 @@ class FirebaseAuth {
   /// If this method succeeds, the user must from now on use [newPassword] when
   /// signing in via [signInWithPassword()]. If it fails, an [AuthException] is
   /// thrown.
-  Future resetPassword(String oobCode, String newPassword) async =>
+  Future<void> resetPassword(String oobCode, String newPassword) async =>
       api.resetPassword(
         PasswordResetRequest.confirm(
           oobCode: oobCode,

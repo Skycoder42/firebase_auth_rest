@@ -682,4 +682,5 @@ void main() {
   });
 }
 
-Future _wait(int seconds) => Future<void>.delayed(Duration(seconds: seconds));
+Future<void> _wait(int seconds) =>
+    Future<void>.delayed(Duration(seconds: seconds));

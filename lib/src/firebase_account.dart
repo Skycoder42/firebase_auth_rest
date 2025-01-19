@@ -227,7 +227,7 @@ class FirebaseAccount {
   /// accounts [FirebaseAccount.locale] will be used.
   ///
   /// If the request fails, an [AuthException] will be thrown.
-  Future requestEmailConfirmation({
+  Future<void> requestEmailConfirmation({
     String? locale,
   }) async =>
       api.sendOobCode(
@@ -514,7 +514,7 @@ class FirebaseAccount {
     }
   }
 
-  Future _updateTokenTimeout() async {
+  Future<void> _updateTokenTimeout() async {
     try {
       await _updateToken();
       // ignore: avoid_catches_without_on_clauses

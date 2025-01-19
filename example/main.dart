@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:firebase_auth_rest/firebase_auth_rest.dart';
 import 'package:http/http.dart';
 
-Future main(List<String> arguments) async {
+Future<void> main(List<String> arguments) async {
   final client = Client();
 
   // optional:
