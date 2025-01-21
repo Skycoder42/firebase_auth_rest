@@ -41,3 +41,8 @@ account.dispose();
 
 ## Documentation
 The documentation is available at https://pub.dev/documentation/firebase_auth_rest/latest/. A full example can be found at https://pub.dev/packages/firebase_auth_rest/example.
+
+## Testing
+If you intend to run the integration tests, you will have to create a firebase project with the authentication enabled. You must enable E-Mail and anonymous authentication and disable the E-Mail enumeration protection. **Note:** This is *only* required to run the integration tests. For a normal firebase project you should never disable E-Mail enumeration protection. Finally, you have to create a `.env` file with the `FIREBASE_API_KEY` from the project.
+
+Alternatively you can use the [firebase emulator](https://firebase.google.com/docs/emulator-suite) for testing. In that case, you will have to set the `FIREBASE_EMULATOR_HOST` and `FIREBASE_EMULATOR_PORT` in the `.env` file as well.
