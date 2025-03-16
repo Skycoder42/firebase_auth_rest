@@ -23,9 +23,15 @@ Future<void> main(List<String> arguments) async {
 
   try {
     // create a firebase auth instance
-    final fbAuth = emulator != null
-        ? FirebaseAuth.emulator(client, arguments[0], emulator, locale: 'en-US')
-        : FirebaseAuth(client, arguments[0], 'en-US');
+    final fbAuth =
+        emulator != null
+            ? FirebaseAuth.emulator(
+              client,
+              arguments[0],
+              emulator,
+              locale: 'en-US',
+            )
+            : FirebaseAuth(client, arguments[0], 'en-US');
 
     // login, set autoRefresh to true to automatically refresh the idToken in
     // the background

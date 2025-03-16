@@ -16,7 +16,8 @@ void main() {
   late final Client client;
   late final FirebaseAuth auth;
 
-  String generateRnd(int length) => List<String>.generate(
+  String generateRnd(int length) =>
+      List<String>.generate(
         length ~/ 2,
         (i) => Random.secure().nextInt(256).toRadixString(16),
       ).join();
@@ -28,14 +29,12 @@ void main() {
     final emulatorPort = await TestConfig.emulatorPort;
     EmulatorConfig? emulator;
     if (emulatorPort != null && emulatorHost != null) {
-      emulator = EmulatorConfig(
-        host: emulatorHost,
-        port: emulatorPort,
-      );
+      emulator = EmulatorConfig(host: emulatorHost, port: emulatorPort);
     }
-    auth = emulator != null
-        ? FirebaseAuth.emulator(client, apiKey, emulator)
-        : FirebaseAuth(client, apiKey);
+    auth =
+        emulator != null
+            ? FirebaseAuth.emulator(client, apiKey, emulator)
+            : FirebaseAuth(client, apiKey);
     if (auth.api.emulator != null) {
       // ignore: avoid_print
       print(
@@ -128,9 +127,7 @@ void main() {
       await account.updateProfile(
         displayName: const ProfileUpdate.delete(),
         photoUrl: ProfileUpdate.update(
-          Uri.parse(
-            'https://example.org/profile.png',
-          ),
+          Uri.parse('https://example.org/profile.png'),
         ),
       );
       details = await account.getDetails();
@@ -138,9 +135,7 @@ void main() {
       expect(details!.displayName, isNull);
       expect(details.photoUrl, Uri.parse('https://example.org/profile.png'));
 
-      await account.updateProfile(
-        photoUrl: const ProfileUpdate.delete(),
-      );
+      await account.updateProfile(photoUrl: const ProfileUpdate.delete());
       details = await account.getDetails();
       expect(details, isNotNull);
       expect(details!.displayName, isNull);
@@ -249,7 +244,5 @@ void main() {
   });
 }
 
-Matcher _isAfter(DateTime after) => predicate<DateTime>(
-      (e) => e.isAfter(after),
-      'is after $after',
-    );
+Matcher _isAfter(DateTime after) =>
+    predicate<DateTime>((e) => e.isAfter(after), 'is after $after');

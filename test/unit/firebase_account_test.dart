@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, discarded_futures
 
 import 'package:dart_test_tools/test.dart';
 import 'package:firebase_auth_rest/src/firebase_account.dart';
@@ -59,18 +59,10 @@ void main() {
     registerFallbackValue(const DeleteRequest(idToken: ''));
     registerFallbackValue(const UnlinkRequest(idToken: '', deleteProvider: []));
     registerFallbackValue(
-      LinkIdpRequest(
-        idToken: '',
-        requestUri: Uri(),
-        postBody: '',
-      ),
+      LinkIdpRequest(idToken: '', requestUri: Uri(), postBody: ''),
     );
     registerFallbackValue(
-      const LinkEmailRequest(
-        idToken: '',
-        email: '',
-        password: '',
-      ),
+      const LinkEmailRequest(idToken: '', email: '', password: ''),
     );
     registerFallbackValue(const OobCodeRequest.verifyEmail(idToken: ''));
     registerFallbackValue(const ProfileUpdateRequest(idToken: ''));
@@ -78,10 +70,7 @@ void main() {
     registerFallbackValue(const UserDataRequest(idToken: ''));
     registerFallbackValue(const ConfirmEmailRequest(oobCode: ''));
     registerFallbackValue(
-      const PasswordUpdateRequest(
-        idToken: '',
-        password: '',
-      ),
+      const PasswordUpdateRequest(idToken: '', password: ''),
     );
   });
 
@@ -128,8 +117,11 @@ void main() {
 
     test('create initializes api with correct client and key', () {
       const apiKey = 'API-KEY';
-      account =
-          FirebaseAccount.create(mockClient, apiKey, defaultSignInResponse);
+      account = FirebaseAccount.create(
+        mockClient,
+        apiKey,
+        defaultSignInResponse,
+      );
 
       expect(account.api.client, mockClient);
       expect(account.api.apiKey, apiKey);
@@ -139,11 +131,12 @@ void main() {
   group('restore', () {
     final mockClient = MockClient();
 
-    setUp(() async {
+    setUp(() {
       reset(mockClient);
 
-      when(() => mockApi.token(refresh_token: any(named: 'refresh_token')))
-          .thenAnswer((i) async => defaultRefreshResponse);
+      when(
+        () => mockApi.token(refresh_token: any(named: 'refresh_token')),
+      ).thenAnswer((i) async => defaultRefreshResponse);
     });
 
     test('apiRestore calls api.token with refreshToken', () async {
@@ -163,9 +156,8 @@ void main() {
       const refreshToken1 = 'refreshToken1';
       const refreshToken2 = 'refreshToken2';
       when(() => mockApi.token(refresh_token: refreshToken1)).thenAnswer(
-        (i) async => defaultRefreshResponse.copyWith(
-          refresh_token: refreshToken2,
-        ),
+        (i) async =>
+            defaultRefreshResponse.copyWith(refresh_token: refreshToken2),
       );
 
       final expiresAt = DateTime.now().toUtc().add(Duration(seconds: 5));
@@ -197,7 +189,7 @@ void main() {
   });
 
   group('autoRefresh', () {
-    setUp(() async {
+    setUp(() {
       when(
         () => mockApi.token(
           refresh_token: any(named: 'refresh_token'),
@@ -230,8 +222,9 @@ void main() {
     });
 
     test('sends token request again after timeout', () async {
-      when(() => mockApi.token(refresh_token: any(named: 'refresh_token')))
-          .thenAnswer(
+      when(
+        () => mockApi.token(refresh_token: any(named: 'refresh_token')),
+      ).thenAnswer(
         (i) async => defaultRefreshResponse.copyWith(
           refresh_token: 'refreshToken2',
           expires_in: '62',
@@ -249,26 +242,23 @@ void main() {
       verify(() => mockApi.token(refresh_token: 'refreshToken2')).called(2);
     });
 
-    test('sends token request immediately if timeout is below 60 seconds',
-        () async {
-      account = FirebaseAccount.apiCreate(
-        mockApi,
-        defaultSignInResponse,
-      );
+    test(
+      'sends token request immediately if timeout is below 60 seconds',
+      () async {
+        account = FirebaseAccount.apiCreate(mockApi, defaultSignInResponse);
 
-      await _wait(1);
+        await _wait(1);
 
-      verify(() => mockApi.token(refresh_token: 'refreshToken')).called(1);
-    });
+        verify(() => mockApi.token(refresh_token: 'refreshToken')).called(1);
+      },
+    );
 
-    test('token update errors are streamed', () async {
-      when(() => mockApi.token(refresh_token: any(named: 'refresh_token')))
-          .thenThrow(AuthException(ErrorData()));
+    test('token update errors are streamed', () {
+      when(
+        () => mockApi.token(refresh_token: any(named: 'refresh_token')),
+      ).thenThrow(AuthException(ErrorData()));
 
-      account = FirebaseAccount.apiCreate(
-        mockApi,
-        defaultSignInResponse,
-      );
+      account = FirebaseAccount.apiCreate(mockApi, defaultSignInResponse);
 
       expect(() => account.idTokenStream.first, throwsA(isA<AuthException>()));
     });
@@ -288,8 +278,9 @@ void main() {
       test('updates all properties', () async {
         const idToken = 'id';
         const refreshToken = 'refresh';
-        when(() => mockApi.token(refresh_token: any(named: 'refresh_token')))
-            .thenAnswer(
+        when(
+          () => mockApi.token(refresh_token: any(named: 'refresh_token')),
+        ).thenAnswer(
           (i) async => defaultRefreshResponse.copyWith(
             id_token: idToken,
             refresh_token: refreshToken,
@@ -306,17 +297,19 @@ void main() {
         expect(account.expiresAt.difference(expiresAt).inSeconds, 0);
       });
 
-      test('forwards auth exceptions', () async {
-        when(() => mockApi.token(refresh_token: any(named: 'refresh_token')))
-            .thenThrow(AuthException(ErrorData()));
+      test('forwards auth exceptions', () {
+        when(
+          () => mockApi.token(refresh_token: any(named: 'refresh_token')),
+        ).thenThrow(AuthException(ErrorData()));
 
         expect(() => account.refresh(), throwsA(isA<AuthException>()));
       });
 
       test('token updates are streamed', () async {
         const idToken = 'nextId';
-        when(() => mockApi.token(refresh_token: any(named: 'refresh_token')))
-            .thenAnswer(
+        when(
+          () => mockApi.token(refresh_token: any(named: 'refresh_token')),
+        ).thenAnswer(
           (i) async => defaultRefreshResponse.copyWith(
             id_token: idToken,
             expires_in: '5',
@@ -332,29 +325,29 @@ void main() {
     });
 
     testData<(String?, String)>(
-        'requestEmailConfirmation sends oobCode request', const [
-      ('ee-EE', 'ee-EE'),
-      (null, 'ab-CD'),
-    ], (fixture) async {
-      when(() => mockApi.sendOobCode(any(), any()))
-          .thenAnswer((i) async => OobCodeResponse());
+      'requestEmailConfirmation sends oobCode request',
+      const [('ee-EE', 'ee-EE'), (null, 'ab-CD')],
+      (fixture) async {
+        when(
+          () => mockApi.sendOobCode(any(), any()),
+        ).thenAnswer((i) async => OobCodeResponse());
 
-      await account.requestEmailConfirmation(locale: fixture.$1);
+        await account.requestEmailConfirmation(locale: fixture.$1);
 
-      verify(
-        () => mockApi.sendOobCode(
-          OobCodeRequest.verifyEmail(
-            idToken: 'idToken',
+        verify(
+          () => mockApi.sendOobCode(
+            OobCodeRequest.verifyEmail(idToken: 'idToken'),
+            fixture.$2,
           ),
-          fixture.$2,
-        ),
-      );
-    });
+        );
+      },
+    );
 
     test('confirmEmail sends confirm email request', () async {
       const code = 'code';
-      when(() => mockApi.confirmEmail(any()))
-          .thenAnswer((i) async => ConfirmEmailResponse());
+      when(
+        () => mockApi.confirmEmail(any()),
+      ).thenAnswer((i) async => ConfirmEmailResponse());
 
       await account.confirmEmail(code);
 
@@ -363,11 +356,9 @@ void main() {
 
     group('getDetails', () {
       test('sends user data request', () async {
-        when(() => mockApi.getUserData(any())).thenAnswer(
-          (i) async => UserDataResponse(
-            users: [],
-          ),
-        );
+        when(
+          () => mockApi.getUserData(any()),
+        ).thenAnswer((i) async => UserDataResponse(users: []));
 
         final result = await account.getDetails();
 
@@ -378,12 +369,7 @@ void main() {
       test('returns first user data element', () async {
         final userData = defaultUserData.copyWith(displayName: 'Max Muster');
         when(() => mockApi.getUserData(any())).thenAnswer(
-          (i) async => UserDataResponse(
-            users: [
-              userData,
-              defaultUserData,
-            ],
-          ),
+          (i) async => UserDataResponse(users: [userData, defaultUserData]),
         );
 
         final result = await account.getDetails();
@@ -392,145 +378,137 @@ void main() {
     });
 
     testData<(String?, String)>(
-        'updateEmail sends email update request', const [
-      ('ee-EE', 'ee-EE'),
-      (null, 'ab-CD'),
-    ], (fixture) async {
-      const newEmail = 'new@mail.de';
-      when(() => mockApi.updateEmail(any(), any()))
-          .thenAnswer((i) async => EmailUpdateResponse(localId: ''));
+      'updateEmail sends email update request',
+      const [('ee-EE', 'ee-EE'), (null, 'ab-CD')],
+      (fixture) async {
+        const newEmail = 'new@mail.de';
+        when(
+          () => mockApi.updateEmail(any(), any()),
+        ).thenAnswer((i) async => EmailUpdateResponse(localId: ''));
 
-      await account.updateEmail(newEmail, locale: fixture.$1);
+        await account.updateEmail(newEmail, locale: fixture.$1);
 
-      verify(
-        () => mockApi.updateEmail(
-          EmailUpdateRequest(
-            idToken: 'idToken',
-            email: newEmail,
+        verify(
+          () => mockApi.updateEmail(
+            EmailUpdateRequest(idToken: 'idToken', email: newEmail),
+            fixture.$2,
           ),
-          fixture.$2,
-        ),
-      );
-    });
+        );
+      },
+    );
 
     test('updatePassword sends password update request', () async {
       const newPassword = 'pw';
-      when(() => mockApi.updatePassword(any()))
-          .thenAnswer((i) async => PasswordUpdateResponse(localId: ''));
+      when(
+        () => mockApi.updatePassword(any()),
+      ).thenAnswer((i) async => PasswordUpdateResponse(localId: ''));
 
       await account.updatePassword(newPassword);
 
       verify(
         () => mockApi.updatePassword(
-          PasswordUpdateRequest(
-            idToken: 'idToken',
-            password: newPassword,
-          ),
+          PasswordUpdateRequest(idToken: 'idToken', password: newPassword),
         ),
       );
     });
 
     testData<
+      (
+        ProfileUpdate<String>?,
+        ProfileUpdate<Uri>?,
+        String?,
+        Uri?,
+        List<DeleteAttribute>,
+      )
+    >(
+      'updateProfile sends profile update',
+      [
+        (null, null, null, null, const []),
         (
-          ProfileUpdate<String>?,
-          ProfileUpdate<Uri>?,
-          String?,
-          Uri?,
-          List<DeleteAttribute>
-        )>('updateProfile sends profile update', [
-      (
-        null,
-        null,
-        null,
-        null,
-        const [],
-      ),
-      (
-        null,
-        ProfileUpdate<Uri>.update(Uri.parse('http://example.com/image.jpg')),
-        null,
-        Uri.parse('http://example.com/image.jpg'),
-        const [],
-      ),
-      (
-        null,
-        ProfileUpdate<Uri>.delete(),
-        null,
-        null,
-        const [DeleteAttribute.PHOTO_URL],
-      ),
-      (
-        ProfileUpdate<String>.update('name'),
-        null,
-        'name',
-        null,
-        const [],
-      ),
-      (
-        ProfileUpdate<String>.update('name'),
-        ProfileUpdate<Uri>.update(Uri.parse('http://example.com/image.jpg')),
-        'name',
-        Uri.parse('http://example.com/image.jpg'),
-        const [],
-      ),
-      (
-        ProfileUpdate<String>.update('name'),
-        ProfileUpdate<Uri>.delete(),
-        'name',
-        null,
-        const [DeleteAttribute.PHOTO_URL],
-      ),
-      (
-        ProfileUpdate<String>.delete(),
-        null,
-        null,
-        null,
-        const [DeleteAttribute.DISPLAY_NAME],
-      ),
-      (
-        ProfileUpdate<String>.delete(),
-        ProfileUpdate<Uri>.update(Uri.parse('http://example.com/image.jpg')),
-        null,
-        Uri.parse('http://example.com/image.jpg'),
-        const [DeleteAttribute.DISPLAY_NAME],
-      ),
-      (
-        ProfileUpdate<String>.delete(),
-        ProfileUpdate<Uri>.delete(),
-        null,
-        null,
-        const <DeleteAttribute>[
-          DeleteAttribute.DISPLAY_NAME,
-          DeleteAttribute.PHOTO_URL,
-        ],
-      ),
-    ], (fixture) async {
-      when(() => mockApi.updateProfile(any()))
-          .thenAnswer((i) async => ProfileUpdateResponse(localId: ''));
-
-      await account.updateProfile(
-        displayName: fixture.$1,
-        photoUrl: fixture.$2,
-      );
-
-      verify(
-        () => mockApi.updateProfile(
-          ProfileUpdateRequest(
-            idToken: 'idToken',
-            displayName: fixture.$3,
-            photoUrl: fixture.$4,
-            deleteAttribute: fixture.$5,
-          ),
+          null,
+          ProfileUpdate<Uri>.update(Uri.parse('http://example.com/image.jpg')),
+          null,
+          Uri.parse('http://example.com/image.jpg'),
+          const [],
         ),
-      );
-    });
+        (
+          null,
+          ProfileUpdate<Uri>.delete(),
+          null,
+          null,
+          const [DeleteAttribute.PHOTO_URL],
+        ),
+        (ProfileUpdate<String>.update('name'), null, 'name', null, const []),
+        (
+          ProfileUpdate<String>.update('name'),
+          ProfileUpdate<Uri>.update(Uri.parse('http://example.com/image.jpg')),
+          'name',
+          Uri.parse('http://example.com/image.jpg'),
+          const [],
+        ),
+        (
+          ProfileUpdate<String>.update('name'),
+          ProfileUpdate<Uri>.delete(),
+          'name',
+          null,
+          const [DeleteAttribute.PHOTO_URL],
+        ),
+        (
+          ProfileUpdate<String>.delete(),
+          null,
+          null,
+          null,
+          const [DeleteAttribute.DISPLAY_NAME],
+        ),
+        (
+          ProfileUpdate<String>.delete(),
+          ProfileUpdate<Uri>.update(Uri.parse('http://example.com/image.jpg')),
+          null,
+          Uri.parse('http://example.com/image.jpg'),
+          const [DeleteAttribute.DISPLAY_NAME],
+        ),
+        (
+          ProfileUpdate<String>.delete(),
+          ProfileUpdate<Uri>.delete(),
+          null,
+          null,
+          const <DeleteAttribute>[
+            DeleteAttribute.DISPLAY_NAME,
+            DeleteAttribute.PHOTO_URL,
+          ],
+        ),
+      ],
+      (fixture) async {
+        when(
+          () => mockApi.updateProfile(any()),
+        ).thenAnswer((i) async => ProfileUpdateResponse(localId: ''));
+
+        await account.updateProfile(
+          displayName: fixture.$1,
+          photoUrl: fixture.$2,
+        );
+
+        verify(
+          () => mockApi.updateProfile(
+            ProfileUpdateRequest(
+              idToken: 'idToken',
+              displayName: fixture.$3,
+              photoUrl: fixture.$4,
+              deleteAttribute: fixture.$5,
+            ),
+          ),
+        );
+      },
+    );
 
     group('linkEmail', () {
       test('sends link email request', () async {
-        when(() => mockApi.linkEmail(any()))
-            .thenAnswer((i) async => defaultLinkEmailResponse);
-        when(() => mockApi.sendOobCode(any(), any()))
-            .thenAnswer((i) async => OobCodeResponse());
+        when(
+          () => mockApi.linkEmail(any()),
+        ).thenAnswer((i) async => defaultLinkEmailResponse);
+        when(
+          () => mockApi.sendOobCode(any(), any()),
+        ).thenAnswer((i) async => OobCodeResponse());
 
         const mail = 'mail';
         const password = 'password';
@@ -554,9 +532,7 @@ void main() {
 
       test('returns email verified as result', () async {
         when(() => mockApi.linkEmail(any())).thenAnswer(
-          (i) async => defaultLinkEmailResponse.copyWith(
-            emailVerified: true,
-          ),
+          (i) async => defaultLinkEmailResponse.copyWith(emailVerified: true),
         );
 
         final result = await account.linkEmail(
@@ -569,53 +545,51 @@ void main() {
       });
 
       testData<(String?, String)>(
-          'requests email confirmation if not verified and enabled', const [
-        ('ee-EE', 'ee-EE'),
-        (null, 'ab-CD'),
-      ], (fixture) async {
-        when(() => mockApi.linkEmail(any()))
-            .thenAnswer((i) async => defaultLinkEmailResponse);
-        when(() => mockApi.sendOobCode(any(), any()))
-            .thenAnswer((i) async => OobCodeResponse());
+        'requests email confirmation if not verified and enabled',
+        const [('ee-EE', 'ee-EE'), (null, 'ab-CD')],
+        (fixture) async {
+          when(
+            () => mockApi.linkEmail(any()),
+          ).thenAnswer((i) async => defaultLinkEmailResponse);
+          when(
+            () => mockApi.sendOobCode(any(), any()),
+          ).thenAnswer((i) async => OobCodeResponse());
 
-        final result = await account.linkEmail(
-          'mail',
-          'password',
-          locale: fixture.$1,
-        );
-        expect(result, false);
+          final result = await account.linkEmail(
+            'mail',
+            'password',
+            locale: fixture.$1,
+          );
+          expect(result, false);
 
-        verify(
-          () => mockApi.sendOobCode(
-            OobCodeRequest.verifyEmail(
-              idToken: 'idToken',
+          verify(
+            () => mockApi.sendOobCode(
+              OobCodeRequest.verifyEmail(idToken: 'idToken'),
+              fixture.$2,
             ),
-            fixture.$2,
-          ),
-        );
-      });
+          );
+        },
+      );
 
-      test('does not request email confirmation if verified and enabled',
-          () async {
-        when(() => mockApi.linkEmail(any())).thenAnswer(
-          (i) async => defaultLinkEmailResponse.copyWith(
-            emailVerified: true,
-          ),
-        );
+      test(
+        'does not request email confirmation if verified and enabled',
+        () async {
+          when(() => mockApi.linkEmail(any())).thenAnswer(
+            (i) async => defaultLinkEmailResponse.copyWith(emailVerified: true),
+          );
 
-        final result = await account.linkEmail(
-          'mail',
-          'password',
-        );
-        expect(result, true);
+          final result = await account.linkEmail('mail', 'password');
+          expect(result, true);
 
-        verifyNever(() => mockApi.sendOobCode(any()));
-      });
+          verifyNever(() => mockApi.sendOobCode(any()));
+        },
+      );
     });
 
     test('linkIdp sends link idp request', () async {
-      when(() => mockApi.linkIdp(any()))
-          .thenAnswer((i) async => defaultLinkIdpResponse);
+      when(
+        () => mockApi.linkIdp(any()),
+      ).thenAnswer((i) async => defaultLinkIdpResponse);
 
       final provider = IdpProvider.google('token');
       final uri = Uri.parse('https://localhost:4242');
@@ -633,18 +607,16 @@ void main() {
     });
 
     test('unlinkProvider sends unlink request', () async {
-      when(() => mockApi.unlinkProvider(any()))
-          .thenAnswer((i) async => UnlinkResponse(localId: ''));
+      when(
+        () => mockApi.unlinkProvider(any()),
+      ).thenAnswer((i) async => UnlinkResponse(localId: ''));
 
       const providers = ['a', 'b'];
       await account.unlinkProviders(providers);
 
       verify(
         () => mockApi.unlinkProvider(
-          UnlinkRequest(
-            idToken: 'idToken',
-            deleteProvider: providers,
-          ),
+          UnlinkRequest(idToken: 'idToken', deleteProvider: providers),
         ),
       );
     });
@@ -655,13 +627,7 @@ void main() {
 
         await account.delete();
 
-        verify(
-          () => mockApi.delete(
-            DeleteRequest(
-              idToken: 'idToken',
-            ),
-          ),
-        );
+        verify(() => mockApi.delete(DeleteRequest(idToken: 'idToken')));
       });
 
       test('sends null to idToken stream', () async {

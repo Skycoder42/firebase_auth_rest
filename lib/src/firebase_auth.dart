@@ -29,7 +29,7 @@ class FirebaseAuth {
   /// endpoints. If [locale] is specified, it is used to initialize
   /// the [FirebaseAuth.locale] property.
   FirebaseAuth(Client client, String apiKey, [this.locale])
-      : api = RestApi(client, apiKey);
+    : api = RestApi(client, apiKey);
 
   /// Creates a new firebase auth instance.
   ///
@@ -58,20 +58,14 @@ class FirebaseAuth {
   /// email and a password.
   ///
   /// If the request fails, an [AuthException] will be thrown.
-  Future<List<String>> fetchProviders(
-    String email, [
-    Uri? continueUri,
-  ]) async {
+  Future<List<String>> fetchProviders(String email, [Uri? continueUri]) async {
     final response = await api.fetchProviders(
       FetchProviderRequest(
         identifier: email,
         continueUri: continueUri ?? Uri.http('localhost'),
       ),
     );
-    return [
-      if (response.registered) 'email',
-      ...response.allProviders,
-    ];
+    return [if (response.registered) 'email', ...response.allProviders];
   }
 
   /// Signs up to firebase as an anonymous user.
@@ -88,9 +82,7 @@ class FirebaseAuth {
   /// you can do so by using [FirebaseAccount.linkEmail()] or
   /// [FirebaseAccount.linkIdp()] to add credentials to the account. This will
   /// preserve any data associated with this account.
-  Future<FirebaseAccount> signUpAnonymous({
-    bool autoRefresh = true,
-  }) async =>
+  Future<FirebaseAccount> signUpAnonymous({bool autoRefresh = true}) async =>
       FirebaseAccount.apiCreate(
         api,
         await api.signUpAnonymous(const AnonymousSignInRequest()),
@@ -125,16 +117,11 @@ class FirebaseAuth {
     String? locale,
   }) async {
     final response = await api.signUpWithPassword(
-      PasswordSignInRequest(
-        email: email,
-        password: password,
-      ),
+      PasswordSignInRequest(email: email, password: password),
     );
     if (autoVerify) {
       await api.sendOobCode(
-        OobCodeRequest.verifyEmail(
-          idToken: response.idToken,
-        ),
+        OobCodeRequest.verifyEmail(idToken: response.idToken),
         locale ?? this.locale,
       );
     }
@@ -163,18 +150,14 @@ class FirebaseAuth {
     IdpProvider provider,
     Uri requestUri, {
     bool autoRefresh = true,
-  }) async =>
-      FirebaseAccount.apiCreate(
-        api,
-        await api.signInWithIdp(
-          IdpSignInRequest(
-            postBody: provider.postBody,
-            requestUri: requestUri,
-          ),
-        ),
-        autoRefresh: autoRefresh,
-        locale: locale,
-      );
+  }) async => FirebaseAccount.apiCreate(
+    api,
+    await api.signInWithIdp(
+      IdpSignInRequest(postBody: provider.postBody, requestUri: requestUri),
+    ),
+    autoRefresh: autoRefresh,
+    locale: locale,
+  );
 
   /// Signs into firebase with an email and a password.
   ///
@@ -193,18 +176,14 @@ class FirebaseAuth {
     String email,
     String password, {
     bool autoRefresh = true,
-  }) async =>
-      FirebaseAccount.apiCreate(
-        api,
-        await api.signInWithPassword(
-          PasswordSignInRequest(
-            email: email,
-            password: password,
-          ),
-        ),
-        autoRefresh: autoRefresh,
-        locale: locale,
-      );
+  }) async => FirebaseAccount.apiCreate(
+    api,
+    await api.signInWithPassword(
+      PasswordSignInRequest(email: email, password: password),
+    ),
+    autoRefresh: autoRefresh,
+    locale: locale,
+  );
 
   /// Signs into firebase with a custom token.
   ///
@@ -220,17 +199,12 @@ class FirebaseAuth {
   Future<FirebaseAccount> signInWithCustomToken(
     String token, {
     bool autoRefresh = true,
-  }) async =>
-      FirebaseAccount.apiCreate(
-        api,
-        await api.signInWithCustomToken(
-          CustomTokenSignInRequest(
-            token: token,
-          ),
-        ),
-        autoRefresh: autoRefresh,
-        locale: locale,
-      );
+  }) async => FirebaseAccount.apiCreate(
+    api,
+    await api.signInWithCustomToken(CustomTokenSignInRequest(token: token)),
+    autoRefresh: autoRefresh,
+    locale: locale,
+  );
 
   /// Sends a password reset email to a user.
   ///
@@ -238,11 +212,8 @@ class FirebaseAuth {
   /// [email]. The language of that mail is determined by [locale], if
   /// specified, [FirebaseAuth.locale] otherwise. If the request fails, an
   /// [AuthException] is thrown.
-  Future<void> requestPasswordReset(
-    String email, {
-    String? locale,
-  }) async =>
-      api.sendOobCode(
+  Future<void> requestPasswordReset(String email, {String? locale}) async =>
+      await api.sendOobCode(
         OobCodeRequest.passwordReset(email: email),
         locale ?? this.locale,
       );
@@ -256,7 +227,7 @@ class FirebaseAuth {
   /// If the check succeeds, the future simply resolves without a value. If it
   /// fails instead, an [AuthException] is thrown.
   Future<void> validatePasswordReset(String oobCode) async =>
-      api.resetPassword(PasswordResetRequest.verify(oobCode: oobCode));
+      await api.resetPassword(PasswordResetRequest.verify(oobCode: oobCode));
 
   /// Completes a password reset by setting a new password.
   ///
@@ -268,7 +239,7 @@ class FirebaseAuth {
   /// signing in via [signInWithPassword()]. If it fails, an [AuthException] is
   /// thrown.
   Future<void> resetPassword(String oobCode, String newPassword) async =>
-      api.resetPassword(
+      await api.resetPassword(
         PasswordResetRequest.confirm(
           oobCode: oobCode,
           newPassword: newPassword,
@@ -294,11 +265,11 @@ class FirebaseAuth {
     bool autoRefresh = true,
     String? locale,
   }) async =>
-      // ignore: deprecated_member_use_from_same_package
-      FirebaseAccount.apiRestore(
-        api,
-        refreshToken,
-        autoRefresh: autoRefresh,
-        locale: locale ?? this.locale,
-      );
+  // ignore: deprecated_member_use_from_same_package
+  await FirebaseAccount.apiRestore(
+    api,
+    refreshToken,
+    autoRefresh: autoRefresh,
+    locale: locale ?? this.locale,
+  );
 }

@@ -39,10 +39,7 @@ class FirebaseAccount {
 
   Timer? _refreshTimer;
   final StreamController<String> _refreshController =
-      StreamController<String>.broadcast(
-    onListen: () {},
-    onCancel: () {},
-  );
+      StreamController<String>.broadcast(onListen: () {}, onCancel: () {});
 
   FirebaseAccount._(
     this.api,
@@ -72,15 +69,11 @@ class FirebaseAccount {
     bool autoRefresh = true,
     EmulatorConfig? emulator,
   }) : this.apiCreate(
-          RestApi(
-            client,
-            apiKey,
-            emulator: emulator,
-          ),
-          signInResponse,
-          autoRefresh: autoRefresh,
-          locale: locale,
-        );
+         RestApi(client, apiKey, emulator: emulator),
+         signInResponse,
+         autoRefresh: autoRefresh,
+         locale: locale,
+       );
 
   /// Creates a new account from a successful sign in response and a [RestApi].
   ///
@@ -95,10 +88,10 @@ class FirebaseAccount {
     SignInResponse signInResponse, {
     bool autoRefresh = true,
     this.locale,
-  })  : _localId = signInResponse.localId,
-        _idToken = signInResponse.idToken,
-        _refreshToken = signInResponse.refreshToken,
-        _expiresAt = _expiresInToAt(_durFromString(signInResponse.expiresIn)) {
+  }) : _localId = signInResponse.localId,
+       _idToken = signInResponse.idToken,
+       _refreshToken = signInResponse.refreshToken,
+       _expiresAt = _expiresInToAt(_durFromString(signInResponse.expiresIn)) {
     this.autoRefresh = autoRefresh;
   }
 
@@ -111,17 +104,12 @@ class FirebaseAccount {
     bool autoRefresh = true,
     String? locale,
     EmulatorConfig? emulator,
-  }) =>
-      apiRestore(
-        RestApi(
-          client,
-          apiKey,
-          emulator: emulator,
-        ),
-        refreshToken,
-        autoRefresh: autoRefresh,
-        locale: locale,
-      );
+  }) => apiRestore(
+    RestApi(client, apiKey, emulator: emulator),
+    refreshToken,
+    autoRefresh: autoRefresh,
+    locale: locale,
+  );
 
   /// @nodoc
   @Deprecated('Use FirebaseAuth.restoreAccount instead')
@@ -227,13 +215,9 @@ class FirebaseAccount {
   /// accounts [FirebaseAccount.locale] will be used.
   ///
   /// If the request fails, an [AuthException] will be thrown.
-  Future<void> requestEmailConfirmation({
-    String? locale,
-  }) async =>
-      api.sendOobCode(
-        OobCodeRequest.verifyEmail(
-          idToken: _idToken,
-        ),
+  Future<void> requestEmailConfirmation({String? locale}) async =>
+      await api.sendOobCode(
+        OobCodeRequest.verifyEmail(idToken: _idToken),
         locale ?? this.locale,
       );
 
@@ -247,7 +231,7 @@ class FirebaseAccount {
   /// If the request fails, including because an invalid code was passed to the
   /// method, an [AuthException] will be thrown.
   Future<void> confirmEmail(String oobCode) async =>
-      api.confirmEmail(ConfirmEmailRequest(oobCode: oobCode));
+      await api.confirmEmail(ConfirmEmailRequest(oobCode: oobCode));
 
   /// Fetches the user profile details of the account.
   ///
@@ -279,15 +263,9 @@ class FirebaseAccount {
   /// can use [getDetails()] or [FirebaseAuth.fetchProviders] to find out which
   /// providers a user has activated for this account. You can instead link the
   /// account with an email address and a new password via [linkEmail()].
-  Future<void> updateEmail(
-    String newEmail, {
-    String? locale,
-  }) =>
+  Future<void> updateEmail(String newEmail, {String? locale}) =>
       api.updateEmail(
-        EmailUpdateRequest(
-          idToken: _idToken,
-          email: newEmail,
-        ),
+        EmailUpdateRequest(idToken: _idToken, email: newEmail),
         locale ?? this.locale,
       );
 
@@ -302,10 +280,7 @@ class FirebaseAccount {
   /// address and a new password via [linkEmail()].
   Future<void> updatePassword(String newPassword) async {
     final response = await api.updatePassword(
-      PasswordUpdateRequest(
-        idToken: _idToken,
-        password: newPassword,
-      ),
+      PasswordUpdateRequest(idToken: _idToken, password: newPassword),
     );
     _applyToken(
       idToken: response.idToken,
@@ -328,18 +303,17 @@ class FirebaseAccount {
   Future<void> updateProfile({
     ProfileUpdate<String>? displayName,
     ProfileUpdate<Uri>? photoUrl,
-  }) =>
-      api.updateProfile(
-        ProfileUpdateRequest(
-          idToken: _idToken,
-          displayName: displayName?.updateOr(),
-          photoUrl: photoUrl?.updateOr(),
-          deleteAttribute: [
-            if (displayName?.isDelete ?? false) DeleteAttribute.DISPLAY_NAME,
-            if (photoUrl?.isDelete ?? false) DeleteAttribute.PHOTO_URL,
-          ],
-        ),
-      );
+  }) => api.updateProfile(
+    ProfileUpdateRequest(
+      idToken: _idToken,
+      displayName: displayName?.updateOr(),
+      photoUrl: photoUrl?.updateOr(),
+      deleteAttribute: [
+        if (displayName?.isDelete ?? false) DeleteAttribute.DISPLAY_NAME,
+        if (photoUrl?.isDelete ?? false) DeleteAttribute.PHOTO_URL,
+      ],
+    ),
+  );
 
   /// Links a new email address to this account.
   ///
@@ -365,11 +339,7 @@ class FirebaseAccount {
     String? locale,
   }) async {
     final response = await api.linkEmail(
-      LinkEmailRequest(
-        idToken: _idToken,
-        email: email,
-        password: password,
-      ),
+      LinkEmailRequest(idToken: _idToken, email: email, password: password),
     );
     _applyToken(
       idToken: response.idToken,
@@ -391,10 +361,7 @@ class FirebaseAccount {
   /// twitter, etc.) can be added to allow login with the given [provider] and
   /// [requestUri] via [FirebaseAuth.signInWithIdp()]. If the linking fails, an
   /// [AuthException] is thrown.
-  Future<void> linkIdp(
-    IdpProvider provider,
-    Uri requestUri,
-  ) async {
+  Future<void> linkIdp(IdpProvider provider, Uri requestUri) async {
     final response = await api.linkIdp(
       LinkIdpRequest(
         idToken: _idToken,
@@ -420,11 +387,8 @@ class FirebaseAccount {
   /// provider. However, you can always re-add providers via [linkEmail()] or
   /// [linkIdp()].
   Future<void> unlinkProviders(List<String> providers) => api.unlinkProvider(
-        UnlinkRequest(
-          idToken: _idToken,
-          deleteProvider: providers,
-        ),
-      );
+    UnlinkRequest(idToken: _idToken, deleteProvider: providers),
+  );
 
   /// Delete the account
   ///

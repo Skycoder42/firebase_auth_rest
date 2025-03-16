@@ -12,9 +12,9 @@ sealed class SignInResponse with _$SignInResponse {
 
   /// The uid of the newly created user.
   String get localId => switch (this) {
-        CustomTokenSignInResponse() => '',
-        _ => throw StateError('Unreachable code was reached!'),
-      };
+    CustomTokenSignInResponse() => '',
+    _ => throw StateError('Unreachable code was reached!'),
+  };
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-sign-in-anonymously
   const factory SignInResponse.anonymous({

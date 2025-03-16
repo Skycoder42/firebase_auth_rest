@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, discarded_futures
 import 'package:dart_test_tools/test.dart';
 import 'package:firebase_auth_rest/src/firebase_account.dart';
 import 'package:firebase_auth_rest/src/firebase_auth.dart';
@@ -27,10 +27,7 @@ void main() {
   setUpAll(() {
     registerFallbackValue(Uri());
     registerFallbackValue(
-      FetchProviderRequest(
-        identifier: '',
-        continueUri: Uri(),
-      ),
+      FetchProviderRequest(identifier: '', continueUri: Uri()),
     );
     registerFallbackValue(const AnonymousSignInRequest());
     registerFallbackValue(const OobCodeRequest.verifyEmail(idToken: ''));
@@ -49,11 +46,7 @@ void main() {
     const apiKey = 'key';
     const locale = 'locale';
 
-    final auth = FirebaseAuth(
-      mockClient,
-      apiKey,
-      locale,
-    );
+    final auth = FirebaseAuth(mockClient, apiKey, locale);
 
     expect(auth.api, isNotNull);
     expect(auth.api.client, mockClient);
@@ -63,10 +56,7 @@ void main() {
 
   test('Api constructor sets api and locale correctly', () {
     const locale = 'locale';
-    final auth = FirebaseAuth.api(
-      mockApi,
-      locale,
-    );
+    final auth = FirebaseAuth.api(mockApi, locale);
 
     expect(auth.api, mockApi);
     expect(auth.locale, locale);
@@ -91,50 +81,47 @@ void main() {
     });
 
     group('fetchProviders', () {
-      testData<(Uri?, Uri)>('sends fetch providers request', [
-        (
-          null,
-          Uri.parse('http://localhost'),
-        ),
-        (
-          Uri.parse('http://example.com'),
-          Uri.parse('http://example.com'),
-        ),
-      ], (fixture) async {
-        when(() => mockApi.fetchProviders(any())).thenAnswer(
-          (i) async => FetchProviderResponse(
-            allProviders: [],
-          ),
-        );
+      testData<(Uri?, Uri)>(
+        'sends fetch providers request',
+        [
+          (null, Uri.parse('http://localhost')),
+          (Uri.parse('http://example.com'), Uri.parse('http://example.com')),
+        ],
+        (fixture) async {
+          when(
+            () => mockApi.fetchProviders(any()),
+          ).thenAnswer((i) async => FetchProviderResponse(allProviders: []));
 
-        const mail = 'mail';
-        await auth.fetchProviders(mail, fixture.$1);
+          const mail = 'mail';
+          await auth.fetchProviders(mail, fixture.$1);
 
-        verify(
-          () => mockApi.fetchProviders(
-            FetchProviderRequest(
-              identifier: mail,
-              continueUri: fixture.$2,
+          verify(
+            () => mockApi.fetchProviders(
+              FetchProviderRequest(identifier: mail, continueUri: fixture.$2),
             ),
-          ),
-        );
-      });
+          );
+        },
+      );
 
-      testData<(bool, List<String>)>('returns providers with mail', const [
-        (false, ['a', 'b', 'c']),
-        (true, ['email', 'a', 'b', 'c']),
-      ], (fixture) async {
-        const providers = ['a', 'b', 'c'];
-        when(() => mockApi.fetchProviders(any())).thenAnswer(
-          (i) async => FetchProviderResponse(
-            registered: fixture.$1,
-            allProviders: providers,
-          ),
-        );
+      testData<(bool, List<String>)>(
+        'returns providers with mail',
+        const [
+          (false, ['a', 'b', 'c']),
+          (true, ['email', 'a', 'b', 'c']),
+        ],
+        (fixture) async {
+          const providers = ['a', 'b', 'c'];
+          when(() => mockApi.fetchProviders(any())).thenAnswer(
+            (i) async => FetchProviderResponse(
+              registered: fixture.$1,
+              allProviders: providers,
+            ),
+          );
 
-        final result = await auth.fetchProviders('email');
-        expect(result, fixture.$2);
-      });
+          final result = await auth.fetchProviders('email');
+          expect(result, fixture.$2);
+        },
+      );
     });
 
     group('signUpAnonymous', () {
@@ -150,11 +137,7 @@ void main() {
 
         account = await auth.signUpAnonymous();
 
-        verify(
-          () => mockApi.signUpAnonymous(
-            AnonymousSignInRequest(),
-          ),
-        );
+        verify(() => mockApi.signUpAnonymous(AnonymousSignInRequest()));
       });
 
       test('creates account from reply', () async {
@@ -167,8 +150,9 @@ void main() {
           ),
         );
 
-        final expiresAt =
-            DateTime.now().toUtc().add(const Duration(minutes: 1));
+        final expiresAt = DateTime.now().toUtc().add(
+          const Duration(minutes: 1),
+        );
         account = await auth.signUpAnonymous(autoRefresh: false);
 
         expect(account!.localId, localId);
@@ -180,9 +164,10 @@ void main() {
     });
 
     group('signUpWithPassword', () {
-      setUp(() async {
-        when(() => mockApi.sendOobCode(any(), any()))
-            .thenAnswer((i) async => const OobCodeResponse());
+      setUp(() {
+        when(
+          () => mockApi.sendOobCode(any(), any()),
+        ).thenAnswer((i) async => const OobCodeResponse());
       });
 
       test('sends password sign up request', () async {
@@ -205,44 +190,40 @@ void main() {
 
         verify(
           () => mockApi.signUpWithPassword(
-            PasswordSignInRequest(
-              email: mail,
-              password: password,
-            ),
+            PasswordSignInRequest(email: mail, password: password),
           ),
         );
         verifyNoMoreInteractions(mockApi);
       });
 
-      testData<(String?, String)>('sends oob code request if enabled', const [
-        ('ee-EE', 'ee-EE'),
-        (null, 'ab-CD'),
-      ], (fixture) async {
-        when(() => mockApi.signUpWithPassword(any())).thenAnswer(
-          (i) async => PasswordSignInResponse(
-            idToken: idToken,
-            localId: '',
-            expiresIn: '1',
-            refreshToken: '',
-          ),
-        );
-
-        account = await auth.signUpWithPassword(
-          'email',
-          'password',
-          autoRefresh: false,
-          locale: fixture.$1,
-        );
-
-        verify(
-          () => mockApi.sendOobCode(
-            OobCodeRequest.verifyEmail(
+      testData<(String?, String)>(
+        'sends oob code request if enabled',
+        const [('ee-EE', 'ee-EE'), (null, 'ab-CD')],
+        (fixture) async {
+          when(() => mockApi.signUpWithPassword(any())).thenAnswer(
+            (i) async => PasswordSignInResponse(
               idToken: idToken,
+              localId: '',
+              expiresIn: '1',
+              refreshToken: '',
             ),
-            fixture.$2,
-          ),
-        );
-      });
+          );
+
+          account = await auth.signUpWithPassword(
+            'email',
+            'password',
+            autoRefresh: false,
+            locale: fixture.$1,
+          );
+
+          verify(
+            () => mockApi.sendOobCode(
+              OobCodeRequest.verifyEmail(idToken: idToken),
+              fixture.$2,
+            ),
+          );
+        },
+      );
 
       test('creates account from reply', () async {
         when(() => mockApi.signUpWithPassword(any())).thenAnswer(
@@ -254,8 +235,9 @@ void main() {
           ),
         );
 
-        final expiresAt =
-            DateTime.now().toUtc().add(const Duration(minutes: 1));
+        final expiresAt = DateTime.now().toUtc().add(
+          const Duration(minutes: 1),
+        );
         account = await auth.signUpWithPassword(
           'email',
           'password',
@@ -290,10 +272,7 @@ void main() {
 
         verify(
           () => mockApi.signInWithIdp(
-            IdpSignInRequest(
-              postBody: provider.postBody,
-              requestUri: uri,
-            ),
+            IdpSignInRequest(postBody: provider.postBody, requestUri: uri),
           ),
         );
       });
@@ -310,8 +289,9 @@ void main() {
           ),
         );
 
-        final expiresAt =
-            DateTime.now().toUtc().add(const Duration(minutes: 1));
+        final expiresAt = DateTime.now().toUtc().add(
+          const Duration(minutes: 1),
+        );
         account = await auth.signInWithIdp(
           IdpProvider.google('idToken'),
           Uri(),
@@ -339,17 +319,11 @@ void main() {
           ),
         );
 
-        account = await auth.signInWithPassword(
-          mail,
-          password,
-        );
+        account = await auth.signInWithPassword(mail, password);
 
         verify(
           () => mockApi.signInWithPassword(
-            PasswordSignInRequest(
-              email: mail,
-              password: password,
-            ),
+            PasswordSignInRequest(email: mail, password: password),
           ),
         );
         verifyNoMoreInteractions(mockApi);
@@ -365,8 +339,9 @@ void main() {
           ),
         );
 
-        final expiresAt =
-            DateTime.now().toUtc().add(const Duration(minutes: 1));
+        final expiresAt = DateTime.now().toUtc().add(
+          const Duration(minutes: 1),
+        );
         account = await auth.signInWithPassword(
           'email',
           'password',
@@ -396,9 +371,7 @@ void main() {
 
         verify(
           () => mockApi.signInWithCustomToken(
-            CustomTokenSignInRequest(
-              token: token,
-            ),
+            CustomTokenSignInRequest(token: token),
           ),
         );
       });
@@ -412,12 +385,10 @@ void main() {
           ),
         );
 
-        final expiresAt =
-            DateTime.now().toUtc().add(const Duration(minutes: 1));
-        account = await auth.signInWithCustomToken(
-          'token',
-          autoRefresh: false,
+        final expiresAt = DateTime.now().toUtc().add(
+          const Duration(minutes: 1),
         );
+        account = await auth.signInWithCustomToken('token', autoRefresh: false);
 
         expect(account!.localId, isEmpty);
         expect(account!.idToken, idToken);
@@ -428,61 +399,55 @@ void main() {
     });
 
     testData<(String?, String)>(
-        'requestPasswordReset sends oob code request', const [
-      ('ee-EE', 'ee-EE'),
-      (null, 'ab-CD'),
-    ], (fixture) async {
-      when(() => mockApi.sendOobCode(any(), any()))
-          .thenAnswer((i) async => const OobCodeResponse());
-      const mail = 'email';
-      await auth.requestPasswordReset(
-        mail,
-        locale: fixture.$1,
-      );
+      'requestPasswordReset sends oob code request',
+      const [('ee-EE', 'ee-EE'), (null, 'ab-CD')],
+      (fixture) async {
+        when(
+          () => mockApi.sendOobCode(any(), any()),
+        ).thenAnswer((i) async => const OobCodeResponse());
+        const mail = 'email';
+        await auth.requestPasswordReset(mail, locale: fixture.$1);
 
-      verify(
-        () => mockApi.sendOobCode(
-          OobCodeRequest.passwordReset(
-            email: mail,
+        verify(
+          () => mockApi.sendOobCode(
+            OobCodeRequest.passwordReset(email: mail),
+            fixture.$2,
           ),
-          fixture.$2,
-        ),
-      );
-    });
+        );
+      },
+    );
 
     test('validatePasswordReset send reset password request', () async {
-      when(() => mockApi.resetPassword(any()))
-          .thenAnswer((i) async => const PasswordResetResponse());
+      when(
+        () => mockApi.resetPassword(any()),
+      ).thenAnswer((i) async => const PasswordResetResponse());
       const code = 'oob-code';
       await auth.validatePasswordReset(code);
 
       verify(
-        () => mockApi.resetPassword(
-          PasswordResetRequest.verify(oobCode: code),
-        ),
+        () => mockApi.resetPassword(PasswordResetRequest.verify(oobCode: code)),
       );
     });
 
     test('resetPassword send reset password request', () async {
-      when(() => mockApi.resetPassword(any()))
-          .thenAnswer((i) async => const PasswordResetResponse());
+      when(
+        () => mockApi.resetPassword(any()),
+      ).thenAnswer((i) async => const PasswordResetResponse());
       const code = 'oob-code';
       const password = 'password';
       await auth.resetPassword(code, password);
 
       verify(
         () => mockApi.resetPassword(
-          PasswordResetRequest.confirm(
-            oobCode: code,
-            newPassword: password,
-          ),
+          PasswordResetRequest.confirm(oobCode: code, newPassword: password),
         ),
       );
     });
 
     test('restoreAccount restores account with api', () async {
-      when(() => mockApi.token(refresh_token: any(named: 'refresh_token')))
-          .thenAnswer(
+      when(
+        () => mockApi.token(refresh_token: any(named: 'refresh_token')),
+      ).thenAnswer(
         (i) async => RefreshResponse(
           expires_in: '5',
           token_type: 'token_type',

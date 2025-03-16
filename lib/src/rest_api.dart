@@ -56,116 +56,78 @@ class RestApi {
   Future<RefreshResponse> token({
     required String refresh_token,
     String grant_type = 'refresh_token',
-  }) async =>
-      RefreshResponse.fromJson(
-        await _postQuery(
-          _buildUri(
-            'token',
-            isTokenRequest: true,
-          ),
-          {
-            'refresh_token': refresh_token,
-            'grant_type': grant_type,
-          },
-        ),
-      );
+  }) async => RefreshResponse.fromJson(
+    await _postQuery(_buildUri('token', isTokenRequest: true), {
+      'refresh_token': refresh_token,
+      'grant_type': grant_type,
+    }),
+  );
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-sign-in-anonymously
   Future<AnonymousSignInResponse> signUpAnonymous(
     AnonymousSignInRequest request,
-  ) async =>
-      AnonymousSignInResponse.fromJson(
-        await _post(
-          _buildUri('accounts:signUp'),
-          request.toJson(),
-        ),
-      );
+  ) async => AnonymousSignInResponse.fromJson(
+    await _post(_buildUri('accounts:signUp'), request.toJson()),
+  );
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-create-email-password
   Future<PasswordSignInResponse> signUpWithPassword(
     PasswordSignInRequest request,
-  ) async =>
-      PasswordSignInResponse.fromJson(
-        await _post(
-          _buildUri('accounts:signUp'),
-          request.toJson(),
-        ),
-      );
+  ) async => PasswordSignInResponse.fromJson(
+    await _post(_buildUri('accounts:signUp'), request.toJson()),
+  );
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-sign-in-with-oauth-credential
   Future<IdpSignInResponse> signInWithIdp(IdpSignInRequest request) async =>
       IdpSignInResponse.fromJson(
-        await _post(
-          _buildUri('accounts:signInWithIdp'),
-          request.toJson(),
-        ),
+        await _post(_buildUri('accounts:signInWithIdp'), request.toJson()),
       );
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-sign-in-email-password
   Future<PasswordSignInResponse> signInWithPassword(
     PasswordSignInRequest request,
-  ) async =>
-      PasswordSignInResponse.fromJson(
-        await _post(
-          _buildUri('accounts:signInWithPassword'),
-          request.toJson(),
-        ),
-      );
+  ) async => PasswordSignInResponse.fromJson(
+    await _post(_buildUri('accounts:signInWithPassword'), request.toJson()),
+  );
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-verify-custom-token
   Future<CustomTokenSignInResponse> signInWithCustomToken(
     CustomTokenSignInRequest request,
-  ) async =>
-      CustomTokenSignInResponse.fromJson(
-        await _post(
-          _buildUri('accounts:signInWithCustomToken'),
-          request.toJson(),
-        ),
-      );
+  ) async => CustomTokenSignInResponse.fromJson(
+    await _post(_buildUri('accounts:signInWithCustomToken'), request.toJson()),
+  );
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-get-account-info
   Future<UserDataResponse> getUserData(UserDataRequest request) async =>
       UserDataResponse.fromJson(
-        await _post(
-          _buildUri('accounts:lookup'),
-          request.toJson(),
-        ),
+        await _post(_buildUri('accounts:lookup'), request.toJson()),
       );
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-change-email
   Future<EmailUpdateResponse> updateEmail(
     EmailUpdateRequest request, [
     String? locale,
-  ]) async =>
-      EmailUpdateResponse.fromJson(
-        await _post(
-          _buildUri('accounts:update'),
-          request.toJson(),
-          headers: locale != null ? {_firebaseLocaleHeader: locale} : null,
-        ),
-      );
+  ]) async => EmailUpdateResponse.fromJson(
+    await _post(
+      _buildUri('accounts:update'),
+      request.toJson(),
+      headers: locale != null ? {_firebaseLocaleHeader: locale} : null,
+    ),
+  );
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-change-password
   Future<PasswordUpdateResponse> updatePassword(
     PasswordUpdateRequest request,
-  ) async =>
-      PasswordUpdateResponse.fromJson(
-        await _post(
-          _buildUri('accounts:update'),
-          request.toJson(),
-        ),
-      );
+  ) async => PasswordUpdateResponse.fromJson(
+    await _post(_buildUri('accounts:update'), request.toJson()),
+  );
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-update-profile
   Future<ProfileUpdateResponse> updateProfile(
     ProfileUpdateRequest request,
-  ) async =>
-      ProfileUpdateResponse.fromJson(
-        await _post(
-          _buildUri('accounts:update'),
-          request.toJson(),
-        ),
-      );
+  ) async => ProfileUpdateResponse.fromJson(
+    await _post(_buildUri('accounts:update'), request.toJson()),
+  );
 
   /// Meta-Method for multiple API-Methods
   ///
@@ -174,14 +136,13 @@ class RestApi {
   Future<OobCodeResponse> sendOobCode(
     OobCodeRequest request, [
     String? locale,
-  ]) async =>
-      OobCodeResponse.fromJson(
-        await _post(
-          _buildUri('accounts:sendOobCode'),
-          request.toJson(),
-          headers: locale != null ? {_firebaseLocaleHeader: locale} : null,
-        ),
-      );
+  ]) async => OobCodeResponse.fromJson(
+    await _post(
+      _buildUri('accounts:sendOobCode'),
+      request.toJson(),
+      headers: locale != null ? {_firebaseLocaleHeader: locale} : null,
+    ),
+  );
 
   /// Meta-Method for multiple API-Methods
   ///
@@ -189,69 +150,45 @@ class RestApi {
   /// - https://firebase.google.com/docs/reference/rest/auth#section-confirm-reset-password
   Future<PasswordResetResponse> resetPassword(
     PasswordResetRequest request,
-  ) async =>
-      PasswordResetResponse.fromJson(
-        await _post(
-          _buildUri('accounts:resetPassword'),
-          request.toJson(),
-        ),
-      );
+  ) async => PasswordResetResponse.fromJson(
+    await _post(_buildUri('accounts:resetPassword'), request.toJson()),
+  );
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-confirm-email-verification
   Future<ConfirmEmailResponse> confirmEmail(
     ConfirmEmailRequest request,
-  ) async =>
-      ConfirmEmailResponse.fromJson(
-        await _post(
-          _buildUri('accounts:update'),
-          request.toJson(),
-        ),
-      );
+  ) async => ConfirmEmailResponse.fromJson(
+    await _post(_buildUri('accounts:update'), request.toJson()),
+  );
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-fetch-providers-for-email
   Future<FetchProviderResponse> fetchProviders(
     FetchProviderRequest request,
-  ) async =>
-      FetchProviderResponse.fromJson(
-        await _post(
-          _buildUri('accounts:createAuthUri'),
-          request.toJson(),
-        ),
-      );
+  ) async => FetchProviderResponse.fromJson(
+    await _post(_buildUri('accounts:createAuthUri'), request.toJson()),
+  );
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-link-with-email-password
   Future<LinkEmailResponse> linkEmail(LinkEmailRequest request) async =>
       LinkEmailResponse.fromJson(
-        await _post(
-          _buildUri('accounts:update'),
-          request.toJson(),
-        ),
+        await _post(_buildUri('accounts:update'), request.toJson()),
       );
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-link-with-oauth-credential
   Future<LinkIdpResponse> linkIdp(LinkIdpRequest request) async =>
       LinkIdpResponse.fromJson(
-        await _post(
-          _buildUri('accounts:signInWithIdp'),
-          request.toJson(),
-        ),
+        await _post(_buildUri('accounts:signInWithIdp'), request.toJson()),
       );
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-unlink-provider
   Future<UnlinkResponse> unlinkProvider(UnlinkRequest request) async =>
       UnlinkResponse.fromJson(
-        await _post(
-          _buildUri('accounts:update'),
-          request.toJson(),
-        ),
+        await _post(_buildUri('accounts:update'), request.toJson()),
       );
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-delete-account
-  Future<void> delete(DeleteRequest request) => _post(
-        _buildUri('accounts:delete'),
-        request.toJson(),
-        noContent: true,
-      );
+  Future<void> delete(DeleteRequest request) =>
+      _post(_buildUri('accounts:delete'), request.toJson(), noContent: true);
 
   Uri _buildUri(
     String path, {
@@ -273,15 +210,8 @@ class RestApi {
       scheme: protocol,
       host: host,
       port: port,
-      pathSegments: [
-        if (emulator != null) targetDomain,
-        'v1',
-        path,
-      ],
-      queryParameters: <String, dynamic>{
-        'key': apiKey,
-        ...?queryParameters,
-      },
+      pathSegments: [if (emulator != null) targetDomain, 'v1', path],
+      queryParameters: <String, dynamic>{'key': apiKey, ...?queryParameters},
     );
   }
 
@@ -314,11 +244,7 @@ class RestApi {
       'Accept': 'application/json',
     };
     return _parseResponse(
-      await client.post(
-        url,
-        body: query,
-        headers: allHeaders,
-      ),
+      await client.post(url, body: query, headers: allHeaders),
     );
   }
 

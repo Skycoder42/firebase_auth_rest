@@ -56,11 +56,11 @@ sealed class IdpProvider with _$IdpProvider {
   ///
   /// The provider id is typically the domain of the provider.
   String get id => switch (this) {
-        _GoogleIdpProvider() => 'google.com',
-        _FacebookIdpProvider() => 'facebook.com',
-        _TwitterIdpProvider() => 'twitter.com',
-        _CustomIdpProvider(providerId: final providerId) => providerId,
-      };
+    _GoogleIdpProvider() => 'google.com',
+    _FacebookIdpProvider() => 'facebook.com',
+    _TwitterIdpProvider() => 'twitter.com',
+    _CustomIdpProvider(providerId: final providerId) => providerId,
+  };
 
   /// Generates a HTTP-POST body to be used by the REST-API.
   ///
@@ -70,27 +70,19 @@ sealed class IdpProvider with _$IdpProvider {
   /// factory constructors.
   String get postBody {
     final params = switch (this) {
-      _GoogleIdpProvider(idToken: final idToken) => {
-          'id_token': idToken,
-        },
+      _GoogleIdpProvider(idToken: final idToken) => {'id_token': idToken},
       _FacebookIdpProvider(accessToken: final accessToken) => {
-          'access_token': accessToken,
-        },
+        'access_token': accessToken,
+      },
       _TwitterIdpProvider(
         accessToken: final accessToken,
-        oauthTokenSecret: final oauthTokenSecret
+        oauthTokenSecret: final oauthTokenSecret,
       ) =>
-        {
-          'access_token': accessToken,
-          'oauth_token_secret': oauthTokenSecret,
-        },
+        {'access_token': accessToken, 'oauth_token_secret': oauthTokenSecret},
       _CustomIdpProvider(parameters: final parameters) => parameters,
     };
     return Uri(
-      queryParameters: <String, dynamic>{
-        ...params,
-        'providerId': id,
-      },
+      queryParameters: <String, dynamic>{...params, 'providerId': id},
     ).query;
   }
 }

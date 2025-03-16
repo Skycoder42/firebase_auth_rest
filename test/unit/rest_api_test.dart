@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, discarded_futures
 import 'dart:convert';
 
 import 'package:firebase_auth_rest/src/models/auth_exception.dart';
@@ -31,20 +31,19 @@ extension FakeResponseX on When<Future<Response>> {
       thenAnswer((i) async => FakeResponse.forModel<T>(model, overwrites));
 }
 
-void main() async {
+void main() {
   const apiKey = 'apiKey';
   final mockClient = MockClient();
   final api = RestApi(mockClient, apiKey);
 
   When<Future<Response>> whenPost() => when(
-        // ignore: discarded_futures
-        () => mockClient.post(
-          any(),
-          body: any(named: 'body'),
-          headers: any(named: 'headers'),
-          encoding: any(named: 'encoding'),
-        ),
-      );
+    () => mockClient.post(
+      any(),
+      body: any(named: 'body'),
+      headers: any(named: 'headers'),
+      encoding: any(named: 'encoding'),
+    ),
+  );
 
   void whenError() =>
       whenPost().thenAnswer((i) => Future.value(FakeResponse(statusCode: 400)));
@@ -85,15 +84,12 @@ void main() async {
             'Accept': 'application/json',
             'Content-Type': 'application/x-www-form-urlencoded',
           },
-          body: {
-            'refresh_token': token,
-            'grant_type': 'refresh_token',
-          },
+          body: {'refresh_token': token, 'grant_type': 'refresh_token'},
         ),
       );
     });
 
-    test('should throw AuthException on failure', () async {
+    test('should throw AuthException on failure', () {
       whenError();
       expect(
         () => api.token(refresh_token: 'token'),
@@ -119,9 +115,7 @@ void main() async {
           Uri.parse(
             'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=apiKey',
           ),
-          body: json.encode({
-            'returnSecureToken': true,
-          }),
+          body: json.encode({'returnSecureToken': true}),
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -130,7 +124,7 @@ void main() async {
       );
     });
 
-    test('should throw AuthException on failure', () async {
+    test('should throw AuthException on failure', () {
       whenError();
       expect(
         () => api.signUpAnonymous(AnonymousSignInRequest()),
@@ -151,10 +145,7 @@ void main() async {
       );
 
       await api.signUpWithPassword(
-        PasswordSignInRequest(
-          email: 'email',
-          password: 'password',
-        ),
+        PasswordSignInRequest(email: 'email', password: 'password'),
       );
       verify(
         () => mockClient.post(
@@ -174,14 +165,11 @@ void main() async {
       );
     });
 
-    test('should throw AuthException on failure', () async {
+    test('should throw AuthException on failure', () {
       whenError();
       expect(
         () => api.signUpWithPassword(
-          PasswordSignInRequest(
-            email: '',
-            password: '',
-          ),
+          PasswordSignInRequest(email: '', password: ''),
         ),
         throwsA(isA<AuthException>()),
       );
@@ -226,14 +214,11 @@ void main() async {
       );
     });
 
-    test('should throw AuthException on failure', () async {
+    test('should throw AuthException on failure', () {
       whenError();
       expect(
         () => api.signInWithIdp(
-          IdpSignInRequest(
-            requestUri: Uri(),
-            postBody: 'postBody',
-          ),
+          IdpSignInRequest(requestUri: Uri(), postBody: 'postBody'),
         ),
         throwsA(isA<AuthException>()),
       );
@@ -252,10 +237,7 @@ void main() async {
       );
 
       await api.signInWithPassword(
-        const PasswordSignInRequest(
-          email: 'email',
-          password: 'password',
-        ),
+        const PasswordSignInRequest(email: 'email', password: 'password'),
       );
       verify(
         () => mockClient.post(
@@ -275,14 +257,11 @@ void main() async {
       );
     });
 
-    test('should throw AuthException on failure', () async {
+    test('should throw AuthException on failure', () {
       whenError();
       expect(
         () => api.signInWithPassword(
-          const PasswordSignInRequest(
-            email: '',
-            password: '',
-          ),
+          const PasswordSignInRequest(email: '', password: ''),
         ),
         throwsA(isA<AuthException>()),
       );
@@ -307,10 +286,7 @@ void main() async {
           Uri.parse(
             'https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=apiKey',
           ),
-          body: json.encode({
-            'token': 'token',
-            'returnSecureToken': true,
-          }),
+          body: json.encode({'token': 'token', 'returnSecureToken': true}),
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -319,7 +295,7 @@ void main() async {
       );
     });
 
-    test('should throw AuthException on failure', () async {
+    test('should throw AuthException on failure', () {
       whenError();
       expect(
         () => api.signInWithCustomToken(
@@ -334,19 +310,13 @@ void main() async {
     test('should send a post request with correct data', () async {
       whenPost().thenFake(const UserDataResponse());
 
-      await api.getUserData(
-        UserDataRequest(
-          idToken: 'idToken',
-        ),
-      );
+      await api.getUserData(UserDataRequest(idToken: 'idToken'));
       verify(
         () => mockClient.post(
           Uri.parse(
             'https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=apiKey',
           ),
-          body: json.encode({
-            'idToken': 'idToken',
-          }),
+          body: json.encode({'idToken': 'idToken'}),
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -355,14 +325,10 @@ void main() async {
       );
     });
 
-    test('should throw AuthException on failure', () async {
+    test('should throw AuthException on failure', () {
       whenError();
       expect(
-        () => api.getUserData(
-          UserDataRequest(
-            idToken: 'idToken',
-          ),
-        ),
+        () => api.getUserData(UserDataRequest(idToken: 'idToken')),
         throwsA(isA<AuthException>()),
       );
     });
@@ -373,10 +339,7 @@ void main() async {
       whenPost().thenFake(const EmailUpdateResponse(localId: ''));
 
       await api.updateEmail(
-        const EmailUpdateRequest(
-          idToken: 'token',
-          email: 'mail',
-        ),
+        const EmailUpdateRequest(idToken: 'token', email: 'mail'),
         'de-DE',
       );
       verify(
@@ -398,14 +361,11 @@ void main() async {
       );
     });
 
-    test('should throw AuthException on failure', () async {
+    test('should throw AuthException on failure', () {
       whenError();
       expect(
         () => api.updateEmail(
-          const EmailUpdateRequest(
-            idToken: 'token',
-            email: 'mail',
-          ),
+          const EmailUpdateRequest(idToken: 'token', email: 'mail'),
         ),
         throwsA(isA<AuthException>()),
       );
@@ -417,10 +377,7 @@ void main() async {
       whenPost().thenFake(const PasswordUpdateResponse(localId: ''));
 
       await api.updatePassword(
-        const PasswordUpdateRequest(
-          idToken: 'token',
-          password: 'password',
-        ),
+        const PasswordUpdateRequest(idToken: 'token', password: 'password'),
       );
       verify(
         () => mockClient.post(
@@ -440,14 +397,11 @@ void main() async {
       );
     });
 
-    test('should throw AuthException on failure', () async {
+    test('should throw AuthException on failure', () {
       whenError();
       expect(
         () => api.updatePassword(
-          const PasswordUpdateRequest(
-            idToken: 'token',
-            password: 'password',
-          ),
+          const PasswordUpdateRequest(idToken: 'token', password: 'password'),
         ),
         throwsA(isA<AuthException>()),
       );
@@ -485,7 +439,7 @@ void main() async {
       );
     });
 
-    test('should throw AuthException on failure', () async {
+    test('should throw AuthException on failure', () {
       whenError();
       expect(
         () => api.updateProfile(const ProfileUpdateRequest(idToken: 'token')),
@@ -521,7 +475,7 @@ void main() async {
         );
       });
 
-      test('should throw AuthException on failure', () async {
+      test('should throw AuthException on failure', () {
         whenError();
 
         expect(
@@ -559,7 +513,7 @@ void main() async {
         );
       });
 
-      test('should throw AuthException on failure', () async {
+      test('should throw AuthException on failure', () {
         whenError();
 
         expect(
@@ -585,9 +539,7 @@ void main() async {
             Uri.parse(
               'https://identitytoolkit.googleapis.com/v1/accounts:resetPassword?key=apiKey',
             ),
-            body: json.encode({
-              'oobCode': 'code',
-            }),
+            body: json.encode({'oobCode': 'code'}),
             headers: {
               'Accept': 'application/json',
               'Content-Type': 'application/json',
@@ -596,7 +548,7 @@ void main() async {
         );
       });
 
-      test('should throw AuthException on failure', () async {
+      test('should throw AuthException on failure', () {
         whenError();
 
         expect(
@@ -623,10 +575,7 @@ void main() async {
             Uri.parse(
               'https://identitytoolkit.googleapis.com/v1/accounts:resetPassword?key=apiKey',
             ),
-            body: json.encode({
-              'oobCode': 'code',
-              'newPassword': 'password',
-            }),
+            body: json.encode({'oobCode': 'code', 'newPassword': 'password'}),
             headers: {
               'Accept': 'application/json',
               'Content-Type': 'application/json',
@@ -635,7 +584,7 @@ void main() async {
         );
       });
 
-      test('should throw AuthException on failure', () async {
+      test('should throw AuthException on failure', () {
         whenError();
 
         expect(
@@ -661,9 +610,7 @@ void main() async {
           Uri.parse(
             'https://identitytoolkit.googleapis.com/v1/accounts:update?key=apiKey',
           ),
-          body: json.encode({
-            'oobCode': 'code',
-          }),
+          body: json.encode({'oobCode': 'code'}),
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -672,7 +619,7 @@ void main() async {
       );
     });
 
-    test('should throw AuthException on failure', () async {
+    test('should throw AuthException on failure', () {
       whenError();
       expect(
         () => api.confirmEmail(const ConfirmEmailRequest(oobCode: 'code')),
@@ -708,14 +655,11 @@ void main() async {
       );
     });
 
-    test('should throw AuthException on failure', () async {
+    test('should throw AuthException on failure', () {
       whenError();
       expect(
         () => api.fetchProviders(
-          FetchProviderRequest(
-            identifier: 'id',
-            continueUri: Uri(),
-          ),
+          FetchProviderRequest(identifier: 'id', continueUri: Uri()),
         ),
         throwsA(isA<AuthException>()),
       );
@@ -752,7 +696,7 @@ void main() async {
       );
     });
 
-    test('should throw AuthException on failure', () async {
+    test('should throw AuthException on failure', () {
       whenError();
       expect(
         () => api.linkEmail(
@@ -807,15 +751,11 @@ void main() async {
       );
     });
 
-    test('should throw AuthException on failure', () async {
+    test('should throw AuthException on failure', () {
       whenError();
       expect(
         () => api.linkIdp(
-          LinkIdpRequest(
-            idToken: 'token',
-            requestUri: Uri(),
-            postBody: '',
-          ),
+          LinkIdpRequest(idToken: 'token', requestUri: Uri(), postBody: ''),
         ),
         throwsA(isA<AuthException>()),
       );
@@ -827,10 +767,7 @@ void main() async {
       whenPost().thenFake(const UnlinkResponse(localId: ''));
 
       await api.unlinkProvider(
-        const UnlinkRequest(
-          idToken: 'token',
-          deleteProvider: ['a', 'b', 'c'],
-        ),
+        const UnlinkRequest(idToken: 'token', deleteProvider: ['a', 'b', 'c']),
       );
       verify(
         () => mockClient.post(
@@ -849,14 +786,11 @@ void main() async {
       );
     });
 
-    test('should throw AuthException on failure', () async {
+    test('should throw AuthException on failure', () {
       whenError();
       expect(
         () => api.unlinkProvider(
-          const UnlinkRequest(
-            idToken: 'token',
-            deleteProvider: [],
-          ),
+          const UnlinkRequest(idToken: 'token', deleteProvider: []),
         ),
         throwsA(isA<AuthException>()),
       );
@@ -871,9 +805,7 @@ void main() async {
           Uri.parse(
             'https://identitytoolkit.googleapis.com/v1/accounts:delete?key=apiKey',
           ),
-          body: json.encode({
-            'idToken': 'token',
-          }),
+          body: json.encode({'idToken': 'token'}),
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -882,7 +814,7 @@ void main() async {
       );
     });
 
-    test('should throw AuthException on failure', () async {
+    test('should throw AuthException on failure', () {
       whenError();
       expect(
         () => api.delete(const DeleteRequest(idToken: 'token')),
@@ -917,9 +849,7 @@ void main() async {
           Uri.parse(
             'http://$emulatorHost:$emulatorPort/identitytoolkit.googleapis.com/v1/accounts:signUp?key=apiKey',
           ),
-          body: json.encode({
-            'returnSecureToken': true,
-          }),
+          body: json.encode({'returnSecureToken': true}),
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -951,10 +881,7 @@ void main() async {
             'Accept': 'application/json',
             'Content-Type': 'application/x-www-form-urlencoded',
           },
-          body: {
-            'refresh_token': token,
-            'grant_type': 'refresh_token',
-          },
+          body: {'refresh_token': token, 'grant_type': 'refresh_token'},
         ),
       );
     });
