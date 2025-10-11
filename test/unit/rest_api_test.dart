@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, discarded_futures
+// ignore_for_file: prefer_const_constructors
 import 'dart:convert';
 
 import 'package:firebase_auth_rest/src/models/auth_exception.dart';

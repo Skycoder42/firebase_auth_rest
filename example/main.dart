@@ -11,8 +11,9 @@ Future<void> main(List<String> arguments) async {
   // parse the 2nd and 3rd args to get the emulatorHost and emulatorPort
   // make sure to run firebase emulators:start before doing this
   final emulatorHost = arguments.length >= 2 ? arguments[1] : null;
-  final emulatorPort =
-      arguments.length >= 3 ? int.tryParse(arguments[2]) : null;
+  final emulatorPort = arguments.length >= 3
+      ? int.tryParse(arguments[2])
+      : null;
   EmulatorConfig? emulator;
   if (emulatorHost != null && emulatorPort != null) {
     print(
@@ -23,15 +24,9 @@ Future<void> main(List<String> arguments) async {
 
   try {
     // create a firebase auth instance
-    final fbAuth =
-        emulator != null
-            ? FirebaseAuth.emulator(
-              client,
-              arguments[0],
-              emulator,
-              locale: 'en-US',
-            )
-            : FirebaseAuth(client, arguments[0], 'en-US');
+    final fbAuth = emulator != null
+        ? FirebaseAuth.emulator(client, arguments[0], emulator, locale: 'en-US')
+        : FirebaseAuth(client, arguments[0], 'en-US');
 
     // login, set autoRefresh to true to automatically refresh the idToken in
     // the background

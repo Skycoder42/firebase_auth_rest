@@ -447,7 +447,6 @@ class FirebaseAccount {
         refreshToken: response.refresh_token,
         expiresIn: response.expires_in,
       );
-      // ignore: avoid_catches_without_on_clauses
     } catch (_) {
       autoRefresh = false;
       rethrow;
@@ -463,15 +462,15 @@ class FirebaseAccount {
       _idToken = idToken ?? _idToken;
       _refreshToken = refreshToken ?? _refreshToken;
       final expiresInDur = expiresIn != null ? _durFromString(expiresIn) : null;
-      _expiresAt =
-          expiresInDur != null ? _expiresInToAt(expiresInDur) : _expiresAt;
+      _expiresAt = expiresInDur != null
+          ? _expiresInToAt(expiresInDur)
+          : _expiresAt;
       if (autoRefresh && expiresInDur != null) {
         _scheduleAutoRefresh(expiresInDur);
       }
       if (_refreshController.hasListener) {
         _refreshController.add(_idToken);
       }
-      // ignore: avoid_catches_without_on_clauses
     } catch (_) {
       autoRefresh = false;
       rethrow;
@@ -481,7 +480,6 @@ class FirebaseAccount {
   Future<void> _updateTokenTimeout() async {
     try {
       await _updateToken();
-      // ignore: avoid_catches_without_on_clauses
     } catch (e, s) {
       // redirect exceptions to listeners, if any
       if (_refreshController.hasListener) {

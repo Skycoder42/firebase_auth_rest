@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, discarded_futures
+// ignore_for_file: prefer_const_constructors
 
 import 'package:dart_test_tools/test.dart';
 import 'package:firebase_auth_rest/src/firebase_account.dart';

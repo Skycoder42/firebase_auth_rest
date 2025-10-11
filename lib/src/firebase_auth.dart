@@ -265,11 +265,11 @@ class FirebaseAuth {
     bool autoRefresh = true,
     String? locale,
   }) async =>
-  // ignore: deprecated_member_use_from_same_package
-  await FirebaseAccount.apiRestore(
-    api,
-    refreshToken,
-    autoRefresh: autoRefresh,
-    locale: locale ?? this.locale,
-  );
+      // ignore: deprecated_member_use_from_same_package
+      await FirebaseAccount.apiRestore(
+        api,
+        refreshToken,
+        autoRefresh: autoRefresh,
+        locale: locale ?? this.locale,
+      );
 }

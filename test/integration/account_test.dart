@@ -16,11 +16,10 @@ void main() {
   late final Client client;
   late final FirebaseAuth auth;
 
-  String generateRnd(int length) =>
-      List<String>.generate(
-        length ~/ 2,
-        (i) => Random.secure().nextInt(256).toRadixString(16),
-      ).join();
+  String generateRnd(int length) => List<String>.generate(
+    length ~/ 2,
+    (i) => Random.secure().nextInt(256).toRadixString(16),
+  ).join();
 
   setUpAll(() async {
     client = Client();
@@ -31,10 +30,9 @@ void main() {
     if (emulatorPort != null && emulatorHost != null) {
       emulator = EmulatorConfig(host: emulatorHost, port: emulatorPort);
     }
-    auth =
-        emulator != null
-            ? FirebaseAuth.emulator(client, apiKey, emulator)
-            : FirebaseAuth(client, apiKey);
+    auth = emulator != null
+        ? FirebaseAuth.emulator(client, apiKey, emulator)
+        : FirebaseAuth(client, apiKey);
     if (auth.api.emulator != null) {
       // ignore: avoid_print
       print(
