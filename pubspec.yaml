@@ -16,7 +16,7 @@ dev_dependencies:
   coverage: ^1.15.0
   custom_lint: ^0.8.1
   dart_pre_commit: ^6.0.0
-  dart_test_tools: ^6.2.3+1
+  dart_test_tools: ">=6.2.3+1 <8.0.0"
   freezed: ^3.2.3
   json_serializable: ^6.11.1
   meta: ^1.17.0
