@@ -265,7 +265,7 @@ class FirebaseAuth {
     bool autoRefresh = true,
     String? locale,
   }) async =>
-      // ignore: deprecated_member_use_from_same_package
+      // ignore: deprecated_member_use_from_same_package to avoid duplicate code
       await FirebaseAccount.apiRestore(
         api,
         refreshToken,
