@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:dart_test_tools/test.dart';
 import 'package:firebase_auth_rest/src/firebase_account.dart';
 import 'package:firebase_auth_rest/src/models/auth_exception.dart';
@@ -90,7 +88,7 @@ void main() {
     });
 
     test('apiCreate initializes account correctly', () {
-      final expiresAt = DateTime.now().toUtc().add(Duration(seconds: 5));
+      final expiresAt = DateTime.now().toUtc().add(const Duration(seconds: 5));
       account = FirebaseAccount.apiCreate(
         mockApi,
         defaultSignInResponse,
@@ -108,7 +106,7 @@ void main() {
     });
 
     test('apiCreate starts refresh timer', () {
-      final expiresAt = DateTime.now().toUtc().add(Duration(seconds: 5));
+      final expiresAt = DateTime.now().toUtc().add(const Duration(seconds: 5));
       account = FirebaseAccount.apiCreate(mockApi, defaultSignInResponse);
 
       expect(account.autoRefresh, true);
@@ -142,7 +140,7 @@ void main() {
     test('apiRestore calls api.token with refreshToken', () async {
       const refreshToken = 'refreshToken';
 
-      // ignore: deprecated_member_use_from_same_package
+      // ignore: deprecated_member_use_from_same_package for tests
       account = await FirebaseAccount.apiRestore(
         mockApi,
         refreshToken,
@@ -160,8 +158,8 @@ void main() {
             defaultRefreshResponse.copyWith(refresh_token: refreshToken2),
       );
 
-      final expiresAt = DateTime.now().toUtc().add(Duration(seconds: 5));
-      // ignore: deprecated_member_use_from_same_package
+      final expiresAt = DateTime.now().toUtc().add(const Duration(seconds: 5));
+      // ignore: deprecated_member_use_from_same_package for tests
       account = await FirebaseAccount.apiRestore(
         mockApi,
         refreshToken1,
@@ -179,8 +177,8 @@ void main() {
     });
 
     test('apiRestore starts refresh timer', () async {
-      final expiresAt = DateTime.now().toUtc().add(Duration(seconds: 5));
-      // ignore: deprecated_member_use_from_same_package
+      final expiresAt = DateTime.now().toUtc().add(const Duration(seconds: 5));
+      // ignore: deprecated_member_use_from_same_package for tests
       account = await FirebaseAccount.apiRestore(mockApi, 'refreshToken');
 
       expect(account.autoRefresh, true);
@@ -256,7 +254,7 @@ void main() {
     test('token update errors are streamed', () {
       when(
         () => mockApi.token(refresh_token: any(named: 'refresh_token')),
-      ).thenThrow(AuthException(ErrorData()));
+      ).thenThrow(const AuthException(ErrorData()));
 
       account = FirebaseAccount.apiCreate(mockApi, defaultSignInResponse);
 
@@ -288,7 +286,9 @@ void main() {
           ),
         );
 
-        final expiresAt = DateTime.now().toUtc().add(Duration(seconds: 6000));
+        final expiresAt = DateTime.now().toUtc().add(
+          const Duration(seconds: 6000),
+        );
         final token = await account.refresh();
 
         expect(token, idToken);
@@ -300,7 +300,7 @@ void main() {
       test('forwards auth exceptions', () {
         when(
           () => mockApi.token(refresh_token: any(named: 'refresh_token')),
-        ).thenThrow(AuthException(ErrorData()));
+        ).thenThrow(const AuthException(ErrorData()));
 
         expect(() => account.refresh(), throwsA(isA<AuthException>()));
       });
@@ -330,13 +330,13 @@ void main() {
       (fixture) async {
         when(
           () => mockApi.sendOobCode(any(), any()),
-        ).thenAnswer((i) async => OobCodeResponse());
+        ).thenAnswer((i) async => const OobCodeResponse());
 
         await account.requestEmailConfirmation(locale: fixture.$1);
 
         verify(
           () => mockApi.sendOobCode(
-            OobCodeRequest.verifyEmail(idToken: 'idToken'),
+            const OobCodeRequest.verifyEmail(idToken: 'idToken'),
             fixture.$2,
           ),
         );
@@ -347,22 +347,26 @@ void main() {
       const code = 'code';
       when(
         () => mockApi.confirmEmail(any()),
-      ).thenAnswer((i) async => ConfirmEmailResponse());
+      ).thenAnswer((i) async => const ConfirmEmailResponse());
 
       await account.confirmEmail(code);
 
-      verify(() => mockApi.confirmEmail(ConfirmEmailRequest(oobCode: code)));
+      verify(
+        () => mockApi.confirmEmail(const ConfirmEmailRequest(oobCode: code)),
+      );
     });
 
     group('getDetails', () {
       test('sends user data request', () async {
         when(
           () => mockApi.getUserData(any()),
-        ).thenAnswer((i) async => UserDataResponse(users: []));
+        ).thenAnswer((i) async => const UserDataResponse());
 
         final result = await account.getDetails();
 
-        verify(() => mockApi.getUserData(UserDataRequest(idToken: 'idToken')));
+        verify(
+          () => mockApi.getUserData(const UserDataRequest(idToken: 'idToken')),
+        );
         expect(result, null);
       });
 
@@ -384,13 +388,13 @@ void main() {
         const newEmail = 'new@mail.de';
         when(
           () => mockApi.updateEmail(any(), any()),
-        ).thenAnswer((i) async => EmailUpdateResponse(localId: ''));
+        ).thenAnswer((i) async => const EmailUpdateResponse(localId: ''));
 
         await account.updateEmail(newEmail, locale: fixture.$1);
 
         verify(
           () => mockApi.updateEmail(
-            EmailUpdateRequest(idToken: 'idToken', email: newEmail),
+            const EmailUpdateRequest(idToken: 'idToken', email: newEmail),
             fixture.$2,
           ),
         );
@@ -401,13 +405,16 @@ void main() {
       const newPassword = 'pw';
       when(
         () => mockApi.updatePassword(any()),
-      ).thenAnswer((i) async => PasswordUpdateResponse(localId: ''));
+      ).thenAnswer((i) async => const PasswordUpdateResponse(localId: ''));
 
       await account.updatePassword(newPassword);
 
       verify(
         () => mockApi.updatePassword(
-          PasswordUpdateRequest(idToken: 'idToken', password: newPassword),
+          const PasswordUpdateRequest(
+            idToken: 'idToken',
+            password: newPassword,
+          ),
         ),
       );
     });
@@ -433,43 +440,49 @@ void main() {
         ),
         (
           null,
-          ProfileUpdate<Uri>.delete(),
+          const ProfileUpdate<Uri>.delete(),
           null,
           null,
           const [DeleteAttribute.PHOTO_URL],
         ),
-        (ProfileUpdate<String>.update('name'), null, 'name', null, const []),
         (
-          ProfileUpdate<String>.update('name'),
+          const ProfileUpdate<String>.update('name'),
+          null,
+          'name',
+          null,
+          const [],
+        ),
+        (
+          const ProfileUpdate<String>.update('name'),
           ProfileUpdate<Uri>.update(Uri.parse('http://example.com/image.jpg')),
           'name',
           Uri.parse('http://example.com/image.jpg'),
           const [],
         ),
         (
-          ProfileUpdate<String>.update('name'),
-          ProfileUpdate<Uri>.delete(),
+          const ProfileUpdate<String>.update('name'),
+          const ProfileUpdate<Uri>.delete(),
           'name',
           null,
           const [DeleteAttribute.PHOTO_URL],
         ),
         (
-          ProfileUpdate<String>.delete(),
+          const ProfileUpdate<String>.delete(),
           null,
           null,
           null,
           const [DeleteAttribute.DISPLAY_NAME],
         ),
         (
-          ProfileUpdate<String>.delete(),
+          const ProfileUpdate<String>.delete(),
           ProfileUpdate<Uri>.update(Uri.parse('http://example.com/image.jpg')),
           null,
           Uri.parse('http://example.com/image.jpg'),
           const [DeleteAttribute.DISPLAY_NAME],
         ),
         (
-          ProfileUpdate<String>.delete(),
-          ProfileUpdate<Uri>.delete(),
+          const ProfileUpdate<String>.delete(),
+          const ProfileUpdate<Uri>.delete(),
           null,
           null,
           const <DeleteAttribute>[
@@ -481,7 +494,7 @@ void main() {
       (fixture) async {
         when(
           () => mockApi.updateProfile(any()),
-        ).thenAnswer((i) async => ProfileUpdateResponse(localId: ''));
+        ).thenAnswer((i) async => const ProfileUpdateResponse(localId: ''));
 
         await account.updateProfile(
           displayName: fixture.$1,
@@ -508,7 +521,7 @@ void main() {
         ).thenAnswer((i) async => defaultLinkEmailResponse);
         when(
           () => mockApi.sendOobCode(any(), any()),
-        ).thenAnswer((i) async => OobCodeResponse());
+        ).thenAnswer((i) async => const OobCodeResponse());
 
         const mail = 'mail';
         const password = 'password';
@@ -520,7 +533,7 @@ void main() {
 
         verify(
           () => mockApi.linkEmail(
-            LinkEmailRequest(
+            const LinkEmailRequest(
               idToken: 'idToken',
               email: mail,
               password: password,
@@ -553,7 +566,7 @@ void main() {
           ).thenAnswer((i) async => defaultLinkEmailResponse);
           when(
             () => mockApi.sendOobCode(any(), any()),
-          ).thenAnswer((i) async => OobCodeResponse());
+          ).thenAnswer((i) async => const OobCodeResponse());
 
           final result = await account.linkEmail(
             'mail',
@@ -564,7 +577,7 @@ void main() {
 
           verify(
             () => mockApi.sendOobCode(
-              OobCodeRequest.verifyEmail(idToken: 'idToken'),
+              const OobCodeRequest.verifyEmail(idToken: 'idToken'),
               fixture.$2,
             ),
           );
@@ -591,7 +604,7 @@ void main() {
         () => mockApi.linkIdp(any()),
       ).thenAnswer((i) async => defaultLinkIdpResponse);
 
-      final provider = IdpProvider.google('token');
+      const provider = IdpProvider.google('token');
       final uri = Uri.parse('https://localhost:4242');
       await account.linkIdp(provider, uri);
 
@@ -609,14 +622,14 @@ void main() {
     test('unlinkProvider sends unlink request', () async {
       when(
         () => mockApi.unlinkProvider(any()),
-      ).thenAnswer((i) async => UnlinkResponse(localId: ''));
+      ).thenAnswer((i) async => const UnlinkResponse(localId: ''));
 
       const providers = ['a', 'b'];
       await account.unlinkProviders(providers);
 
       verify(
         () => mockApi.unlinkProvider(
-          UnlinkRequest(idToken: 'idToken', deleteProvider: providers),
+          const UnlinkRequest(idToken: 'idToken', deleteProvider: providers),
         ),
       );
     });
@@ -627,7 +640,7 @@ void main() {
 
         await account.delete();
 
-        verify(() => mockApi.delete(DeleteRequest(idToken: 'idToken')));
+        verify(() => mockApi.delete(const DeleteRequest(idToken: 'idToken')));
       });
 
       test('sends null to idToken stream', () async {

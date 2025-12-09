@@ -1,4 +1,3 @@
-// ignore_for_file: prefer_const_constructors
 import 'dart:convert';
 
 import 'package:firebase_auth_rest/src/models/auth_exception.dart';
@@ -101,7 +100,7 @@ void main() {
   group('signUpAnonymous', () {
     test('should send a post request with correct data', () async {
       whenPost().thenFake(
-        AnonymousSignInResponse(
+        const AnonymousSignInResponse(
           idToken: '',
           refreshToken: '',
           expiresIn: '',
@@ -109,7 +108,7 @@ void main() {
         ),
       );
 
-      await api.signUpAnonymous(AnonymousSignInRequest());
+      await api.signUpAnonymous(const AnonymousSignInRequest());
       verify(
         () => mockClient.post(
           Uri.parse(
@@ -127,7 +126,7 @@ void main() {
     test('should throw AuthException on failure', () {
       whenError();
       expect(
-        () => api.signUpAnonymous(AnonymousSignInRequest()),
+        () => api.signUpAnonymous(const AnonymousSignInRequest()),
         throwsA(isA<AuthException>()),
       );
     });
@@ -145,7 +144,7 @@ void main() {
       );
 
       await api.signUpWithPassword(
-        PasswordSignInRequest(email: 'email', password: 'password'),
+        const PasswordSignInRequest(email: 'email', password: 'password'),
       );
       verify(
         () => mockClient.post(
@@ -169,7 +168,7 @@ void main() {
       whenError();
       expect(
         () => api.signUpWithPassword(
-          PasswordSignInRequest(email: '', password: ''),
+          const PasswordSignInRequest(email: '', password: ''),
         ),
         throwsA(isA<AuthException>()),
       );
@@ -310,7 +309,7 @@ void main() {
     test('should send a post request with correct data', () async {
       whenPost().thenFake(const UserDataResponse());
 
-      await api.getUserData(UserDataRequest(idToken: 'idToken'));
+      await api.getUserData(const UserDataRequest(idToken: 'idToken'));
       verify(
         () => mockClient.post(
           Uri.parse(
@@ -328,7 +327,7 @@ void main() {
     test('should throw AuthException on failure', () {
       whenError();
       expect(
-        () => api.getUserData(UserDataRequest(idToken: 'idToken')),
+        () => api.getUserData(const UserDataRequest(idToken: 'idToken')),
         throwsA(isA<AuthException>()),
       );
     });
@@ -831,11 +830,11 @@ void main() {
     final apiWithEmulator = RestApi(
       mockClient,
       apiKey,
-      emulator: EmulatorConfig(host: emulatorHost, port: emulatorPort),
+      emulator: const EmulatorConfig(host: emulatorHost, port: emulatorPort),
     );
     test('should construct emulator version of auth endpoints', () async {
       whenPost().thenFake(
-        AnonymousSignInResponse(
+        const AnonymousSignInResponse(
           idToken: '',
           refreshToken: '',
           expiresIn: '',
@@ -843,7 +842,7 @@ void main() {
         ),
       );
 
-      await apiWithEmulator.signUpAnonymous(AnonymousSignInRequest());
+      await apiWithEmulator.signUpAnonymous(const AnonymousSignInRequest());
       verify(
         () => mockClient.post(
           Uri.parse(

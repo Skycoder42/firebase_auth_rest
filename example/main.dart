@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print for example
 import 'dart:io';
 
 import 'package:firebase_auth_rest/firebase_auth_rest.dart';
@@ -51,7 +51,7 @@ Future<void> main(List<String> arguments) async {
       await account.dispose();
     }
 
-    // ignore: avoid_catches_without_on_clauses
+    // ignore: avoid_catches_without_on_clauses for example
   } catch (e) {
     print(e);
     print(

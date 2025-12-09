@@ -1,4 +1,3 @@
-// ignore_for_file: prefer_const_constructors
 import 'package:dart_test_tools/test.dart';
 import 'package:firebase_auth_rest/src/firebase_account.dart';
 import 'package:firebase_auth_rest/src/firebase_auth.dart';
@@ -90,7 +89,7 @@ void main() {
         (fixture) async {
           when(
             () => mockApi.fetchProviders(any()),
-          ).thenAnswer((i) async => FetchProviderResponse(allProviders: []));
+          ).thenAnswer((i) async => const FetchProviderResponse());
 
           const mail = 'mail';
           await auth.fetchProviders(mail, fixture.$1);
@@ -127,7 +126,7 @@ void main() {
     group('signUpAnonymous', () {
       test('sends anonymous sign up request', () async {
         when(() => mockApi.signUpAnonymous(any())).thenAnswer(
-          (i) async => AnonymousSignInResponse(
+          (i) async => const AnonymousSignInResponse(
             idToken: '',
             localId: '',
             expiresIn: '1',
@@ -137,12 +136,12 @@ void main() {
 
         account = await auth.signUpAnonymous();
 
-        verify(() => mockApi.signUpAnonymous(AnonymousSignInRequest()));
+        verify(() => mockApi.signUpAnonymous(const AnonymousSignInRequest()));
       });
 
       test('creates account from reply', () async {
         when(() => mockApi.signUpAnonymous(any())).thenAnswer(
-          (i) async => AnonymousSignInResponse(
+          (i) async => const AnonymousSignInResponse(
             idToken: idToken,
             localId: localId,
             expiresIn: expiresIn,
@@ -174,7 +173,7 @@ void main() {
         const mail = 'mail';
         const password = 'password';
         when(() => mockApi.signUpWithPassword(any())).thenAnswer(
-          (i) async => PasswordSignInResponse(
+          (i) async => const PasswordSignInResponse(
             idToken: '',
             localId: '',
             expiresIn: '1',
@@ -190,7 +189,7 @@ void main() {
 
         verify(
           () => mockApi.signUpWithPassword(
-            PasswordSignInRequest(email: mail, password: password),
+            const PasswordSignInRequest(email: mail, password: password),
           ),
         );
         verifyNoMoreInteractions(mockApi);
@@ -201,7 +200,7 @@ void main() {
         const [('ee-EE', 'ee-EE'), (null, 'ab-CD')],
         (fixture) async {
           when(() => mockApi.signUpWithPassword(any())).thenAnswer(
-            (i) async => PasswordSignInResponse(
+            (i) async => const PasswordSignInResponse(
               idToken: idToken,
               localId: '',
               expiresIn: '1',
@@ -218,7 +217,7 @@ void main() {
 
           verify(
             () => mockApi.sendOobCode(
-              OobCodeRequest.verifyEmail(idToken: idToken),
+              const OobCodeRequest.verifyEmail(idToken: idToken),
               fixture.$2,
             ),
           );
@@ -227,7 +226,7 @@ void main() {
 
       test('creates account from reply', () async {
         when(() => mockApi.signUpWithPassword(any())).thenAnswer(
-          (i) async => PasswordSignInResponse(
+          (i) async => const PasswordSignInResponse(
             idToken: idToken,
             localId: localId,
             expiresIn: expiresIn,
@@ -255,10 +254,10 @@ void main() {
 
     group('signInWithIdp', () {
       test('sends idp sign in request', () async {
-        final provider = IdpProvider.google('token');
+        const provider = IdpProvider.google('token');
         final uri = Uri.parse('http://localhost');
         when(() => mockApi.signInWithIdp(any())).thenAnswer(
-          (i) async => IdpSignInResponse(
+          (i) async => const IdpSignInResponse(
             idToken: '',
             localId: '',
             expiresIn: '1',
@@ -279,7 +278,7 @@ void main() {
 
       test('creates account from reply', () async {
         when(() => mockApi.signInWithIdp(any())).thenAnswer(
-          (i) async => IdpSignInResponse(
+          (i) async => const IdpSignInResponse(
             idToken: idToken,
             localId: localId,
             expiresIn: expiresIn,
@@ -293,7 +292,7 @@ void main() {
           const Duration(minutes: 1),
         );
         account = await auth.signInWithIdp(
-          IdpProvider.google('idToken'),
+          const IdpProvider.google('idToken'),
           Uri(),
           autoRefresh: false,
         );
@@ -311,7 +310,7 @@ void main() {
         const mail = 'mail';
         const password = 'password';
         when(() => mockApi.signInWithPassword(any())).thenAnswer(
-          (i) async => PasswordSignInResponse(
+          (i) async => const PasswordSignInResponse(
             idToken: '',
             localId: '',
             expiresIn: '1',
@@ -323,7 +322,7 @@ void main() {
 
         verify(
           () => mockApi.signInWithPassword(
-            PasswordSignInRequest(email: mail, password: password),
+            const PasswordSignInRequest(email: mail, password: password),
           ),
         );
         verifyNoMoreInteractions(mockApi);
@@ -331,7 +330,7 @@ void main() {
 
       test('creates account from reply', () async {
         when(() => mockApi.signInWithPassword(any())).thenAnswer(
-          (i) async => PasswordSignInResponse(
+          (i) async => const PasswordSignInResponse(
             idToken: idToken,
             localId: localId,
             expiresIn: expiresIn,
@@ -360,7 +359,7 @@ void main() {
       test('sends custom tken sign in request', () async {
         const token = 'token';
         when(() => mockApi.signInWithCustomToken(any())).thenAnswer(
-          (i) async => CustomTokenSignInResponse(
+          (i) async => const CustomTokenSignInResponse(
             idToken: '',
             expiresIn: '1',
             refreshToken: '',
@@ -371,14 +370,14 @@ void main() {
 
         verify(
           () => mockApi.signInWithCustomToken(
-            CustomTokenSignInRequest(token: token),
+            const CustomTokenSignInRequest(token: token),
           ),
         );
       });
 
       test('creates account from reply', () async {
         when(() => mockApi.signInWithCustomToken(any())).thenAnswer(
-          (i) async => CustomTokenSignInResponse(
+          (i) async => const CustomTokenSignInResponse(
             idToken: idToken,
             expiresIn: expiresIn,
             refreshToken: refreshToken,
@@ -410,7 +409,7 @@ void main() {
 
         verify(
           () => mockApi.sendOobCode(
-            OobCodeRequest.passwordReset(email: mail),
+            const OobCodeRequest.passwordReset(email: mail),
             fixture.$2,
           ),
         );
@@ -425,7 +424,9 @@ void main() {
       await auth.validatePasswordReset(code);
 
       verify(
-        () => mockApi.resetPassword(PasswordResetRequest.verify(oobCode: code)),
+        () => mockApi.resetPassword(
+          const PasswordResetRequest.verify(oobCode: code),
+        ),
       );
     });
 
@@ -439,7 +440,10 @@ void main() {
 
       verify(
         () => mockApi.resetPassword(
-          PasswordResetRequest.confirm(oobCode: code, newPassword: password),
+          const PasswordResetRequest.confirm(
+            oobCode: code,
+            newPassword: password,
+          ),
         ),
       );
     });
@@ -448,7 +452,7 @@ void main() {
       when(
         () => mockApi.token(refresh_token: any(named: 'refresh_token')),
       ).thenAnswer(
-        (i) async => RefreshResponse(
+        (i) async => const RefreshResponse(
           expires_in: '5',
           token_type: 'token_type',
           refresh_token: 'refresh_token',

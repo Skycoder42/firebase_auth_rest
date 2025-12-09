@@ -1,6 +1,5 @@
 import 'dart:math';
 
-// ignore: no_self_package_imports
 import 'package:firebase_auth_rest/firebase_auth_rest.dart';
 import 'package:http/http.dart';
 import 'package:test/test.dart';
@@ -34,7 +33,7 @@ void main() {
         ? FirebaseAuth.emulator(client, apiKey, emulator)
         : FirebaseAuth(client, apiKey);
     if (auth.api.emulator != null) {
-      // ignore: avoid_print
+      // ignore: avoid_print for tests
       print(
         'running tests against firebase emulator located at http://${auth.api.emulator?.host}:${auth.api.emulator?.port}',
       );

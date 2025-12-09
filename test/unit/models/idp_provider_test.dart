@@ -1,4 +1,3 @@
-// ignore_for_file: prefer_const_constructors
 import 'package:dart_test_tools/test.dart';
 import 'package:firebase_auth_rest/src/models/idp_provider.dart';
 import 'package:test/test.dart';
@@ -8,17 +7,17 @@ void main() {
     'IdpProvider returns correct id and postBody',
     [
       (
-        IdpProvider.google('idToken'),
+        const IdpProvider.google('idToken'),
         'google.com',
         'id_token=idToken&providerId=google.com',
       ),
       (
-        IdpProvider.facebook('accessToken'),
+        const IdpProvider.facebook('accessToken'),
         'facebook.com',
         'access_token=accessToken&providerId=facebook.com',
       ),
       (
-        IdpProvider.twitter(
+        const IdpProvider.twitter(
           accessToken: 'accessToken',
           oauthTokenSecret: 'oauthTokenSecret',
         ),
@@ -28,7 +27,7 @@ void main() {
             '&providerId=twitter.com',
       ),
       (
-        IdpProvider.custom(
+        const IdpProvider.custom(
           providerId: 'custom',
           parameters: <String, dynamic>{'a': 'b'},
         ),

@@ -1,4 +1,3 @@
-// ignore_for_file: non_constant_identifier_names
 import 'dart:convert';
 
 import 'package:http/http.dart';
@@ -54,7 +53,9 @@ class RestApi {
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-refresh-token
   Future<RefreshResponse> token({
+    // ignore: non_constant_identifier_names for backwarts compatibility
     required String refresh_token,
+    // ignore: non_constant_identifier_names for backwarts compatibility
     String grant_type = 'refresh_token',
   }) async => RefreshResponse.fromJson(
     await _postQuery(_buildUri('token', isTokenRequest: true), {
