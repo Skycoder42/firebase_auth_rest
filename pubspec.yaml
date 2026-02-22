@@ -25,4 +25,5 @@ dev_dependencies:
 dart_pre_commit:
   pull-up-dependencies:
     allowed:
+      - meta
       - test

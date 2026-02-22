@@ -1,5 +1,5 @@
 // coverage:ignore-file
-// ignore_for_file: constant_identifier_names, invalid_annotation_target
+// ignore_for_file: constant_identifier_names
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
