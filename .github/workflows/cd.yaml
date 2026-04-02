@@ -1,15 +1,19 @@
 name: CD - Publish to pub.dev
 
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        description: The version to be deployed
+        required: true
 
 jobs:
   publish:
     name: Publish
     uses: Skycoder42/dart_test_tools/.github/workflows/publish.yml@main
-    with:
-      buildRunner: true
     permissions:
       id-token: write
+    with:
+      version: ${{ inputs.version }}
+      buildRunner: true

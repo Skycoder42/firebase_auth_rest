@@ -27,5 +27,8 @@ jobs:
     uses: Skycoder42/dart_test_tools/.github/workflows/release.yml@main
     needs:
       - ci
-    secrets:
-      githubToken: ${{ secrets.GH_PAT }}
+    permissions:
+      contents: write
+      actions: write
+    with:
+      publishWorkflow: cd.yaml
