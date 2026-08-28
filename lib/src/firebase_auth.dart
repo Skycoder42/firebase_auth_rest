@@ -28,7 +28,7 @@ class FirebaseAuth {
   /// The instance uses [client] and [apiKey] for accessing the Firebase REST
   /// endpoints. If [locale] is specified, it is used to initialize
   /// the [FirebaseAuth.locale] property.
-  FirebaseAuth(Client client, String apiKey, [this.locale])
+  new(Client client, String apiKey, [this.locale])
     : api = RestApi(client, apiKey);
 
   /// Creates a new firebase auth instance.
@@ -36,14 +36,14 @@ class FirebaseAuth {
   /// The instance uses the [api] for accessing the Firebase REST endpoints. If
   /// [locale] is specified, it is used to initialize the [FirebaseAuth.locale]
   /// property.
-  FirebaseAuth.api(this.api, [this.locale]);
+  new api(this.api, [this.locale]);
 
   /// Create a new firebase auth instance that connects to the firebase emulator
   ///
   /// The instance uses [client], [apiKey], and [emulator] for accessing the
   /// Firebase auth emulator REST endpoints. If [locale] is specified, it is
   /// used to initialize the [FirebaseAuth.locale] property.
-  FirebaseAuth.emulator(
+  new emulator(
     Client client,
     String apiKey,
     EmulatorConfig emulator, {

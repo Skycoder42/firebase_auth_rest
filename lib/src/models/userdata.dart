@@ -14,7 +14,7 @@ part 'userdata.g.dart';
 @freezed
 sealed class UserData with _$UserData {
   /// Default constructor
-  const factory UserData({
+  const factory({
     /// The uid of the current user.
     required String localId,
 
@@ -58,6 +58,5 @@ sealed class UserData with _$UserData {
   }) = _UserData;
 
   /// JSON constructor
-  factory UserData.fromJson(Map<String, dynamic> json) =>
-      _$UserDataFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$UserDataFromJson(json);
 }

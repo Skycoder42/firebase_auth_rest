@@ -49,7 +49,7 @@ class RestApi {
   /// [emulator] is specified, requests will be made against the Firebase auth
   /// emulator instead of the production endpoints using the provided
   /// [EmulatorConfig].
-  const RestApi(this.client, this.apiKey, {this.emulator});
+  const new(this.client, this.apiKey, {this.emulator});
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-refresh-token
   Future<RefreshResponse> token({

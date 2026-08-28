@@ -10,7 +10,7 @@ part 'refresh_response.g.dart';
 @freezed
 sealed class RefreshResponse with _$RefreshResponse {
   /// Default constructor
-  const factory RefreshResponse({
+  const factory({
     /// The number of seconds in which the ID token expires.
     required String expires_in,
     // The type of the refresh token, always "Bearer".
@@ -31,6 +31,6 @@ sealed class RefreshResponse with _$RefreshResponse {
   }) = _RefreshResponse;
 
   /// JSON constructor
-  factory RefreshResponse.fromJson(Map<String, dynamic> json) =>
+  factory fromJson(Map<String, dynamic> json) =>
       _$RefreshResponseFromJson(json);
 }

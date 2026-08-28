@@ -19,11 +19,11 @@ class ProfileUpdate<T> {
   ///
   /// This method sets [this.data] to [data], [isUpdate] to true and [isDelete]
   /// to false.
-  const ProfileUpdate.update(this.data);
+  const new update(this.data);
 
   /// Creates a new profile update to delete data.
   ///
   /// This method sets [data] to null, [isUpdate] to false and [isDelete] to
   /// true.
-  const ProfileUpdate.delete() : data = null;
+  const new delete() : data = null;
 }

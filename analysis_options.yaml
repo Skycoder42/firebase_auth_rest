@@ -1,6 +1,6 @@
 include: package:dart_test_tools/package.yaml
 plugins:
-  dart_test_tools: ^7.0.1
+  dart_test_tools: ^7.3.2
 analyzer:
   exclude:
     - "**/*.g.dart"

@@ -19,13 +19,13 @@ enum DeleteAttribute {
 @freezed
 sealed class UpdateRequest with _$UpdateRequest {
   /// https://firebase.google.com/docs/reference/rest/auth#section-confirm-email-verification
-  const factory UpdateRequest.confirmEmail({
+  const factory confirmEmail({
     /// The action code sent to user's email for email verification.
     required String oobCode,
   }) = ConfirmEmailRequest;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-change-email
-  const factory UpdateRequest.email({
+  const factory email({
     /// A Firebase Auth ID token for the user.
     required String idToken,
 
@@ -37,7 +37,7 @@ sealed class UpdateRequest with _$UpdateRequest {
   }) = EmailUpdateRequest;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-change-password
-  const factory UpdateRequest.password({
+  const factory password({
     /// A Firebase Auth ID token for the user.
     required String idToken,
 
@@ -49,7 +49,7 @@ sealed class UpdateRequest with _$UpdateRequest {
   }) = PasswordUpdateRequest;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-update-profile
-  const factory UpdateRequest.profile({
+  const factory profile({
     /// A Firebase Auth ID token for the user.
     required String idToken,
 
@@ -68,7 +68,7 @@ sealed class UpdateRequest with _$UpdateRequest {
   }) = ProfileUpdateRequest;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-link-with-email-password
-  const factory UpdateRequest.linkEmail({
+  const factory linkEmail({
     /// The Firebase ID token of the account you are trying to link the
     /// credential to.
     required String idToken,
@@ -84,7 +84,7 @@ sealed class UpdateRequest with _$UpdateRequest {
   }) = LinkEmailRequest;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-unlink-provider
-  const factory UpdateRequest.unlink({
+  const factory unlink({
     /// The Firebase ID token of the account.
     required String idToken,
 
@@ -93,6 +93,5 @@ sealed class UpdateRequest with _$UpdateRequest {
   }) = UnlinkRequest;
 
   /// JSON constructor
-  factory UpdateRequest.fromJson(Map<String, dynamic> json) =>
-      _$UpdateRequestFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$UpdateRequestFromJson(json);
 }

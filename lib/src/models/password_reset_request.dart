@@ -9,14 +9,14 @@ part 'password_reset_request.g.dart';
 @freezed
 sealed class PasswordResetRequest with _$PasswordResetRequest {
   /// https://firebase.google.com/docs/reference/rest/auth#section-verify-password-reset-code
-  const factory PasswordResetRequest.verify({
+  const factory verify({
     /// The email action code sent to the user's email for resetting the
     /// password.
     required String oobCode,
   }) = VerifyPasswordResetRequest;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-confirm-reset-password
-  const factory PasswordResetRequest.confirm({
+  const factory confirm({
     /// The email action code sent to the user's email for resetting the
     /// password.
     required String oobCode,
@@ -26,6 +26,6 @@ sealed class PasswordResetRequest with _$PasswordResetRequest {
   }) = ConfirmPasswordResetRequest;
 
   /// JSON constructor
-  factory PasswordResetRequest.fromJson(Map<String, dynamic> json) =>
+  factory fromJson(Map<String, dynamic> json) =>
       _$PasswordResetRequestFromJson(json);
 }

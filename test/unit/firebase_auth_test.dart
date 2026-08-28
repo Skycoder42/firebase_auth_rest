@@ -16,9 +16,9 @@ import 'package:http/http.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-class MockClient extends Mock implements Client {}
+class MockClient extends Mock implements Client;
 
-class MockRestApi extends Mock implements RestApi {}
+class MockRestApi extends Mock implements RestApi;
 
 void main() {
   final mockApi = MockRestApi();
@@ -87,9 +87,8 @@ void main() {
           (Uri.parse('http://example.com'), Uri.parse('http://example.com')),
         ],
         (fixture) async {
-          when(
-            () => mockApi.fetchProviders(any()),
-          ).thenAnswer((i) async => const FetchProviderResponse());
+          when(() => mockApi.fetchProviders(any()))
+              .thenAnswer((i) async => const FetchProviderResponse());
 
           const mail = 'mail';
           await auth.fetchProviders(mail, fixture.$1);
@@ -164,9 +163,8 @@ void main() {
 
     group('signUpWithPassword', () {
       setUp(() {
-        when(
-          () => mockApi.sendOobCode(any(), any()),
-        ).thenAnswer((i) async => const OobCodeResponse());
+        when(() => mockApi.sendOobCode(any(), any()))
+            .thenAnswer((i) async => const OobCodeResponse());
       });
 
       test('sends password sign up request', () async {
@@ -401,9 +399,8 @@ void main() {
       'requestPasswordReset sends oob code request',
       const [('ee-EE', 'ee-EE'), (null, 'ab-CD')],
       (fixture) async {
-        when(
-          () => mockApi.sendOobCode(any(), any()),
-        ).thenAnswer((i) async => const OobCodeResponse());
+        when(() => mockApi.sendOobCode(any(), any()))
+            .thenAnswer((i) async => const OobCodeResponse());
         const mail = 'email';
         await auth.requestPasswordReset(mail, locale: fixture.$1);
 
@@ -417,9 +414,8 @@ void main() {
     );
 
     test('validatePasswordReset send reset password request', () async {
-      when(
-        () => mockApi.resetPassword(any()),
-      ).thenAnswer((i) async => const PasswordResetResponse());
+      when(() => mockApi.resetPassword(any()))
+          .thenAnswer((i) async => const PasswordResetResponse());
       const code = 'oob-code';
       await auth.validatePasswordReset(code);
 
@@ -431,9 +427,8 @@ void main() {
     });
 
     test('resetPassword send reset password request', () async {
-      when(
-        () => mockApi.resetPassword(any()),
-      ).thenAnswer((i) async => const PasswordResetResponse());
+      when(() => mockApi.resetPassword(any()))
+          .thenAnswer((i) async => const PasswordResetResponse());
       const code = 'oob-code';
       const password = 'password';
       await auth.resetPassword(code, password);
@@ -449,18 +444,17 @@ void main() {
     });
 
     test('restoreAccount restores account with api', () async {
-      when(
-        () => mockApi.token(refresh_token: any(named: 'refresh_token')),
-      ).thenAnswer(
-        (i) async => const RefreshResponse(
-          expires_in: '5',
-          token_type: 'token_type',
-          refresh_token: 'refresh_token',
-          id_token: 'id_token',
-          user_id: 'user_id',
-          project_id: 'project_id',
-        ),
-      );
+      when(() => mockApi.token(refresh_token: any(named: 'refresh_token')))
+          .thenAnswer(
+            (i) async => const RefreshResponse(
+              expires_in: '5',
+              token_type: 'token_type',
+              refresh_token: 'refresh_token',
+              id_token: 'id_token',
+              user_id: 'user_id',
+              project_id: 'project_id',
+            ),
+          );
 
       account = await auth.restoreAccount(refreshToken, autoRefresh: false);
 

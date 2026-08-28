@@ -11,13 +11,13 @@ part 'userdata_response.g.dart';
 @freezed
 sealed class UserDataResponse with _$UserDataResponse {
   /// Default constructor
-  const factory UserDataResponse({
+  const factory({
     /// The account associated with the given Firebase ID token. Check
     /// [UserData] for more details.
     @Default(<UserData>[]) List<UserData> users,
   }) = _UserDataResponse;
 
   /// JSON constructor
-  factory UserDataResponse.fromJson(Map<String, dynamic> json) =>
+  factory fromJson(Map<String, dynamic> json) =>
       _$UserDataResponseFromJson(json);
 }

@@ -9,12 +9,12 @@ part 'userdata_request.g.dart';
 @freezed
 sealed class UserDataRequest with _$UserDataRequest {
   /// Default constructor
-  const factory UserDataRequest({
+  const factory({
     /// The Firebase ID token of the account.
     required String idToken,
   }) = _UserDataRequest;
 
   /// JSON constructor
-  factory UserDataRequest.fromJson(Map<String, dynamic> json) =>
+  factory fromJson(Map<String, dynamic> json) =>
       _$UserDataRequestFromJson(json);
 }

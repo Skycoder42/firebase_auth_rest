@@ -9,7 +9,7 @@ part 'auth_exception.g.dart';
 @freezed
 sealed class ErrorDetails with _$ErrorDetails {
   /// Default constructor
-  const factory ErrorDetails({
+  const factory({
     /// The domain in which the error occured
     String? domain,
 
@@ -21,15 +21,14 @@ sealed class ErrorDetails with _$ErrorDetails {
   }) = _ErrorDetails;
 
   /// JSON constructor
-  factory ErrorDetails.fromJson(Map<String, dynamic> json) =>
-      _$ErrorDetailsFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$ErrorDetailsFromJson(json);
 }
 
 /// https://firebase.google.com/docs/reference/rest/auth#section-error-format
 @freezed
 sealed class ErrorData with _$ErrorData {
   /// Default constructor
-  const factory ErrorData({
+  const factory({
     /// The error code
     @Default(-1) int code,
 
@@ -41,20 +40,18 @@ sealed class ErrorData with _$ErrorData {
   }) = _ErrorData;
 
   /// JSON Constructor
-  factory ErrorData.fromJson(Map<String, dynamic> json) =>
-      _$ErrorDataFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$ErrorDataFromJson(json);
 }
 
 /// https://firebase.google.com/docs/reference/rest/auth#section-error-format
 @freezed
 sealed class AuthException with _$AuthException implements Exception {
   /// Default constructor
-  const factory AuthException(
+  const factory(
     /// The actual error data
     ErrorData error,
   ) = _AuthException;
 
   /// JSON Constructor
-  factory AuthException.fromJson(Map<String, dynamic> json) =>
-      _$AuthExceptionFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$AuthExceptionFromJson(json);
 }

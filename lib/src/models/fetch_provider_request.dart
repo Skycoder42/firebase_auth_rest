@@ -9,7 +9,7 @@ part 'fetch_provider_request.g.dart';
 @freezed
 sealed class FetchProviderRequest with _$FetchProviderRequest {
   /// Default constructor
-  const factory FetchProviderRequest({
+  const factory({
     /// User's email address
     required String identifier,
 
@@ -19,6 +19,6 @@ sealed class FetchProviderRequest with _$FetchProviderRequest {
   }) = _FetchProviderRequest;
 
   /// JSON constructor
-  factory FetchProviderRequest.fromJson(Map<String, dynamic> json) =>
+  factory fromJson(Map<String, dynamic> json) =>
       _$FetchProviderRequestFromJson(json);
 }

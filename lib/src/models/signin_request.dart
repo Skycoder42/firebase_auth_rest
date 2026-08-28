@@ -9,13 +9,13 @@ part 'signin_request.g.dart';
 @freezed
 sealed class SignInRequest with _$SignInRequest {
   /// https://firebase.google.com/docs/reference/rest/auth#section-sign-in-anonymously
-  const factory SignInRequest.anonymous({
+  const factory anonymous({
     /// Whether or not to return an ID and refresh token. Should always be true.
     @Default(true) bool returnSecureToken,
   }) = AnonymousSignInRequest;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-sign-in-with-oauth-credential
-  const factory SignInRequest.idp({
+  const factory idp({
     /// The URI to which the IDP redirects the user back.
     required Uri requestUri,
 
@@ -35,7 +35,7 @@ sealed class SignInRequest with _$SignInRequest {
   ///
   /// - https://firebase.google.com/docs/reference/rest/auth#section-create-email-password
   /// - https://firebase.google.com/docs/reference/rest/auth#section-sign-in-email-password
-  const factory SignInRequest.password({
+  const factory password({
     /// The email the user is signing in with.
     required String email,
 
@@ -47,7 +47,7 @@ sealed class SignInRequest with _$SignInRequest {
   }) = PasswordSignInRequest; // TODO split into 2
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-verify-custom-token
-  const factory SignInRequest.customToken({
+  const factory customToken({
     /// A Firebase Auth custom token from which to create an ID and refresh
     /// token pair.
     required String token,
@@ -57,7 +57,7 @@ sealed class SignInRequest with _$SignInRequest {
   }) = CustomTokenSignInRequest;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-link-with-oauth-credential
-  const factory SignInRequest.linkIdp({
+  const factory linkIdp({
     /// The Firebase ID token of the account you are trying to link the
     /// credential to.
     required String idToken,
@@ -78,6 +78,5 @@ sealed class SignInRequest with _$SignInRequest {
   }) = LinkIdpRequest;
 
   /// JSON constructor
-  factory SignInRequest.fromJson(Map<String, dynamic> json) =>
-      _$SignInRequestFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$SignInRequestFromJson(json);
 }

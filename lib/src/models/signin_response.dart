@@ -8,7 +8,7 @@ part 'signin_response.g.dart';
 /// Meta-Class for multiple API-Endpoints
 @freezed
 sealed class SignInResponse with _$SignInResponse {
-  const SignInResponse._();
+  const new _();
 
   /// The uid of the newly created user.
   String get localId => switch (this) {
@@ -17,7 +17,7 @@ sealed class SignInResponse with _$SignInResponse {
   };
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-sign-in-anonymously
-  const factory SignInResponse.anonymous({
+  const factory anonymous({
     /// A Firebase Auth ID token for the newly created user.
     required String idToken,
 
@@ -35,7 +35,7 @@ sealed class SignInResponse with _$SignInResponse {
   }) = AnonymousSignInResponse;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-sign-in-with-oauth-credential
-  const factory SignInResponse.idp({
+  const factory idp({
     /// The unique ID identifies the IdP account.
     required String federatedId,
 
@@ -98,7 +98,7 @@ sealed class SignInResponse with _$SignInResponse {
   ///
   /// - https://firebase.google.com/docs/reference/rest/auth#section-create-email-password
   /// - https://firebase.google.com/docs/reference/rest/auth#section-sign-in-email-password
-  const factory SignInResponse.password({
+  const factory password({
     /// A Firebase Auth ID token for the authenticated user.
     required String idToken,
 
@@ -119,7 +119,7 @@ sealed class SignInResponse with _$SignInResponse {
   }) = PasswordSignInResponse; // TODO split into two
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-verify-custom-token
-  const factory SignInResponse.custom({
+  const factory custom({
     /// A Firebase Auth ID token generated from the provided custom token.
     required String idToken,
 
@@ -131,7 +131,7 @@ sealed class SignInResponse with _$SignInResponse {
   }) = CustomTokenSignInResponse;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-link-with-oauth-credential
-  const factory SignInResponse.linkIdp({
+  const factory linkIdp({
     /// The unique ID identifies the IdP account.
     required String federatedId,
 
@@ -186,6 +186,5 @@ sealed class SignInResponse with _$SignInResponse {
   }) = LinkIdpResponse;
 
   /// JSON constructor
-  factory SignInResponse.fromJson(Map<String, dynamic> json) =>
-      _$SignInResponseFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$SignInResponseFromJson(json);
 }

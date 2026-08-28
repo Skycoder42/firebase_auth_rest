@@ -19,9 +19,9 @@ import 'package:http/http.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-class MockClient extends Mock implements Client {}
+class MockClient extends Mock implements Client;
 
-class MockRestApi extends Mock implements RestApi {}
+class MockRestApi extends Mock implements RestApi;
 
 void main() {
   final mockApi = MockRestApi();
@@ -132,9 +132,8 @@ void main() {
     setUp(() {
       reset(mockClient);
 
-      when(
-        () => mockApi.token(refresh_token: any(named: 'refresh_token')),
-      ).thenAnswer((i) async => defaultRefreshResponse);
+      when(() => mockApi.token(refresh_token: any(named: 'refresh_token')))
+          .thenAnswer((i) async => defaultRefreshResponse);
     });
 
     test('apiRestore calls api.token with refreshToken', () async {
@@ -220,14 +219,13 @@ void main() {
     });
 
     test('sends token request again after timeout', () async {
-      when(
-        () => mockApi.token(refresh_token: any(named: 'refresh_token')),
-      ).thenAnswer(
-        (i) async => defaultRefreshResponse.copyWith(
-          refresh_token: 'refreshToken2',
-          expires_in: '62',
-        ),
-      );
+      when(() => mockApi.token(refresh_token: any(named: 'refresh_token')))
+          .thenAnswer(
+            (i) async => defaultRefreshResponse.copyWith(
+              refresh_token: 'refreshToken2',
+              expires_in: '62',
+            ),
+          );
 
       account = FirebaseAccount.apiCreate(
         mockApi,
@@ -252,9 +250,8 @@ void main() {
     );
 
     test('token update errors are streamed', () {
-      when(
-        () => mockApi.token(refresh_token: any(named: 'refresh_token')),
-      ).thenThrow(const AuthException(ErrorData()));
+      when(() => mockApi.token(refresh_token: any(named: 'refresh_token')))
+          .thenThrow(const AuthException(ErrorData()));
 
       account = FirebaseAccount.apiCreate(mockApi, defaultSignInResponse);
 
@@ -276,15 +273,14 @@ void main() {
       test('updates all properties', () async {
         const idToken = 'id';
         const refreshToken = 'refresh';
-        when(
-          () => mockApi.token(refresh_token: any(named: 'refresh_token')),
-        ).thenAnswer(
-          (i) async => defaultRefreshResponse.copyWith(
-            id_token: idToken,
-            refresh_token: refreshToken,
-            expires_in: '6000',
-          ),
-        );
+        when(() => mockApi.token(refresh_token: any(named: 'refresh_token')))
+            .thenAnswer(
+              (i) async => defaultRefreshResponse.copyWith(
+                id_token: idToken,
+                refresh_token: refreshToken,
+                expires_in: '6000',
+              ),
+            );
 
         final expiresAt = DateTime.now().toUtc().add(
           const Duration(seconds: 6000),
@@ -298,23 +294,21 @@ void main() {
       });
 
       test('forwards auth exceptions', () {
-        when(
-          () => mockApi.token(refresh_token: any(named: 'refresh_token')),
-        ).thenThrow(const AuthException(ErrorData()));
+        when(() => mockApi.token(refresh_token: any(named: 'refresh_token')))
+            .thenThrow(const AuthException(ErrorData()));
 
         expect(() => account.refresh(), throwsA(isA<AuthException>()));
       });
 
       test('token updates are streamed', () async {
         const idToken = 'nextId';
-        when(
-          () => mockApi.token(refresh_token: any(named: 'refresh_token')),
-        ).thenAnswer(
-          (i) async => defaultRefreshResponse.copyWith(
-            id_token: idToken,
-            expires_in: '5',
-          ),
-        );
+        when(() => mockApi.token(refresh_token: any(named: 'refresh_token')))
+            .thenAnswer(
+              (i) async => defaultRefreshResponse.copyWith(
+                id_token: idToken,
+                expires_in: '5',
+              ),
+            );
 
         expect(account.idTokenStream.isBroadcast, true);
 
@@ -328,9 +322,8 @@ void main() {
       'requestEmailConfirmation sends oobCode request',
       const [('ee-EE', 'ee-EE'), (null, 'ab-CD')],
       (fixture) async {
-        when(
-          () => mockApi.sendOobCode(any(), any()),
-        ).thenAnswer((i) async => const OobCodeResponse());
+        when(() => mockApi.sendOobCode(any(), any()))
+            .thenAnswer((i) async => const OobCodeResponse());
 
         await account.requestEmailConfirmation(locale: fixture.$1);
 
@@ -345,9 +338,8 @@ void main() {
 
     test('confirmEmail sends confirm email request', () async {
       const code = 'code';
-      when(
-        () => mockApi.confirmEmail(any()),
-      ).thenAnswer((i) async => const ConfirmEmailResponse());
+      when(() => mockApi.confirmEmail(any()))
+          .thenAnswer((i) async => const ConfirmEmailResponse());
 
       await account.confirmEmail(code);
 
@@ -358,9 +350,8 @@ void main() {
 
     group('getDetails', () {
       test('sends user data request', () async {
-        when(
-          () => mockApi.getUserData(any()),
-        ).thenAnswer((i) async => const UserDataResponse());
+        when(() => mockApi.getUserData(any()))
+            .thenAnswer((i) async => const UserDataResponse());
 
         final result = await account.getDetails();
 
@@ -386,9 +377,8 @@ void main() {
       const [('ee-EE', 'ee-EE'), (null, 'ab-CD')],
       (fixture) async {
         const newEmail = 'new@mail.de';
-        when(
-          () => mockApi.updateEmail(any(), any()),
-        ).thenAnswer((i) async => const EmailUpdateResponse(localId: ''));
+        when(() => mockApi.updateEmail(any(), any()))
+            .thenAnswer((i) async => const EmailUpdateResponse(localId: ''));
 
         await account.updateEmail(newEmail, locale: fixture.$1);
 
@@ -403,9 +393,8 @@ void main() {
 
     test('updatePassword sends password update request', () async {
       const newPassword = 'pw';
-      when(
-        () => mockApi.updatePassword(any()),
-      ).thenAnswer((i) async => const PasswordUpdateResponse(localId: ''));
+      when(() => mockApi.updatePassword(any()))
+          .thenAnswer((i) async => const PasswordUpdateResponse(localId: ''));
 
       await account.updatePassword(newPassword);
 
@@ -492,9 +481,8 @@ void main() {
         ),
       ],
       (fixture) async {
-        when(
-          () => mockApi.updateProfile(any()),
-        ).thenAnswer((i) async => const ProfileUpdateResponse(localId: ''));
+        when(() => mockApi.updateProfile(any()))
+            .thenAnswer((i) async => const ProfileUpdateResponse(localId: ''));
 
         await account.updateProfile(
           displayName: fixture.$1,
@@ -516,12 +504,10 @@ void main() {
 
     group('linkEmail', () {
       test('sends link email request', () async {
-        when(
-          () => mockApi.linkEmail(any()),
-        ).thenAnswer((i) async => defaultLinkEmailResponse);
-        when(
-          () => mockApi.sendOobCode(any(), any()),
-        ).thenAnswer((i) async => const OobCodeResponse());
+        when(() => mockApi.linkEmail(any()))
+            .thenAnswer((i) async => defaultLinkEmailResponse);
+        when(() => mockApi.sendOobCode(any(), any()))
+            .thenAnswer((i) async => const OobCodeResponse());
 
         const mail = 'mail';
         const password = 'password';
@@ -561,12 +547,10 @@ void main() {
         'requests email confirmation if not verified and enabled',
         const [('ee-EE', 'ee-EE'), (null, 'ab-CD')],
         (fixture) async {
-          when(
-            () => mockApi.linkEmail(any()),
-          ).thenAnswer((i) async => defaultLinkEmailResponse);
-          when(
-            () => mockApi.sendOobCode(any(), any()),
-          ).thenAnswer((i) async => const OobCodeResponse());
+          when(() => mockApi.linkEmail(any()))
+              .thenAnswer((i) async => defaultLinkEmailResponse);
+          when(() => mockApi.sendOobCode(any(), any()))
+              .thenAnswer((i) async => const OobCodeResponse());
 
           final result = await account.linkEmail(
             'mail',
@@ -600,9 +584,8 @@ void main() {
     });
 
     test('linkIdp sends link idp request', () async {
-      when(
-        () => mockApi.linkIdp(any()),
-      ).thenAnswer((i) async => defaultLinkIdpResponse);
+      when(() => mockApi.linkIdp(any()))
+          .thenAnswer((i) async => defaultLinkIdpResponse);
 
       const provider = IdpProvider.google('token');
       final uri = Uri.parse('https://localhost:4242');
@@ -620,9 +603,8 @@ void main() {
     });
 
     test('unlinkProvider sends unlink request', () async {
-      when(
-        () => mockApi.unlinkProvider(any()),
-      ).thenAnswer((i) async => const UnlinkResponse(localId: ''));
+      when(() => mockApi.unlinkProvider(any()))
+          .thenAnswer((i) async => const UnlinkResponse(localId: ''));
 
       const providers = ['a', 'b'];
       await account.unlinkProviders(providers);

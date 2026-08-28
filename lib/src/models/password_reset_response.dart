@@ -14,7 +14,7 @@ part 'password_reset_response.g.dart';
 @freezed
 sealed class PasswordResetResponse with _$PasswordResetResponse {
   /// Default constructor
-  const factory PasswordResetResponse({
+  const factory({
     /// User's email address.
     String? email,
 
@@ -23,6 +23,6 @@ sealed class PasswordResetResponse with _$PasswordResetResponse {
   }) = _PasswordResetResponse;
 
   /// JSON constructor
-  factory PasswordResetResponse.fromJson(Map<String, dynamic> json) =>
+  factory fromJson(Map<String, dynamic> json) =>
       _$PasswordResetResponseFromJson(json);
 }
