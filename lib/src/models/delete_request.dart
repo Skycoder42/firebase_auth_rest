@@ -9,12 +9,11 @@ part 'delete_request.g.dart';
 @freezed
 sealed class DeleteRequest with _$DeleteRequest {
   /// Default constructor
-  const factory DeleteRequest({
+  const factory({
     /// The Firebase ID token of the user to delete.
     required String idToken,
   }) = _DeleteRequest;
 
   /// JSON constructor
-  factory DeleteRequest.fromJson(Map<String, dynamic> json) =>
-      _$DeleteRequestFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$DeleteRequestFromJson(json);
 }

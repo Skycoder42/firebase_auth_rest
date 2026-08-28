@@ -6,7 +6,7 @@ part 'emulator_config.freezed.dart';
 /// Config with options for connecting the the Firebase auth emulator
 @freezed
 sealed class EmulatorConfig with _$EmulatorConfig {
-  const factory EmulatorConfig({
+  const factory({
     /// The URI host. Example: "127.0.0.1" or "localhost"
     required String host,
 
@@ -17,6 +17,5 @@ sealed class EmulatorConfig with _$EmulatorConfig {
     @Default('http') String protocol,
   }) = _EmulatorConfig;
 
-  factory EmulatorConfig.fromJson(Map<String, dynamic> json) =>
-      _$EmulatorConfigFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$EmulatorConfigFromJson(json);
 }

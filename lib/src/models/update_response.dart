@@ -11,7 +11,7 @@ part 'update_response.g.dart';
 @freezed
 sealed class UpdateResponse with _$UpdateResponse {
   /// https://firebase.google.com/docs/reference/rest/auth#section-confirm-email-verification
-  const factory UpdateResponse.confirmEmail({
+  const factory confirmEmail({
     /// The email of the account.
     String? email,
 
@@ -32,7 +32,7 @@ sealed class UpdateResponse with _$UpdateResponse {
   }) = ConfirmEmailResponse;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-change-email
-  const factory UpdateResponse.email({
+  const factory email({
     /// The uid of the current user.
     required String localId,
 
@@ -56,7 +56,7 @@ sealed class UpdateResponse with _$UpdateResponse {
   }) = EmailUpdateResponse;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-change-password
-  const factory UpdateResponse.password({
+  const factory password({
     /// The uid of the current user.
     required String localId,
 
@@ -80,7 +80,7 @@ sealed class UpdateResponse with _$UpdateResponse {
   }) = PasswordUpdateResponse;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-update-profile
-  const factory UpdateResponse.profile({
+  const factory profile({
     /// The uid of the current user.
     required String localId,
 
@@ -110,7 +110,7 @@ sealed class UpdateResponse with _$UpdateResponse {
   }) = ProfileUpdateResponse;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-link-with-email-password
-  const factory UpdateResponse.linkEmail({
+  const factory linkEmail({
     /// The uid of the current user.
     required String localId,
 
@@ -143,7 +143,7 @@ sealed class UpdateResponse with _$UpdateResponse {
   }) = LinkEmailResponse;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-unlink-provider
-  const factory UpdateResponse.unlink({
+  const factory unlink({
     /// The uid of the current user.
     required String localId,
 
@@ -167,6 +167,5 @@ sealed class UpdateResponse with _$UpdateResponse {
   }) = UnlinkResponse;
 
   /// JSON constructor
-  factory UpdateResponse.fromJson(Map<String, dynamic> json) =>
-      _$UpdateResponseFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$UpdateResponseFromJson(json);
 }

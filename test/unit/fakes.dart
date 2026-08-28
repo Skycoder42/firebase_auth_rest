@@ -9,7 +9,7 @@ class FakeRequest extends Fake implements BaseRequest {
 }
 
 class FakeResponse extends Fake implements Response {
-  FakeResponse({this.body = '{"error": {}}', this.statusCode = 200});
+  new({this.body = '{"error": {}}', this.statusCode = 200});
 
   static FakeResponse forModel<T>(
     T model, [

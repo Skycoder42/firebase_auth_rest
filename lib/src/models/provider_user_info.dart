@@ -9,7 +9,7 @@ part 'provider_user_info.g.dart';
 @freezed
 sealed class ProviderUserInfo with _$ProviderUserInfo {
   /// Default constructor
-  const factory ProviderUserInfo({
+  const factory({
     /// The linked provider ID (e.g. "google.com" for the Google provider).
     required String providerId,
 
@@ -18,6 +18,6 @@ sealed class ProviderUserInfo with _$ProviderUserInfo {
   }) = _ProviderUserInfo;
 
   /// JSON constructor
-  factory ProviderUserInfo.fromJson(Map<String, dynamic> json) =>
+  factory fromJson(Map<String, dynamic> json) =>
       _$ProviderUserInfoFromJson(json);
 }

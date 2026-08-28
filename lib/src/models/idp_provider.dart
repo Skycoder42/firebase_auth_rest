@@ -17,26 +17,26 @@ part 'idp_provider.freezed.dart';
 /// use [IdpProvider.custom()] to create a custom provider instance.
 @freezed
 sealed class IdpProvider with _$IdpProvider {
-  const IdpProvider._();
+  const new _();
 
   /// Create an IDP-Instance for google.com.
   ///
   /// Requires you to perform a Google-OAuth flow to obtain an [idToken]. You
   /// can then create a google provider with that data.
-  const factory IdpProvider.google(String idToken) = _GoogleIdpProvider;
+  const factory google(String idToken) = _GoogleIdpProvider;
 
   /// Create an IDP-Instance for facebook.com.
   ///
   /// Requires you to perform a Facebook-OAuth flow to obtain an [accessToken].
   /// You can then create a facebook provider with that data.
-  const factory IdpProvider.facebook(String accessToken) = _FacebookIdpProvider;
+  const factory facebook(String accessToken) = _FacebookIdpProvider;
 
   /// Create an IDP-Instance for twitter.com.
   ///
   /// Requires you to perform a Twitter-OAuth flow to obtain an [accessToken].
   /// Together with an [oauthTokenSecret] you can then create a facebook
   /// provider with that data.
-  const factory IdpProvider.twitter({
+  const factory twitter({
     required String accessToken,
     required String oauthTokenSecret,
   }) = _TwitterIdpProvider;
@@ -47,7 +47,7 @@ sealed class IdpProvider with _$IdpProvider {
   /// choice, you can then create a provider by using the [providerId] (
   /// typically the domain of the provider) and additional [parameters], that
   /// contain the auth credentials required by firebase to log in the user.
-  const factory IdpProvider.custom({
+  const factory custom({
     required String providerId,
     @Default(<String, dynamic>{}) Map<String, dynamic> parameters,
   }) = _CustomIdpProvider;
@@ -59,7 +59,7 @@ sealed class IdpProvider with _$IdpProvider {
     _GoogleIdpProvider() => 'google.com',
     _FacebookIdpProvider() => 'facebook.com',
     _TwitterIdpProvider() => 'twitter.com',
-    _CustomIdpProvider(providerId: final providerId) => providerId,
+    _CustomIdpProvider(:final providerId) => providerId,
   };
 
   /// Generates a HTTP-POST body to be used by the REST-API.
@@ -70,19 +70,15 @@ sealed class IdpProvider with _$IdpProvider {
   /// factory constructors.
   String get postBody {
     final params = switch (this) {
-      _GoogleIdpProvider(idToken: final idToken) => {'id_token': idToken},
-      _FacebookIdpProvider(accessToken: final accessToken) => {
+      _GoogleIdpProvider(:final idToken) => {'id_token': idToken},
+      _FacebookIdpProvider(:final accessToken) => {'access_token': accessToken},
+      _TwitterIdpProvider(:final accessToken, :final oauthTokenSecret) => {
         'access_token': accessToken,
+        'oauth_token_secret': oauthTokenSecret,
       },
-      _TwitterIdpProvider(
-        accessToken: final accessToken,
-        oauthTokenSecret: final oauthTokenSecret,
-      ) =>
-        {'access_token': accessToken, 'oauth_token_secret': oauthTokenSecret},
-      _CustomIdpProvider(parameters: final parameters) => parameters,
+      _CustomIdpProvider(:final parameters) => parameters,
     };
-    return Uri(
-      queryParameters: <String, dynamic>{...params, 'providerId': id},
-    ).query;
+    return Uri(queryParameters: <String, dynamic>{...params, 'providerId': id})
+        .query;
   }
 }

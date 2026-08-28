@@ -19,7 +19,7 @@ enum OobCodeRequestType {
 @freezed
 sealed class OobCodeRequest with _$OobCodeRequest {
   /// https://firebase.google.com/docs/reference/rest/auth#section-send-email-verification
-  const factory OobCodeRequest.verifyEmail({
+  const factory verifyEmail({
     /// The Firebase ID token of the user to verify.
     required String idToken,
 
@@ -29,7 +29,7 @@ sealed class OobCodeRequest with _$OobCodeRequest {
   }) = VerifyEmailRequest;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-send-password-reset-email
-  const factory OobCodeRequest.passwordReset({
+  const factory passwordReset({
     /// User's email address.
     required String email,
 
@@ -39,6 +39,5 @@ sealed class OobCodeRequest with _$OobCodeRequest {
   }) = PasswordRestRequest;
 
   /// JSON constructor
-  factory OobCodeRequest.fromJson(Map<String, dynamic> json) =>
-      _$OobCodeRequestFromJson(json);
+  factory fromJson(Map<String, dynamic> json) => _$OobCodeRequestFromJson(json);
 }

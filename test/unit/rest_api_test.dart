@@ -23,7 +23,7 @@ import 'package:test/test.dart';
 
 import 'fakes.dart';
 
-class MockClient extends Mock implements Client {}
+class MockClient extends Mock implements Client;
 
 extension FakeResponseX on When<Future<Response>> {
   void thenFake<T>(T model, [Map<String, dynamic>? overwrites]) =>

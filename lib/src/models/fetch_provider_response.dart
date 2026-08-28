@@ -9,7 +9,7 @@ part 'fetch_provider_response.g.dart';
 @freezed
 sealed class FetchProviderResponse with _$FetchProviderResponse {
   /// Default constructors
-  const factory FetchProviderResponse({
+  const factory({
     /// The list of providers that the user has previously signed in with.
     @Default(<String>[]) List<String> allProviders,
 
@@ -18,6 +18,6 @@ sealed class FetchProviderResponse with _$FetchProviderResponse {
   }) = _FetchProviderResponse;
 
   /// JSON constructor
-  factory FetchProviderResponse.fromJson(Map<String, dynamic> json) =>
+  factory fromJson(Map<String, dynamic> json) =>
       _$FetchProviderResponseFromJson(json);
 }

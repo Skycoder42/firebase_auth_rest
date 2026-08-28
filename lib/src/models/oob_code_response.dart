@@ -12,12 +12,12 @@ part 'oob_code_response.g.dart';
 @freezed
 sealed class OobCodeResponse with _$OobCodeResponse {
   /// Default constructor
-  const factory OobCodeResponse({
+  const factory({
     /// User's email address.
     String? email,
   }) = _OobCodeResponse;
 
   /// JSON constructor
-  factory OobCodeResponse.fromJson(Map<String, dynamic> json) =>
+  factory fromJson(Map<String, dynamic> json) =>
       _$OobCodeResponseFromJson(json);
 }

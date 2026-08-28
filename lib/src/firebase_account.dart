@@ -38,10 +38,12 @@ class FirebaseAccount {
   DateTime _expiresAt;
 
   Timer? _refreshTimer;
-  final StreamController<String> _refreshController =
-      StreamController<String>.broadcast(onListen: () {}, onCancel: () {});
+  final _refreshController = StreamController<String>.broadcast(
+    onListen: () {},
+    onCancel: () {},
+  );
 
-  FirebaseAccount._(
+  new _(
     this.api,
     this._localId,
     this._idToken,
@@ -61,7 +63,7 @@ class FirebaseAccount {
   /// these properties. If [emulator] is specified, requests
   /// will be made against the Firebase auth emulator instead of the production
   /// endpoints using the provided [EmulatorConfig].
-  FirebaseAccount.create(
+  new create(
     Client client,
     String apiKey,
     SignInResponse signInResponse, {
@@ -83,7 +85,7 @@ class FirebaseAccount {
   /// The account is created by using the [api] for accessing the Firebase REST
   /// endpoints. The user credentials are extracted from the [signInResponse].
   /// If [autoRefresh] and [locale] are used to initialize these properties.
-  FirebaseAccount.apiCreate(
+  new apiCreate(
     this.api,
     SignInResponse signInResponse, {
     bool autoRefresh = true,
