@@ -19,9 +19,9 @@ import 'package:http/http.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-class MockClient extends Mock implements Client;
+class MockClient() extends Mock implements Client;
 
-class MockRestApi extends Mock implements RestApi;
+class MockRestApi() extends Mock implements RestApi;
 
 void main() {
   final mockApi = MockRestApi();

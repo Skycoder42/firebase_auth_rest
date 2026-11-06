@@ -7,7 +7,7 @@ part 'update_request.freezed.dart';
 part 'update_request.g.dart';
 
 /// Possible values for [UpdateRequest.profile()]
-enum DeleteAttribute {
+enum DeleteAttribute() {
   /// Unsets displayName
   DISPLAY_NAME,
 

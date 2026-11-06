@@ -25,22 +25,22 @@ import 'models/userdata_response.dart';
 /// link to their endpoint documentation of the Firebase API itself.
 ///
 /// See https://firebase.google.com/docs/reference/rest/auth for more details.
-class RestApi {
-  static const _firebaseLocaleHeader = 'X-Firebase-Locale';
-  static const _authHost = 'identitytoolkit.googleapis.com';
-  static const _tokenHost = 'securetoken.googleapis.com';
-
+class const RestApi(
   /// The HTTP-Client used to access the remote api
-  final Client client;
+  final Client client,
 
   /// The Firebase Web-API-Key to authenticate to the remote api
-  final String apiKey;
+  final String apiKey, {
 
   /// Config to connect to the Firebase auth emulator
   ///
   /// When set, requests will be sent to the Firebase auth emulator
   /// instead of the production endpoints
-  final EmulatorConfig? emulator;
+  final EmulatorConfig? emulator,
+}) {
+  static const _firebaseLocaleHeader = 'X-Firebase-Locale';
+  static const _authHost = 'identitytoolkit.googleapis.com';
+  static const _tokenHost = 'securetoken.googleapis.com';
 
   /// Create a new api instance
   ///
@@ -49,7 +49,7 @@ class RestApi {
   /// [emulator] is specified, requests will be made against the Firebase auth
   /// emulator instead of the production endpoints using the provided
   /// [EmulatorConfig].
-  const new(this.client, this.apiKey, {this.emulator});
+  this;
 
   /// https://firebase.google.com/docs/reference/rest/auth#section-refresh-token
   Future<RefreshResponse> token({

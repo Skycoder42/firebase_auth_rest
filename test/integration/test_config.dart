@@ -1,6 +1,6 @@
 import 'package:dart_test_tools/test.dart';
 
-sealed class TestConfig {
+sealed class TestConfig() {
   static Map<String, String>? _cachedEnv;
 
   static Future<Map<String, String>> get _env async =>

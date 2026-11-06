@@ -7,9 +7,7 @@ part 'signin_response.g.dart';
 
 /// Meta-Class for multiple API-Endpoints
 @freezed
-sealed class SignInResponse with _$SignInResponse {
-  const new _();
-
+sealed class const SignInResponse._() with _$SignInResponse {
   /// The uid of the newly created user.
   String get localId => switch (this) {
     CustomTokenSignInResponse() => '',

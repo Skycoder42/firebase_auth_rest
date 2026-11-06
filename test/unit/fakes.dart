@@ -3,14 +3,15 @@ import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:mocktail/mocktail.dart';
 
-class FakeRequest extends Fake implements BaseRequest {
+class FakeRequest() extends Fake implements BaseRequest {
   @override
   Uri get url => Uri.http('localhost', '/');
 }
 
-class FakeResponse extends Fake implements Response {
-  new({this.body = '{"error": {}}', this.statusCode = 200});
-
+class FakeResponse({
+  @override final String body = '{"error": {}}',
+  @override final int statusCode = 200,
+}) extends Fake implements Response {
   static FakeResponse forModel<T>(
     T model, [
     Map<String, dynamic>? overwrites,
@@ -30,10 +31,4 @@ class FakeResponse extends Fake implements Response {
 
   @override
   Map<String, String> get headers => {};
-
-  @override
-  final int statusCode;
-
-  @override
-  final String body;
 }

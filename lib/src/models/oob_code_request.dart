@@ -7,7 +7,7 @@ part 'oob_code_request.freezed.dart';
 part 'oob_code_request.g.dart';
 
 /// Possible values for [OobCodeRequest.requestType]
-enum OobCodeRequestType {
+enum OobCodeRequestType() {
   /// VERIFY_EMAIL
   VERIFY_EMAIL,
 

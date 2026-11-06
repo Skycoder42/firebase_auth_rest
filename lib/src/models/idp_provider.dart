@@ -16,9 +16,7 @@ part 'idp_provider.freezed.dart';
 /// If you want to use a provider other then the ones specified above, you can
 /// use [IdpProvider.custom()] to create a custom provider instance.
 @freezed
-sealed class IdpProvider with _$IdpProvider {
-  const new _();
-
+sealed class const IdpProvider._() with _$IdpProvider {
   /// Create an IDP-Instance for google.com.
   ///
   /// Requires you to perform a Google-OAuth flow to obtain an [idToken]. You
