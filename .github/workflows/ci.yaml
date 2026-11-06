@@ -1,10 +1,9 @@
 name: CI/CD
 
 on:
-  push:
-    branches:
-      - "**"
   workflow_dispatch:
+  push:
+  pull_request:
 
 jobs:
   ci:
@@ -32,3 +31,17 @@ jobs:
       actions: write
     with:
       publishWorkflow: cd.yaml
+
+  renovate:
+    name: Renovate
+    needs:
+      - ci
+      - cd
+    if: ${{ !cancelled() }}
+    uses: Skycoder42/dart_test_tools/.github/workflows/renovate-finish.yml@main
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    with:
+      needs: ${{ toJSON(needs) }}
